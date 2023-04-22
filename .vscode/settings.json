@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "xbmrtime.h": "c",
+    "inttypes.h": "c",
+    "xbrtime_morello.h": "c"
+  }
+}

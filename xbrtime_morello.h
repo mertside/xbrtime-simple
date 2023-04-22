@@ -52,7 +52,7 @@ volatile uint64_t *barrier;
 
 
 /* ------------------------------------------------- FUNCTION PROTOTYPES */
-void __xbrtime_ctor_reg_reset();
+// void __xbrtime_ctor_reg_reset();
 
 __attribute__((constructor)) void __xbrtime_ctor(){
   /* initialize the unnecessary registers */

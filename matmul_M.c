@@ -89,21 +89,21 @@ int main( int argc, char **argv ){
 		t_start = mysecond();
 	}
 
- 	if(xbrtime_mype() == 0){
-		// remote access
-    xbrtime_ulonglong_get((unsigned long long *)(&(shared[0])),			  // dest
-                          	(unsigned long long *)(&(shared[0])),			// src
-                          	ne,																				// ne
-                          	1,																				// stride
-                          	1);									 											// pe
-	}
+ 	// if(xbrtime_mype() == 0){
+	// 	// remote access
+  //   xbrtime_ulonglong_get((unsigned long long *)(&(shared[0])),			  // dest
+  //                         	(unsigned long long *)(&(shared[0])),			// src
+  //                         	ne,																				// ne
+  //                         	1,																				// stride
+  //                         	1);									 											// pe
+	// }
 
   // xbrtime_barrier();
 
 	if(xbrtime_mype() == 0){
 		t_end = mysecond();
 		t_mem = t_end - t_start;
-		printf("Time cost"BGRN " (coalesced transactions): %f\n"RESET, t_mem);
+		// printf("Time cost"BGRN " (coalesced transactions): %f\n"RESET, t_mem);
 		printf("--------------------------------------------\n");
 		t_start = mysecond();
 	}

@@ -16,6 +16,10 @@
 #include "test.h"
 
 int main( int argc, char **argv ){
+	printf("--------------------------------------------\n");
+	printf("Entered Main matmul...\n",GRN);
+	printf("--------------------------------------------\n");
+
 	/* vars */
   int 			rtn 			= 0;
   size_t 		sz 				= _XBGAS_ALLOC_SIZE_;
@@ -27,6 +31,10 @@ int main( int argc, char **argv ){
 	double 		t_mem	  	= 0;
 	double 		t_start  	= 0;
 	double 		t_end  		= 0;
+
+  printf("--------------------------------------------\n");
+	printf("Passed vars & allocs\n",GRN);
+	printf("--------------------------------------------\n");
 
 	/* init */
 	private = malloc( sizeof( uint64_t ) * ne );
@@ -42,6 +50,10 @@ int main( int argc, char **argv ){
 		shared[i] 	= (uint64_t)(i + xbrtime_mype());
 		private[i] 	= 1;
 	}
+
+	printf("--------------------------------------------\n");
+	printf("Passed init\n",GRN);
+	printf("--------------------------------------------\n");
 
   /* perform a barrier */
 #ifdef DEBUG
@@ -60,8 +72,6 @@ int main( int argc, char **argv ){
 
 		t_start = mysecond();
 	}
-
-
 
  /* fetch via loop */
  	if(xbrtime_mype() == 0){
@@ -126,6 +136,9 @@ int main( int argc, char **argv ){
   printf( "xBGAS is Closed\n" );
 #endif
 
+	printf("--------------------------------------------\n");
+	printf("Returning Main matmul...\n",GRN);
+	printf("--------------------------------------------\n");
   return rtn;
 }
 

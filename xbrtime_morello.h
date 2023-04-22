@@ -40,6 +40,40 @@ extern "C" {
 // #include "xbrtime-collectives.h"
 // #include "xbrtime-atomics.h"
 
+/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
+/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
+
+//#define INIT_ADDR 0xBB00000000000000ull
+#define END_ADDR 0xAA00000000000000ull
+
+volatile uint64_t *barrier;
+
+
+/* ------------------------------------------------- FUNCTION PROTOTYPES */
+void __xbrtime_ctor_reg_reset();
+
+__attribute__((constructor)) void __xbrtime_ctor(){
+  /* initialize the unnecessary registers */
+  __xbrtime_ctor_reg_reset();
+	// As max PE = 1024, at most 10 rounds are needed in the synchronizatino  
+  barrier = malloc(sizeof(uint64_t)*2*10);	
+  // printf("CTOR: Init\n");
+}
+__attribute__((destructor)) void __xbrtime_dtor(){
+  /* free_barrier */
+	uint64_t end = 0;
+	*((uint64_t *)END_ADDR) = end;
+  free ((void*)barrier); 	
+  // printf("DTOR: Free\n");
+}
+
+/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
+/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
+
 /* ---------------------------------------- FUNCTION PROTOTYPES */
 
 /*!   \fn int xbrtime_init()
@@ -102,7 +136,7 @@ extern void xbrtime_barrier();
 
 /* _XBRTIME_INIT_C_ */
 
-extern volatile  uint64_t* barrier;
+// extern volatile  uint64_t* barrier;
 #define INIT_ADDR 0xBB00000000000000ull
 
 /* ------------------------------------------------- GLOBALS */

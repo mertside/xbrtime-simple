@@ -47,7 +47,7 @@ int main( int argc, char **argv ){
 #ifdef DEBUG
   printf( "PE=%d; EXECUTING BARRIER\n", xbrtime_mype() );
 #endif
-  xbrtime_barrier();
+  // xbrtime_barrier();
 
 	if(xbrtime_mype() == 0){
 		printf("========================\n");
@@ -78,7 +78,7 @@ int main( int argc, char **argv ){
 #ifdef DEBUG
   printf( "PE=%d; EXECUTING BARRIER\n", xbrtime_mype() );
 #endif
-  xbrtime_barrier();
+  // xbrtime_barrier();
 
 	if(xbrtime_mype() == 0){
 		t_end = mysecond();
@@ -98,7 +98,7 @@ int main( int argc, char **argv ){
                           	1);									 											// pe
 	}
 
-  xbrtime_barrier();
+  // xbrtime_barrier();
 
 	if(xbrtime_mype() == 0){
 		t_end = mysecond();

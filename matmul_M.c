@@ -37,10 +37,10 @@ int main( int argc, char **argv ){
 	printf("[M]"GRN " Passed malloc\n"RESET);
 
   rtn = xbrtime_init();
-	printf("[M]"GRN " Passed xbrtime_init()\n"RESET);
+	printf("[M]"GRN " Passed xbrtime_init()\n"RESET); 
 
   shared = (uint64_t *)(xbrtime_malloc( sz*ne ));
-	printf("[M]"GRN " Passed xbrtime_malloc()\n"RESET);
+	printf("[M]"GRN " Passed xbrtime_malloc()\n"RESET); 
 
 #ifdef DEBUG
   printf( "PE=%d; *SHARED = 0x%"PRIu64"\n", xbrtime_mype(), (uint64_t)(shared) );
@@ -70,17 +70,17 @@ int main( int argc, char **argv ){
 		t_start = mysecond();
 	}
 
-//  /* fetch via loop */
-//  	if(xbrtime_mype() == 0){
-//  		for(i = 0; i < ne; i++){
-// 			// remote access
-//     	xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),			// dest
-//                           	(unsigned long long *)(&(shared[i])),			// src
-//                           	1,																				// ne
-//                           	1,																				// stride
-//                           	1);									 											// pe
-// 		}
-// 	}
+  /* fetch via loop */
+ 	if(xbrtime_mype() == 0){
+ 		for(i = 0; i < ne; i++){
+			// remote access
+    	xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),			// dest
+                          	(unsigned long long *)(&(shared[i])),			// src
+                          	1,																				// ne
+                          	1,																				// stride
+                          	1);									 											// pe
+		}
+	}
 
   /* perform a barrier */
 #ifdef DEBUG
@@ -117,7 +117,7 @@ int main( int argc, char **argv ){
 	}
 
 	for( i = 0; i < ne; i ++)
-		private[i] *= shared[i];
+		private[i] *= shared[i];                           // matrix multiplication
 
 	if(xbrtime_mype() == 0){
 		t_end = mysecond();

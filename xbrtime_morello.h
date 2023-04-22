@@ -45,7 +45,9 @@ extern "C" {
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
 
-//#define INIT_ADDR 0xBB00000000000000ull
+/* _XBRTIME_CTOR_C_ */
+
+#define INIT_ADDR 0xBB00000000000000ull 
 #define END_ADDR 0xAA00000000000000ull
 
 volatile uint64_t *xb_barrier;
@@ -138,7 +140,7 @@ extern void xbrtime_barrier();
 /* _XBRTIME_INIT_C_ */
 
 // extern volatile  uint64_t* barrier;
-#define INIT_ADDR 0xBB00000000000000ull
+// #define INIT_ADDR 0xBB00000000000000ull // MERT – MOVED UP
 
 /* ------------------------------------------------- GLOBALS */
 XBRTIME_DATA *__XBRTIME_CONFIG;
@@ -193,8 +195,8 @@ extern int xbrtime_init(){
   __XBRTIME_CONFIG->_MEMSIZE    = 4096 * 4096;    // __xbrtime_asm_get_memsize();
   __XBRTIME_CONFIG->_NPES       = 8;              // __xbrtime_asm_get_npes();
   __XBRTIME_CONFIG->_START_ADDR = 0x00ull;        // __xbrtime_asm_get_startaddr();
-  __XBRTIME_CONFIG->_SENSE      = 0x00ull;
-  __XBRTIME_CONFIG->_BARRIER 		= xb_barrier;
+  __XBRTIME_CONFIG->_SENSE      = 0x00ull;        // MERT – __xbrtime_asm_get_sense();
+  __XBRTIME_CONFIG->_BARRIER 		= xb_barrier;     // MERT – malloc(sizeof(uint64_t)*2*10);
 	// MAX_PE_NUM = 1024, thus, MAX_Barrier buffer space = log2^1024 = 10
 	for( i = 0; i < 10; i++){
   	__XBRTIME_CONFIG->_BARRIER[i] 		= 0xfffffffffull;
@@ -233,8 +235,8 @@ extern int xbrtime_init(){
   }
   printf("[M] init the PE mapping structure\n");
 
-  int init = 1;
-  *((uint64_t *)INIT_ADDR) = init;
+  // int init = 1;                    // MERT - COMMENTED OUT
+  // *((uint64_t *)INIT_ADDR) = init; // MERT - COMMENTED OUT
   return 0;
 }
 

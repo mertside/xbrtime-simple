@@ -2,6 +2,22 @@
   "files.associations": {
     "xbmrtime.h": "c",
     "inttypes.h": "c",
-    "xbrtime_morello.h": "c"
+    "xbrtime_morello.h": "c",
+    "__hash_table": "c",
+    "__split_buffer": "c",
+    "__tree": "c",
+    "array": "c",
+    "bitset": "c",
+    "deque": "c",
+    "initializer_list": "c",
+    "map": "c",
+    "queue": "c",
+    "set": "c",
+    "stack": "c",
+    "unordered_map": "c",
+    "unordered_set": "c",
+    "vector": "c",
+    "random": "c",
+    "string_view": "c"
   }
 }

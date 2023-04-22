@@ -55,6 +55,7 @@ volatile uint64_t *barrier;
 // void __xbrtime_ctor_reg_reset();
 
 __attribute__((constructor)) void __xbrtime_ctor(){
+  printf("[M] Entered __xbrtime_ctor()\n"YEL);
   /* initialize the unnecessary registers */
   // __xbrtime_ctor_reg_reset();
 	// As max PE = 1024, at most 10 rounds are needed in the synchronizatino  
@@ -62,6 +63,7 @@ __attribute__((constructor)) void __xbrtime_ctor(){
   // printf("CTOR: Init\n");
 }
 __attribute__((destructor)) void __xbrtime_dtor(){
+  printf("[M] Entered __xbrtime_dtor()\n"YEL);
   /* free_barrier */
 	uint64_t end = 0;
 	*((uint64_t *)END_ADDR) = end;
@@ -176,7 +178,7 @@ extern void xbrtime_close(){
 }
 
 extern int xbrtime_init(){
-
+  printf("[M] Entered xbrtime_init()\n"YEL);
   /* vars */
   int i = 0;
 
@@ -216,19 +218,21 @@ extern int xbrtime_init(){
     free( __XBRTIME_CONFIG );
     return -1;
   }
+  printf("[M] init the pe mapping block\n"YEL);
 
   /* init the memory allocation slots */
   for( i=0;i<_XBRTIME_MEM_SLOTS_; i++ ){
     __XBRTIME_CONFIG->_MMAP[i].start_addr = 0x00ull;
     __XBRTIME_CONFIG->_MMAP[i].size       = 0;
   }
+  printf("[M] init the memory allocation slots\n"YEL);
 
   /* init the PE mapping structure */
   for( i=0; i<__XBRTIME_CONFIG->_NPES; i++ ){
     __XBRTIME_CONFIG->_MAP[i]._LOGICAL   = i;
     __XBRTIME_CONFIG->_MAP[i]._PHYSICAL  = i+1;
   }
-
+  printf("[M] init the PE mapping structure\n"YEL);
 
   int init = 1;
   *((uint64_t *)INIT_ADDR) = init;

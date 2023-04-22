@@ -16,7 +16,7 @@
 #include "test.h"
 
 int main( int argc, char **argv ){
-	printf("[M] Entered Main matmul...\n"GRN);
+	printf("[M]"GRN " Entered Main matmul...\n"RESET);
 
 	/* vars */
   int 			rtn 			= 0;
@@ -30,17 +30,17 @@ int main( int argc, char **argv ){
 	double 		t_start  	= 0;
 	double 		t_end  		= 0;
 
-	printf("[M] Passed vars\n"GRN);
+	printf("[M]"GRN " Passed vars\n"RESET);
 
 	/* init */
 	private = malloc( sizeof( uint64_t ) * ne );
-	printf("[M] Passed malloc\n"GRN);
+	printf("[M]"GRN " Passed malloc\n"RESET);
 
   rtn = xbrtime_init();
-	printf("[M] Passed xbrtime_init()\n"GRN);
+	printf("[M]"GRN " Passed xbrtime_init()\n"RESET);
 
   shared = (uint64_t *)(xbrtime_malloc( sz*ne ));
-	printf("[M] Passed xbrtime_malloc()\n"GRN);
+	printf("[M]"GRN " Passed xbrtime_malloc()\n"RESET);
 
 #ifdef DEBUG
   printf( "PE=%d; *SHARED = 0x%"PRIu64"\n", xbrtime_mype(), (uint64_t)(shared) );
@@ -50,7 +50,7 @@ int main( int argc, char **argv ){
 		private[i] 	= 1;
 	}
 
-	printf("[M] Passed init\n"GRN);
+	printf("[M]"GRN " Passed init\n"RESET);
 
   /* perform a barrier */
 #ifdef DEBUG
@@ -134,7 +134,7 @@ int main( int argc, char **argv ){
   printf( "xBGAS is Closed\n" );
 #endif
 
-	printf("[M] Returning Main matmul...\n"GRN);
+	printf("[M]"GRN " Returning Main matmul...\n"RESET);
   return rtn;
 }
 

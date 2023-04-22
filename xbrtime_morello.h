@@ -30,7 +30,7 @@ extern "C" {
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-
+#include "test.h"
 /* ---------------------------------------- REQUIRED HEADERS */
 #include "xbMrtime-types.h"
 // #include "xbMrtime-api.h"
@@ -48,26 +48,25 @@ extern "C" {
 //#define INIT_ADDR 0xBB00000000000000ull
 #define END_ADDR 0xAA00000000000000ull
 
-volatile uint64_t *barrier;
-
+volatile uint64_t *xb_barrier;
 
 /* ------------------------------------------------- FUNCTION PROTOTYPES */
 // void __xbrtime_ctor_reg_reset();
 
 __attribute__((constructor)) void __xbrtime_ctor(){
-  printf("[M] Entered __xbrtime_ctor()\n"YEL);
+  printf("[M]"YEL " Entered __xbrtime_ctor()\n"RESET);
   /* initialize the unnecessary registers */
   // __xbrtime_ctor_reg_reset();
 	// As max PE = 1024, at most 10 rounds are needed in the synchronizatino  
-  barrier = malloc(sizeof(uint64_t)*2*10);	
+  xb_barrier = malloc(sizeof(uint64_t)*2*10);	
   // printf("CTOR: Init\n");
 }
 __attribute__((destructor)) void __xbrtime_dtor(){
-  printf("[M] Entered __xbrtime_dtor()\n"YEL);
+  printf("[M]"YEL " Entered __xbrtime_dtor()\n"RESET);
   /* free_barrier */
 	uint64_t end = 0;
 	*((uint64_t *)END_ADDR) = end;
-  free ((void*)barrier); 	
+  free ((void*)xb_barrier); 	
   // printf("DTOR: Free\n");
 }
 
@@ -82,13 +81,13 @@ __attribute__((destructor)) void __xbrtime_dtor(){
       \brief Initializes the XBGAS Runtime environment
       \return 0 on success, nonzero otherwise
 */
-extern int xbrtime_init();
+int xbrtime_init();
 
 /*!   \fn void xbrtime_close()
       \brief Closes the XBGAS Runtime environment
       \return void
 */
-extern void xbrtime_close();
+void xbrtime_close();
 
 /*!   \fn int xbrtime_addr_accessible( const void *addr, int pe )
       \brief Checks to see whether the address on the target pe can be reached
@@ -178,7 +177,7 @@ extern void xbrtime_close(){
 }
 
 extern int xbrtime_init(){
-  printf("[M] Entered xbrtime_init()\n"YEL);
+  printf("[M]"YEL " Entered xbrtime_init()\n"RESET);
   /* vars */
   int i = 0;
 
@@ -195,7 +194,7 @@ extern int xbrtime_init(){
   __XBRTIME_CONFIG->_NPES       = 8;              // __xbrtime_asm_get_npes();
   __XBRTIME_CONFIG->_START_ADDR = 0x00ull;        // __xbrtime_asm_get_startaddr();
   __XBRTIME_CONFIG->_SENSE      = 0x00ull;
-  __XBRTIME_CONFIG->_BARRIER 		= barrier;
+  __XBRTIME_CONFIG->_BARRIER 		= xb_barrier;
 	// MAX_PE_NUM = 1024, thus, MAX_Barrier buffer space = log2^1024 = 10
 	for( i = 0; i < 10; i++){
   	__XBRTIME_CONFIG->_BARRIER[i] 		= 0xfffffffffull;
@@ -218,21 +217,21 @@ extern int xbrtime_init(){
     free( __XBRTIME_CONFIG );
     return -1;
   }
-  printf("[M] init the pe mapping block\n"YEL);
+  printf("[M]"YEL " init the pe mapping block\n"RESET);
 
   /* init the memory allocation slots */
   for( i=0;i<_XBRTIME_MEM_SLOTS_; i++ ){
     __XBRTIME_CONFIG->_MMAP[i].start_addr = 0x00ull;
     __XBRTIME_CONFIG->_MMAP[i].size       = 0;
   }
-  printf("[M] init the memory allocation slots\n"YEL);
+  printf("[M]"YEL " init the memory allocation slots\n"RESET);
 
   /* init the PE mapping structure */
   for( i=0; i<__XBRTIME_CONFIG->_NPES; i++ ){
     __XBRTIME_CONFIG->_MAP[i]._LOGICAL   = i;
     __XBRTIME_CONFIG->_MAP[i]._PHYSICAL  = i+1;
   }
-  printf("[M] init the PE mapping structure\n"YEL);
+  printf("[M]"YEL " init the PE mapping structure\n"RESET);
 
   int init = 1;
   *((uint64_t *)INIT_ADDR) = init;

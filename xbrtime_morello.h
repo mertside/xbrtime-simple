@@ -30,7 +30,7 @@ extern "C" {
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "test.h"
+// #include "test.h"
 /* ---------------------------------------- REQUIRED HEADERS */
 #include "xbMrtime-types.h"
 // #include "xbMrtime-api.h"
@@ -54,7 +54,7 @@ volatile uint64_t *xb_barrier;
 // void __xbrtime_ctor_reg_reset();
 
 __attribute__((constructor)) void __xbrtime_ctor(){
-  printf("[M]"YEL " Entered __xbrtime_ctor()\n"RESET);
+  printf("[M] Entered __xbrtime_ctor()\n");
   /* initialize the unnecessary registers */
   // __xbrtime_ctor_reg_reset();
 	// As max PE = 1024, at most 10 rounds are needed in the synchronizatino  
@@ -62,7 +62,7 @@ __attribute__((constructor)) void __xbrtime_ctor(){
   // printf("CTOR: Init\n");
 }
 __attribute__((destructor)) void __xbrtime_dtor(){
-  printf("[M]"YEL " Entered __xbrtime_dtor()\n"RESET);
+  printf("[M] Entered __xbrtime_dtor()\n");
   /* free_barrier */
 	uint64_t end = 0;
 	*((uint64_t *)END_ADDR) = end;
@@ -177,7 +177,7 @@ extern void xbrtime_close(){
 }
 
 extern int xbrtime_init(){
-  printf("[M]"YEL " Entered xbrtime_init()\n"RESET);
+  printf("[M] Entered xbrtime_init()\n");
   /* vars */
   int i = 0;
 
@@ -217,21 +217,21 @@ extern int xbrtime_init(){
     free( __XBRTIME_CONFIG );
     return -1;
   }
-  printf("[M]"YEL " init the pe mapping block\n"RESET);
+  printf("[M] init the pe mapping block\n");
 
   /* init the memory allocation slots */
   for( i=0;i<_XBRTIME_MEM_SLOTS_; i++ ){
     __XBRTIME_CONFIG->_MMAP[i].start_addr = 0x00ull;
     __XBRTIME_CONFIG->_MMAP[i].size       = 0;
   }
-  printf("[M]"YEL " init the memory allocation slots\n"RESET);
+  printf("[M] init the memory allocation slots\n");
 
   /* init the PE mapping structure */
   for( i=0; i<__XBRTIME_CONFIG->_NPES; i++ ){
     __XBRTIME_CONFIG->_MAP[i]._LOGICAL   = i;
     __XBRTIME_CONFIG->_MAP[i]._PHYSICAL  = i+1;
   }
-  printf("[M]"YEL " init the PE mapping structure\n"RESET);
+  printf("[M] init the PE mapping structure\n");
 
   int init = 1;
   *((uint64_t *)INIT_ADDR) = init;

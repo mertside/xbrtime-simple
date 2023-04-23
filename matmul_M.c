@@ -69,6 +69,7 @@ int main( int argc, char **argv ){
 		printf(" Element #: %lu\n", ne);
   	printf(" Data size: %lu bytes\n",  (int)(sz) * (int)(ne) );
 		printf(" PE #     : %d\n", xbrtime_num_pes());
+    printf("========================\n");
 
 		t_start = mysecond();
 	}

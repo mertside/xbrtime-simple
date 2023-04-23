@@ -27,6 +27,8 @@
 extern "C" {
 #endif
 
+#define XBGAS_DEBUG
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -321,12 +323,12 @@ extern void xbrtime_barrier(){
 	// 	iter++;
 
   /* force a heavy fence */
-  __xbrtime_asm_fence();
+  __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
 
-#ifdef XBGAS_DEBUG
-	printf("XBGAS_DEBUG:: PE = %d, sense = %ld, complete __xbrtime_asm_fence()\n",xbrtime_mype(), sense);
-#endif
   // MERT – skip the following code due to unimplemented functions
+// #ifdef XBGAS_DEBUG
+// 	printf("XBGAS_DEBUG:: PE = %d, sense = %ld, complete __xbrtime_asm_fence()\n",xbrtime_mype(), sense);
+// #endif
 // 	while(i < iter){
 //   	/* derive the correct target pe */
 // 		target 	= (mype + stride)%num_pe; 

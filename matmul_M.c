@@ -53,7 +53,7 @@ int main( int argc, char **argv ){
 		private[i] 	= 1;
 	}
 
-	printf("[M]"GRN " Passed init\n"RESET);
+	printf("[M]"GRN " Passed shared[] & private[] init\n"RESET);
 
   /* perform a barrier */
 #ifdef DEBUG

@@ -19,6 +19,7 @@
     "vector": "c",
     "random": "c",
     "string_view": "c",
-    "xbmrtime-macros.h": "c"
+    "xbmrtime-macros.h": "c",
+    "test.h": "c"
   }
 }

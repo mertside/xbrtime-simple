@@ -1,16 +1,12 @@
 CC=/home/parallels/cheri/cheri-exercises/tools/ccc
-# CC=gcc
-#RISCV=/home/meside/xbgas-tools
-SRCS= $(wildcard *.c)
-OBJS = $(SRCS:.c=.exe)
-#CFLAGS = -std=c11 -I$(RISCV)/include -L$(RISCV)/lib/
-#LIBS = -lxbrtime -lm
+ARCH=morello-purecap
+DIR=/home/parallels//cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
 
+matMul:
+	$(CC) $(ARCH) -o $(DIR)/matmul_M.exe $(DIR)/matmul_M.c $(DIR)/xbMrtime_api_asm.s
 
-all: $(OBJS)
-
-%.exe:%.c
-	$(CC) -o $@ $^
+gather:
+	$(CC) $(ARCH) -o $(DIR)/gather_M.exe $(DIR)/gather_M.c $(DIR)/xbMrtime_api_asm.s
 
 clean:
 	rm -f ./*.o ./*.exe

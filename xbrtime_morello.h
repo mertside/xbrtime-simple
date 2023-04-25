@@ -193,12 +193,12 @@ extern int xbrtime_init(){
   }
 
   __XBRTIME_CONFIG->_MMAP       = malloc(sizeof(XBRTIME_MEM_T) * _XBRTIME_MEM_SLOTS_);
-  __XBRTIME_CONFIG->_ID         = 0;              // __xbrtime_asm_get_id();
-  __XBRTIME_CONFIG->_MEMSIZE    = 4096 * 4096;    // __xbrtime_asm_get_memsize();
-  __XBRTIME_CONFIG->_NPES       = 8;              // __xbrtime_asm_get_npes();
-  __XBRTIME_CONFIG->_START_ADDR = 0x00ull;        // __xbrtime_asm_get_startaddr();
-  __XBRTIME_CONFIG->_SENSE      = 0x00ull;        // MERT – __xbrtime_asm_get_sense();
-  __XBRTIME_CONFIG->_BARRIER 		= xb_barrier;     // MERT – malloc(sizeof(uint64_t)*2*10);
+  __XBRTIME_CONFIG->_ID         = 0;          // __xbrtime_asm_get_id();
+  __XBRTIME_CONFIG->_MEMSIZE    = 4096 * 4096;// __xbrtime_asm_get_memsize();
+  __XBRTIME_CONFIG->_NPES       = 8;          // __xbrtime_asm_get_npes();
+  __XBRTIME_CONFIG->_START_ADDR = 0x00ull;    // __xbrtime_asm_get_startaddr();
+  __XBRTIME_CONFIG->_SENSE      = 0x00ull;    // __xbrtime_asm_get_sense();
+  __XBRTIME_CONFIG->_BARRIER 		= xb_barrier; // malloc(sizeof(uint64_t)*2*10);
 	// MAX_PE_NUM = 1024, thus, MAX_Barrier buffer space = log2^1024 = 10
 	for( i = 0; i < 10; i++){
   	__XBRTIME_CONFIG->_BARRIER[i] 		= 0xfffffffffull;

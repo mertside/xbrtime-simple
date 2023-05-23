@@ -69,7 +69,7 @@ __attribute__((destructor)) void __xbrtime_dtor(){
   printf("[M] Entered __xbrtime_dtor()\n");
   /* free_barrier */
 	uint64_t end = 0;
-	*((uint64_t *)END_ADDR) = end;
+	// *((uint64_t *)END_ADDR) = end;
   free ((void*)xb_barrier); 	
   // printf("DTOR: Free\n");
 }
@@ -276,16 +276,16 @@ void __xbrtime_get_u8_seq( uint64_t base_src, uint64_t base_dest,//uint32_t pe,
 void xbrtime_ulonglong_get(unsigned long long *dest, 
                            const unsigned long long *src, 
                            size_t nelems, int stride, int pe){
-  printf("[M] Entered xbrtime_ulonglong_get()\n");
+  //printf("[M] Entered xbrtime_ulonglong_get()\n");
   if(nelems == 0){
     return;
   }else /*if( (stride != 1) || (nelems == 1))*/{
     /* sequential execution */
-    // __xbrtime_get_u8_seq(src,//__xbrtime_ltor((uint64_t)(src),pe),
-    //                      (uint64_t)(dest),
-    //                      //xbrtime_decode_pe(pe),
-    //                      (uint32_t)(nelems),
-    //                      (uint32_t)(stride*sizeof(unsigned long long)));
+    //__xbrtime_get_u8_seq(src,//__xbrtime_ltor((uint64_t)(src),pe),
+    //                     (uint64_t)(dest),
+    //                     //xbrtime_decode_pe(pe),
+    //                     (uint32_t)(nelems),
+    //                     (uint32_t)(stride*sizeof(unsigned long long)));
     // MERT – bypassed the above function and directly coppied below:
     dest = src;
   }

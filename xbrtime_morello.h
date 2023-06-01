@@ -41,6 +41,7 @@ extern "C" {
 #include "xbMrtime-macros.h"
 // #include "xbrtime-collectives.h"
 // #include "xbrtime-atomics.h"
+#include "threadpool.h" // From xbgas-runtime-thread
 
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
@@ -52,6 +53,8 @@ extern "C" {
 #define INIT_ADDR 0xBB00000000000000ull 
 #define END_ADDR 0xAA00000000000000ull
 
+#define MAX_NUM_OF_THREADS 16 // From xbgas-runtime-thread
+
 volatile uint64_t *xb_barrier;
 
 /* ------------------------------------------------- FUNCTION PROTOTYPES */
@@ -59,14 +62,65 @@ volatile uint64_t *xb_barrier;
 
 __attribute__((constructor)) void __xbrtime_ctor(){
   printf("[M] Entered __xbrtime_ctor()\n");
+
   /* initialize the unnecessary registers */
-  // __xbrtime_ctor_reg_reset();
+  __xbrtime_ctor_reg_reset();
 	// As max PE = 1024, at most 10 rounds are needed in the synchronizatino  
   xb_barrier = malloc(sizeof(uint64_t)*2*10);	
+  //printf("CTOR: Init\n");
+	//int init = 0;
+  //*((uint64_t *)INIT_ADDR) = init;
+	//if(init || *((uint64_t *)INIT_ADDR))
+	//init = 0;	
+
+  //  ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   numOfThreads
+  int i = 0;
+  int numOfThreads = MAX_NUM_OF_THREADS;
+
+  // Get number of threads from the environment
+  char *str = getenv("NUM_OF_THREADS");
+  // Is the environment variable set appropriately?
+  if(str == NULL || atoi(str) <= 0 || atoi(str) > MAX_NUM_OF_THREADS){
+    if(str == NULL) {
+      // NOT found!
+      fprintf(stderr, "\nNUM_OF_THREADS not set; set environment first!\n");
+    } else {
+      // NOT a reasonable number!
+      fprintf(stderr, "\nNUM_OF_THREADS should be between %d and %d\n",
+              1, MAX_NUM_OF_THREADS);
+    }
+    // Set MAX number of threads as an environment variable
+    const char *envName = "NUM_OF_THREADS";
+    char envValue[10] = "";
+    sprintf(envValue, "%d", numOfThreads);
+    setenv(envName, envValue, 1);
+  }
+  numOfThreads = atoi(getenv("NUM_OF_THREADS"));
+
+#if DEBUG
+  fprintf(stdout, "\nNumber of threads: %d\n", numOfThreads);
+  fflush(stdout);
+#endif
+
+  // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
+  
+  // Create a thread pool
+  tpool_work_queue_t *pool;
+  pool = tpool_create(numOfThreads);
+
   // printf("CTOR: Init\n");
 }
 __attribute__((destructor)) void __xbrtime_dtor(){
   printf("[M] Entered __xbrtime_dtor()\n");
+  
+  // Will return when there is no work
+  tpool_wait(pool);
+
+  // Discard pending, clean queue, order stop, wait, destroy
+  tpool_destroy(pool); 
+
+  // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
+
   /* free_barrier */
 	uint64_t end = 0;
 	// *((uint64_t *)END_ADDR) = end;

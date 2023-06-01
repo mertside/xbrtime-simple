@@ -333,7 +333,7 @@ void __xbrtime_get_u8_seq( uint64_t base_src, uint64_t base_dest,//uint32_t pe,
 void xbrtime_ulonglong_get(unsigned long long *dest, 
                            const unsigned long long *src, 
                            size_t nelems, int stride, int pe){
-  //printf("[M] Entered xbrtime_ulonglong_get()\n");
+  printf("[M] Entered xbrtime_ulonglong_get()\n");
   if(nelems == 0){
     return;
   }else /*if( (stride != 1) || (nelems == 1))*/{

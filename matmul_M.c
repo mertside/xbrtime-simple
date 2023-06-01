@@ -80,7 +80,7 @@ int main( int argc, char **argv ){
 			// remote access
     	xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),			// dest
                           	(unsigned long long *)(&(shared[i])),			// src
-                          	1,																				// ne
+                          	ne,																				// ne
                           	1,																				// stride
                           	1);									 											// pe
 		}

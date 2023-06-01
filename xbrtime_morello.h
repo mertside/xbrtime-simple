@@ -41,7 +41,7 @@ extern "C" {
 #include "xbMrtime-macros.h"
 // #include "xbrtime-collectives.h"
 // #include "xbrtime-atomics.h"
-#include "threadpool.h" // From xbgas-runtime-thread
+#include "threadpool.h"                            // From xbgas-runtime-thread
 
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
@@ -53,9 +53,10 @@ extern "C" {
 #define INIT_ADDR 0xBB00000000000000ull 
 #define END_ADDR 0xAA00000000000000ull
 
-#define MAX_NUM_OF_THREADS 16 // From xbgas-runtime-thread
+#define MAX_NUM_OF_THREADS 16                      // From xbgas-runtime-thread
 
 volatile uint64_t *xb_barrier;
+volatile tpool_work_queue_t *pool;                 // From xbgas-runtime-thread
 
 /* ------------------------------------------------- FUNCTION PROTOTYPES */
 // void __xbrtime_ctor_reg_reset();
@@ -105,7 +106,7 @@ __attribute__((constructor)) void __xbrtime_ctor(){
   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
   
   // Create a thread pool
-  tpool_work_queue_t *pool;
+  // tpool_work_queue_t *pool; // Redefined globally  
   pool = tpool_create(numOfThreads);
 
   // printf("CTOR: Init\n");

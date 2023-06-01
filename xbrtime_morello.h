@@ -100,7 +100,7 @@ __attribute__((constructor)) void __xbrtime_ctor(){
   }
   numOfThreads = atoi(getenv("NUM_OF_THREADS"));
 
-#if DEBUG
+#if XBGAS_DEBUG
   fprintf(stdout, "\nNumber of threads: %d\n", numOfThreads);
   fflush(stdout);
 #endif

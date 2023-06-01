@@ -32,6 +32,8 @@ extern "C" {
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <pthread.h>                               // From xbgas-runtime-thread
+#include <unistd.h>                                // From xbgas-runtime-thread
 // #include "test.h"
 /* ---------------------------------------- REQUIRED HEADERS */
 #include "xbMrtime-types.h"
@@ -65,7 +67,7 @@ __attribute__((constructor)) void __xbrtime_ctor(){
   printf("[M] Entered __xbrtime_ctor()\n");
 
   /* initialize the unnecessary registers */
-  __xbrtime_ctor_reg_reset();
+  // __xbrtime_ctor_reg_reset();
 	// As max PE = 1024, at most 10 rounds are needed in the synchronizatino  
   xb_barrier = malloc(sizeof(uint64_t)*2*10);	
   //printf("CTOR: Init\n");

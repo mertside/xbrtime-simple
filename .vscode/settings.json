@@ -20,6 +20,7 @@
     "random": "c",
     "string_view": "c",
     "xbmrtime-macros.h": "c",
-    "test.h": "c"
+    "test.h": "c",
+    "threadpool.h": "c"
   }
 }

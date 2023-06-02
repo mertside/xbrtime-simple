@@ -256,14 +256,14 @@ __xbrtime_get_u8_seq:
   .global __xbrtime_put_u8_seq
   .type __xbrtime_put_u8_seq, @function
 __xbrtime_put_u8_seq:
-  MOV C12, CZR
+  MOV X12, XZR
 .put_u8_seq:
   LDR C10, [C0]
   @ ADD X0, X0, X3
-  ADD C12, C12, #1
+  ADD X12, X12, #1
   STR C10, [C1]
   @ ADD X1, X1, X3
-  CMP C12, C2
+  CMP X12, X2
   BNE .put_u8_seq
   RET
   .size __xbrtime_put_u8_seq, .-__xbrtime_put_u8_seq

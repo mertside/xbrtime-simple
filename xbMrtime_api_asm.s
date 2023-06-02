@@ -256,7 +256,7 @@ __xbrtime_get_u8_seq:
   .global __xbrtime_put_u8_seq
   .type __xbrtime_put_u8_seq, @function
 __xbrtime_put_u8_seq:
-  MOV C12, XZR
+  MOV C12, CZR
 .put_u8_seq:
   LDR C10, [C0]
   @ ADD X0, X0, X3

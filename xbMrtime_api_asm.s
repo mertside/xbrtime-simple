@@ -258,11 +258,11 @@ __xbrtime_get_u8_seq:
 __xbrtime_put_u8_seq:
   MOV X12, XZR
 .put_u8_seq:
-  LDR C10, [C0]
-  # ADD X0, X0, X3
+  LDR X10, [X0]
+  ADD X0, X0, X3
   ADD X12, X12, #1
-  STR C10, [C1]
-  # ADD X1, X1, X3
+  STR X10, [X1]
+  ADD X1, X1, X3
   CMP X12, X2
   BNE .put_u8_seq
   RET

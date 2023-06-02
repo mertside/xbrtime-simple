@@ -79,7 +79,7 @@ int main( int argc, char **argv ){
 
   /* fetch via loop */
  	if(xbrtime_mype() == 0){
-    xbrtime_ulonglong_get(x,y,1,1,1);
+    xbrtime_ulonglong_get(x,y,0,1,1);
  		// for(i = 0; i < ne; i++){
 
 		// 	// // remote access

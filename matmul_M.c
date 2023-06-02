@@ -33,6 +33,9 @@ int main( int argc, char **argv ){
 	double 		t_start  	= 0;
 	double 		t_end  		= 0;
 
+  unsigned long long x = 1;
+  unsigned long long y = 2;
+
 	printf("[M]"GRN " Passed vars\n"RESET);
 
 	/* init */
@@ -76,19 +79,19 @@ int main( int argc, char **argv ){
 
   /* fetch via loop */
  	if(xbrtime_mype() == 0){
- 		for(i = 0; i < ne; i++){
-			// remote access
+    xbrtime_ulonglong_get(x,y,1,1,1);
+ 		// for(i = 0; i < ne; i++){
 
-      shared[i] = i;
-      /*
-    	xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),			// dest
-                          	(unsigned long long *)(&(shared[i])),			// src
-                          	1,																				// ne
-                          	1,																				// stride
-                          	1);									 											// pe
-      */
-      printf("  Completed iter: %d", i);
-		}
+		// 	// // remote access
+    // 	// xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),			// dest
+    //   //                     	(unsigned long long *)(&(shared[i])),			// src
+    //   //                     	1,																				// ne
+    //   //                     	1,																				// stride
+    //   //                     	1);									 											// pe
+    //   // shared[i] = i;
+    //   printf("  Completed iter: %d\n", i);
+		// }
+    printf("  Completed\n");
 	}
 
   /* perform a barrier */

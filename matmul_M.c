@@ -78,11 +78,15 @@ int main( int argc, char **argv ){
  	if(xbrtime_mype() == 0){
  		for(i = 0; i < ne; i++){
 			// remote access
+
+      shared[i] = i;
+      /*
     	xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),			// dest
                           	(unsigned long long *)(&(shared[i])),			// src
                           	1,																				// ne
                           	1,																				// stride
                           	1);									 											// pe
+      */
       printf("  Completed iter: %d", i);
 		}
 	}

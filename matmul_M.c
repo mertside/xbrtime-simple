@@ -83,6 +83,7 @@ int main( int argc, char **argv ){
                           	1,																				// ne
                           	1,																				// stride
                           	1);									 											// pe
+      printf("  Completed iter: %d", i);
 		}
 	}
 

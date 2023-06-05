@@ -338,13 +338,13 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
     return;
   }else /*if( (stride != 1) || (nelems == 1))*/{
     /* sequential execution */
-    // __xbrtime_get_u8_seq((uint64_t)src,//__xbrtime_ltor((uint64_t)(src),pe),
-    //                      (uint64_t)(dest),
-    //                      //xbrtime_decode_pe(pe),
-    //                      (uint32_t)(nelems),
-    //                      (uint32_t)(stride*sizeof(unsigned long long)));
+    __xbrtime_get_u8_seq((uint64_t)src,//__xbrtime_ltor((uint64_t)(src),pe),
+                         (uint64_t)(dest),
+                         //xbrtime_decode_pe(pe),
+                         (uint32_t)(nelems),
+                         (uint32_t)(stride*sizeof(unsigned long long)));
     // MERT – bypassed the above function and directly coppied below:
-    dest = src;
+    // dest = src;
   }
   __xbrtime_asm_fence();
   printf("[M] Exiting xbrtime_ulonglong_get()\n");

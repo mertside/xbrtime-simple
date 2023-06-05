@@ -239,15 +239,15 @@ __xbrtime_put_s4_seq:
   .global __xbrtime_get_u8_seq
   .type __xbrtime_get_u8_seq, @function
 __xbrtime_get_u8_seq:
-  MOV X12, XZR
-.get_u8_seq:
-  LDR C10, [C0]
-  ADD X0, X0, X3
-  ADD X12, X12, #1
-  STR C10, [C1]
-  ADD X1, X1, X3
-  CMP X12, X2
-  BNE .get_u8_seq
+#  MOV X12, XZR
+#.get_u8_seq:
+#  LDR X10, [X0]
+#  ADD X0, X0, X3
+#  ADD X12, X12, #1
+#  STR X10, [X1]
+#  ADD X1, X1, X3
+#  CMP X12, X2
+#  BNE .get_u8_seq
   RET
   .size __xbrtime_get_u8_seq, .-__xbrtime_get_u8_seq
 

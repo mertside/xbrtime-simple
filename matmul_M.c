@@ -78,21 +78,20 @@ int main( int argc, char **argv ){
 	}
 
   /* fetch via loop */
- 	if(xbrtime_mype() == 0){
+  if(xbrtime_mype() == 0){
     xbrtime_ulonglong_get(x,y,1,1,1);
- 		// for(i = 0; i < ne; i++){
-
-		// 	// // remote access
-    // 	// xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),			// dest
-    //   //                     	(unsigned long long *)(&(shared[i])),			// src
-    //   //                     	1,																				// ne
-    //   //                     	1,																				// stride
-    //   //                     	1);									 											// pe
+    // for(i = 0; i < ne; i++){
+    //   // remote access
+    //   // xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),  // dest
+    //   //                       (unsigned long long *)(&(shared[i])),  // src
+    //   //                       1,                                     // ne
+    //   //                       1,                                     // stride
+    //   //                       1);                                    // pe
     //   // shared[i] = i;
     //   printf("  Completed iter: %d\n", i);
-		// }
+    //   }
     printf("  Completed\n");
-	}
+  }
 
   /* perform a barrier */
 #ifdef DEBUG

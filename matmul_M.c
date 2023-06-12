@@ -33,8 +33,8 @@ int main( int argc, char **argv ){
 	double 		t_start  	= 0;
 	double 		t_end  		= 0;
 
-  unsigned long long x = 1;
-  unsigned long long y = 2;
+  unsigned long long x = 11;
+  unsigned long long y = 22;
 
 	printf("[M]"GRN " Passed vars\n"RESET);
 

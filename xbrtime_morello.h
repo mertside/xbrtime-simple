@@ -44,6 +44,8 @@ extern "C" {
 // #include "xbrtime-collectives.h"
 // #include "xbrtime-atomics.h"
 #include "threadpool.h"                            // From xbgas-runtime-thread
+#include <cheri.h>
+//#include <cheriintrin.h>
 
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
@@ -335,28 +337,28 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
                            size_t nelems, int stride, int pe){
   printf("[M] Entered xbrtime_ulonglong_get()\n");
 
-  printf("DEST:\n"
-         "address: %p\n"
-         "base: %p\n"
-         "length: %lu\n"
-         "offset: %lu\n"
-         "perms: %lu\n"
-         "tag: %lu\n",
-          cheri_address_get(dest),
+  printf("\n  DEST:\n"
+        //  "address: %p\n"
+         "    base: %p\n"
+         "    length: %lu\n"
+         "    offset: %lu\n"
+         "    perms: %lu\n"
+         "    tag: %lu\n\n",
+          // cheri_address_get(dest),
           cheri_base_get(dest),
           cheri_length_get(dest),
           cheri_offset_get(dest),
           cheri_perms_get(dest),
           cheri_tag_get(dest));
 
-  printf("SRC:\n"
-          "address: %p\n"
-          "base: %p\n"
-          "length: %lu\n"
-          "offset: %lu\n"
-          "perms: %lu\n"
-          "tag: %lu\n",
-          cheri_address_get(src),
+  printf("\n  SRC:\n"
+          // "address: %p\n"
+          "    base: %p\n"
+          "    length: %lu\n"
+          "    offset: %lu\n"
+          "    perms: %lu\n"
+          "    tag: %lu\n\n",
+          // cheri_address_get(src),
           cheri_base_get(src),
           cheri_length_get(src),
           cheri_offset_get(src),

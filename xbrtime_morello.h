@@ -374,12 +374,13 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
     //                      //xbrtime_decode_pe(pe),
     //                      (uint32_t)(nelems),
     //                      (uint32_t)(stride*sizeof(unsigned long long)));
-    // MERT – bypassed the above function and directly coppied below:
-    dest = src;
 
     // get src from dest 
     // https://cnlelema.github.io/memo/en/cheri/cheriabi/llvm-builtins/
     // dest = cheri_setoffset(dest, cheri_offset_get(src)); 
+
+    // FIXME:MERT: cheri_setoffset() is not working as expected
+    dest = src; 
 
   }
   __xbrtime_asm_fence();

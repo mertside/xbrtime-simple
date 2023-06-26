@@ -376,6 +376,9 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
                          (uint32_t)(stride*sizeof(unsigned long long)));
     // MERT – bypassed the above function and directly coppied below:
     // dest = src;
+
+    // get src from dest
+    dest = cheri_setoffset(dest, cheri_offset_get(src));
   }
   __xbrtime_asm_fence();
 

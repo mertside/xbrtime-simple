@@ -380,7 +380,7 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
     // dest = cheri_setoffset(dest, cheri_offset_get(src)); 
 
     // FIXME:MERT: cheri_setoffset() is not working as expected
-    memcpy(dest, src, sizeof(unsigned long long))); 
+    memcpy(dest, src, sizeof(unsigned long long)); 
 
   }
   __xbrtime_asm_fence();

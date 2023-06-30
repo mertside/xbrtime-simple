@@ -377,11 +377,12 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
 
     // get src from dest 
     // https://cnlelema.github.io/memo/en/cheri/cheriabi/llvm-builtins/
-    // dest = cheri_setoffset(dest, cheri_offset_get(src)); 
+    //dest = cheri_setoffset(dest, cheri_offset_get(src)); 
 
     // FIXME:MERT: cheri_setoffset() is not working as expected
-    // memcpy(dest, src, sizeof(unsigned long long)); 
+    //memcpy(dest, src, sizeof(unsigned long long)); 
     *dest = *src;
+    //dest = src;
 
   }
   __xbrtime_asm_fence();

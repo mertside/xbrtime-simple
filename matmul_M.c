@@ -36,6 +36,20 @@ int main( int argc, char **argv ){
   unsigned long long x = 11;
   unsigned long long y = 22;
 
+  printf("  X:\n"
+      //  "address: %p\n"
+        "    base:   %p\n"
+        "    length: %lu\n"
+        "    offset: %lu\n"
+        "    perms:  %lu\n"
+        "    tag:    %lu\n",
+        // cheri_address_get(dest),
+        cheri_base_get(&x),
+        cheri_length_get(&x),
+        cheri_offset_get(&x),
+        cheri_perms_get(&x),
+        cheri_tag_get(&x));
+
 	printf("[M]"GRN " Passed vars\n"RESET);
 
 	/* init */
@@ -79,7 +93,7 @@ int main( int argc, char **argv ){
 
   /* fetch via loop */
   if(xbrtime_mype() == 0){
-    xbrtime_ulonglong_get(x,y,1,1,1);
+    xbrtime_ulonglong_get(&x,&y,1,1,1);
     // for(i = 0; i < ne; i++){
     //   // remote access
     //   // xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),  // dest

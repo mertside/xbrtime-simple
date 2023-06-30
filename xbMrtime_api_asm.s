@@ -22,12 +22,13 @@
   #   - {seq,agg} corresponds to sequential
   #             and aggregated transfers
   #---------------------------------------------------
-  # Calling Convention
-  #   - X0 = a0 = base src address
-  #   - X1 = a1 = base dest address
-  #   -    = a2 = remote pe
-  #   - X2 = a3 = nelems
-  #   - X3 = a4 = stride (in bytes)
+  # Calling Convention 
+  # ARM Morello = RISCV = Explanation
+  #        - X0 = a0    = base src address
+  #        - X1 = a1    = base dest address
+  #        -    = a2    = remote pe
+  #        - X2 = a3    = nelems
+  #        - X3 = a4    = stride (in bytes)
   #---------------------------------------------------
 
   #--------------------------------------------------------------------- U1 SEQ

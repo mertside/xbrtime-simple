@@ -241,7 +241,7 @@ __xbrtime_put_s4_seq:
 __xbrtime_get_u8_seq:
   MOV X0, XZR
 .get_u8_seq:
-  //LDR X10, [c19]
+  LDR X10, [c0]
   //ADD X0, X0, X3
   //ADD X12, X12, #1
   //STR X10, [c1]

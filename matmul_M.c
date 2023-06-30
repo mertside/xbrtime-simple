@@ -50,6 +50,20 @@ int main( int argc, char **argv ){
         cheri_perms_get(&x),
         cheri_tag_get(&x));
 
+    printf("  Y:\n"
+      //  "address: %p\n"
+        "    base:   %p\n"
+        "    length: %lu\n"
+        "    offset: %lu\n"
+        "    perms:  %lu\n"
+        "    tag:    %lu\n",
+        // cheri_address_get(dest),
+        cheri_base_get(&y),
+        cheri_length_get(&y),
+        cheri_offset_get(&y),
+        cheri_perms_get(&y),
+        cheri_tag_get(&y));
+
 	printf("[M]"GRN " Passed vars\n"RESET);
 
 	/* init */

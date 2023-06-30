@@ -240,7 +240,7 @@ __xbrtime_put_s4_seq:
   .global __xbrtime_get_u8_seq
   .type __xbrtime_get_u8_seq, @function
 __xbrtime_get_u8_seq:
-  MOV X0, XZR
+  //MOV X0, XZR
 .get_u8_seq:
   LDR X10, [c0]
   //ADD X0, X0, X3

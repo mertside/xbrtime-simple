@@ -336,7 +336,9 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
                            const unsigned long long *src, 
                            size_t nelems, int stride, int pe){
   printf("[M] Entered xbrtime_ulonglong_get()\n");
+
   printf("\n========================\n");
+
   printf("  DEST:\n"
         //  "address: %p\n"
          "    base:   %p\n"
@@ -350,7 +352,9 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
           cheri_offset_get(dest),
           cheri_perms_get(dest),
           cheri_tag_get(dest));
+
   printf("========================\n");
+
   printf("  SRC:\n"
           // "address: %p\n"
           "    base:   %p\n"
@@ -364,7 +368,9 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
           cheri_offset_get(src),
           cheri_perms_get(src),
           cheri_tag_get(src));
+          
     printf("========================\n\n");
+
   if(nelems == 0){
     return;
   }else /*if( (stride != 1) || (nelems == 1))*/{

@@ -369,11 +369,11 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
     return;
   }else /*if( (stride != 1) || (nelems == 1))*/{
     /* sequential execution */
-    // __xbrtime_get_u8_seq((uint64_t)src,//__xbrtime_ltor((uint64_t)(src),pe),
-    //                      (uint64_t)(dest),
-    //                      //xbrtime_decode_pe(pe),
-    //                      (uint32_t)(nelems),
-    //                      (uint32_t)(stride*sizeof(unsigned long long)));
+    __xbrtime_get_u8_seq((uint64_t)src,//__xbrtime_ltor((uint64_t)(src),pe),
+                         (uint64_t)(dest),
+                         //xbrtime_decode_pe(pe),
+                         (uint32_t)(nelems),
+                         (uint32_t)(stride*sizeof(unsigned long long)));
 
     // get src from dest 
     // https://cnlelema.github.io/memo/en/cheri/cheriabi/llvm-builtins/
@@ -381,7 +381,7 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
 
     // FIXME:MERT: cheri_setoffset() is not working as expected
     //memcpy(dest, src, sizeof(unsigned long long)); 
-    *dest = *src;
+    //*dest = *src;
     //dest = src;
 
   }

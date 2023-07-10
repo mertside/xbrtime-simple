@@ -327,7 +327,7 @@ void __xbrtime_asm_fence();
 void __xbrtime_asm_quiet_fence();
 
 // ------------------------------------------------------- FUNCTION PROTOTYPES
-void __xbrtime_get_u8_seq( uint64_t base_src, uint64_t base_dest,//uint32_t pe,
+void __xbrtime_get_u8_seq( uint64_t* base_src, uint64_t* base_dest,//uint32_t pe,
                            uint32_t nelems, uint32_t stride );
 
 
@@ -335,41 +335,37 @@ void __xbrtime_get_u8_seq( uint64_t base_src, uint64_t base_dest,//uint32_t pe,
 void xbrtime_ulonglong_get(unsigned long long *dest, 
                            const unsigned long long *src, 
                            size_t nelems, int stride, int pe){
-  printf("[M] Entered xbrtime_ulonglong_get()\n");
+  //printf("[M] Entered xbrtime_ulonglong_get()\n");
 
-  printf("\n========================\n");
-
+  printf("=================================================================\n");
   printf("  DEST:\n"
-        //  "address: %p\n"
-         "    base:   %p\n"
-         "    length: %lu\n"
-         "    offset: %lu\n"
-         "    perms:  %lu\n"
-         "    tag:    %lu\n",
-          // cheri_address_get(dest),
-          cheri_base_get(dest),
-          cheri_length_get(dest),
-          cheri_offset_get(dest),
-          cheri_perms_get(dest),
-          cheri_tag_get(dest));
-
-  printf("========================\n");
-
+      // "address: %p\n"
+          "\tbase  : %p\n"
+          "\tlength: %lu\t"
+          "\toffset: %lu\n"
+          "\tperms : %lu\t"
+          "\ttag   : %lu\n",
+      // cheri_address_get(dest),
+        cheri_base_get(dest),
+        cheri_length_get(dest),
+        cheri_offset_get(dest),
+        cheri_perms_get(dest),
+        cheri_tag_get(dest));
+  printf("=================================================================\n");
   printf("  SRC:\n"
-          // "address: %p\n"
-          "    base:   %p\n"
-          "    length: %lu\n"
-          "    offset: %lu\n"
-          "    perms:  %lu\n"
-          "    tag:    %lu\n",
-          // cheri_address_get(src),
-          cheri_base_get(src),
-          cheri_length_get(src),
-          cheri_offset_get(src),
-          cheri_perms_get(src),
-          cheri_tag_get(src));
-          
-    printf("========================\n\n");
+      // "address: %p\n"
+          "\tbase  : %p\n"
+          "\tlength: %lu\t"
+          "\toffset: %lu\n"
+          "\tperms : %lu\t"
+          "\ttag   : %lu\n",
+      // cheri_address_get(dest),
+        cheri_base_get(src),
+        cheri_length_get(src),
+        cheri_offset_get(src),
+        cheri_perms_get(src),
+        cheri_tag_get(src));
+  printf("=================================================================\n");
 
   if(nelems == 0){
     return;
@@ -394,7 +390,7 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
   __xbrtime_asm_fence();
 
 
-  printf("[M] Exiting xbrtime_ulonglong_get()\n");
+  //printf("[M] Exiting \n");
 }
 
 /* ------------------------------------------------------------------------- */

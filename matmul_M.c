@@ -33,36 +33,39 @@ int main( int argc, char **argv ){
 	double 		t_start  	= 0;
 	double 		t_end  		= 0;
 
+  /*
   unsigned long long x = 11;
   unsigned long long y = 22;
-
+  printf("=================================================================\n");
   printf("  X:\n"
       //  "address: %p\n"
-        "    base:   %p\n"
-        "    length: %lu\n"
-        "    offset: %lu\n"
-        "    perms:  %lu\n"
-        "    tag:    %lu\n",
-        // cheri_address_get(dest),
+         "\tbase  : %p\n"
+         "\tlength: %lu\t"
+         "\toffset: %lu\n"
+         "\tperms : %lu\t"
+         "\ttag   : %lu\n",
+      // cheri_address_get(dest),
         cheri_base_get(&x),
         cheri_length_get(&x),
         cheri_offset_get(&x),
         cheri_perms_get(&x),
         cheri_tag_get(&x));
-
-    printf("  Y:\n"
-      //  "address: %p\n"
-        "    base:   %p\n"
-        "    length: %lu\n"
-        "    offset: %lu\n"
-        "    perms:  %lu\n"
-        "    tag:    %lu\n",
-        // cheri_address_get(dest),
+  printf("=================================================================\n");
+  printf("  Y:\n"
+      // "address: %p\n"
+          "\tbase  : %p\n"
+          "\tlength: %lu\t"
+          "\toffset: %lu\n"
+          "\tperms : %lu\t"
+          "\ttag   : %lu\n",
+      // cheri_address_get(dest),
         cheri_base_get(&y),
         cheri_length_get(&y),
         cheri_offset_get(&y),
         cheri_perms_get(&y),
         cheri_tag_get(&y));
+  printf("=================================================================\n");
+  */
 
 	printf("[M]"GRN " Passed vars\n"RESET);
 
@@ -107,18 +110,18 @@ int main( int argc, char **argv ){
 
   /* fetch via loop */
   if(xbrtime_mype() == 0){
-    xbrtime_ulonglong_get(&x,&y,1,1,1);
-    // for(i = 0; i < ne; i++){
-    //   // remote access
-    //   // xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),  // dest
-    //   //                       (unsigned long long *)(&(shared[i])),  // src
-    //   //                       1,                                     // ne
-    //   //                       1,                                     // stride
-    //   //                       1);                                    // pe
-    //   // shared[i] = i;
-    //   printf("  Completed iter: %d\n", i);
-    //   }
-    printf("  Completed\n");
+    //xbrtime_ulonglong_get(&x,&y,1,1,1);
+    for(i = 0; i < ne; i++){
+      // remote access
+      xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),  // dest
+                            (unsigned long long *)(&(shared[i])),  // src
+                            1,                                     // ne
+                            1,                                     // stride
+                            1);                                    // pe
+      // shared[i] = i;
+      printf("[M] "BYEL"Completed iter: %d\n"RESET, i+1);
+    }
+    printf("[M] "BGRN"Passed xbrtime_ulonglong_get()\n"RESET);
   }
 
   /* perform a barrier */

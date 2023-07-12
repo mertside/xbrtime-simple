@@ -1,14 +1,15 @@
-CC=~/cheri/cheri-exercises/tools/ccc
+CCOM=~/cheri/cheri-exercises/tools/ccc
 ARCH=morello-purecap
-DIR=~/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
+MY_CC?=$(CCOM) $(ARCH)
+#DIR=~/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
 
 all: matMul gather
 
 matMul:
-	$(CC) $(ARCH) -O0 -lpthread -o $(DIR)/matmul_M.exe $(DIR)/matmul_M.c $(DIR)/xbMrtime_api_asm.s
+	$(MY_CC) -O0 -lpthread -o matmul_M.exe matmul_M.c xbMrtime_api_asm.s
 
 gather:
-	$(CC) $(ARCH) -lpthread -o $(DIR)/gather_M.exe $(DIR)/gather_M.c $(DIR)/xbMrtime_api_asm.s
+	$(MY_CC) -O0 -lpthread -o gather_M.exe gather_M.c xbMrtime_api_asm.s
 
 clean:
 	rm -f ./*.o ./*.exe

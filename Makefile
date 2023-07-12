@@ -1,6 +1,6 @@
-CC=/home/parallels/cheri/cheri-exercises/tools/ccc
+CC=~/cheri/cheri-exercises/tools/ccc
 ARCH=morello-purecap
-DIR=/home/parallels/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
+DIR=~/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
 
 all: matMul gather
 

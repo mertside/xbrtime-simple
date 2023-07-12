@@ -18,6 +18,7 @@
 #define DEBUG 1
 
 int main( int argc, char **argv ){
+	printf("[M]"GRN " Entered Main matmul...\n"RESET);
 	/* vars */
   int 			rtn 			= 0;
   size_t 		sz 				= _XBGAS_ALLOC_SIZE_;
@@ -43,7 +44,9 @@ int main( int argc, char **argv ){
 	idx  		= malloc( sizeof( int64_t ) * ne );
 
   rtn 	= xbrtime_init();
+  printf("[M]"GRN " Passed xbrtime_init()\n"RESET); 
   shared = (uint64_t *)(xbrtime_malloc( sz*ne ));
+  printf("[M]"GRN " Passed xbrtime_malloc()\n"RESET); 
 
 #ifdef DEBUG
   printf( "PE=%d; *SHARED = 0x%"PRIu64"\n", xbrtime_mype(), (uint64_t)(shared) );
@@ -55,6 +58,7 @@ int main( int argc, char **argv ){
 		shared[i] 	= (uint64_t)(xbrtime_mype());
 		private[i] 	= 99;
 	}
+  printf("[M]"GRN " Passed idx[], shared[] & private[] init\n"RESET);
 
   /* perform a barrier */
 #ifdef DEBUG
@@ -92,8 +96,11 @@ int main( int argc, char **argv ){
                           	1,																										// stride
                           	target); 																							// pe
 			remote++;
+      
 		}
+    printf("[M] "BYEL"Completed iter: %d\n"RESET, i+1);
 	}
+  printf("[M] "BGRN"Passed xbrtime_ulonglong_get()\n"RESET);
   /* perform a barrier */
 #ifdef DEBUG
   printf( "PE=%d; EXECUTING BARRIER\n", xbrtime_mype() );
@@ -122,6 +129,7 @@ int main( int argc, char **argv ){
   printf( "xBGAS is Closed\n" );
 #endif
 
+  printf("[M]"GRN " Returning Main matmul...\n"RESET);
   return rtn;
 }
 

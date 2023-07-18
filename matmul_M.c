@@ -16,7 +16,7 @@
 #include "test.h"
 
 #define _XBGAS_ALLOC_SIZE_ 8
-#define _XBGAS_ALLOC_NELEMS_ 1
+#define _XBGAS_ALLOC_NELEMS_ 4
 
 int main( int argc, char **argv ){
 	printf("[M]"GRN " Entered Main matmul...\n"RESET);
@@ -24,7 +24,7 @@ int main( int argc, char **argv ){
 	/* vars */
   int 			rtn 			= 0;
   size_t 		sz 				= _XBGAS_ALLOC_SIZE_;
-  size_t 		ne 				= _XBGAS_ALLOC_NELEMS_*8;
+  size_t 		ne 				= _XBGAS_ALLOC_NELEMS_;
   uint64_t 	i   			= 0;
   uint64_t 	*private  = NULL;
 	uint64_t 	*shared  	= NULL;

@@ -62,9 +62,28 @@ extern "C" {
 volatile uint64_t *xb_barrier;
 volatile tpool_work_queue_t *pool;                 // From xbgas-runtime-thread
 
+// ------------------------------------------------------------------- STRUCTS
+//typedef struct args{
+//  uint64_t thread_id;
+//  volatile uint64_t trampoline_memory;
+//} args;
+
+//typedef enum {false, true} bool;
+
+// ---------------------------------------------------------- GLOBAL VARIABLES
+// Handles for each thread thread
+//pthread_t thread_handles[MAX_NUM_OF_THREADS];
+
+// Args struct for each thread
+//args thread_args[MAX_NUM_OF_THREADS];
+
+// Indicates whether threads are done
+//volatile bool done = false;
+
 /* ------------------------------------------------- FUNCTION PROTOTYPES */
 // void __xbrtime_ctor_reg_reset();
 
+/* ------------------------------------------------------------- CONSTRUCTOR */
 __attribute__((constructor)) void __xbrtime_ctor(){
   printf("[M] Entered __xbrtime_ctor()\n");
 
@@ -75,7 +94,6 @@ __attribute__((constructor)) void __xbrtime_ctor(){
   //printf("CTOR: Init\n");
 	//int init = 0;
   //*((uint64_t *)INIT_ADDR) = init;
-	//if(init || *((uint64_t *)INIT_ADDR))
 	//init = 0;	
 
   //  ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   numOfThreads
@@ -103,9 +121,35 @@ __attribute__((constructor)) void __xbrtime_ctor(){
   numOfThreads = atoi(getenv("NUM_OF_THREADS"));
 
 #if XBGAS_DEBUG
-  fprintf(stdout, "\nNumber of threads: %d\n", numOfThreads);
+  fprintf(stdout, "[M] Number of threads: %d\n", numOfThreads);
   fflush(stdout);
 #endif
+
+  /*
+  // initialize thread args
+  for( i=0; i<numOfThreads; i++ ){
+    thread_args[i].thread_id = i;
+    thread_args[i].trampoline_memory = 0x00ull;
+  }
+
+#if XBGAS_DEBUG
+  fprintf(stdout, "\nAddresses of trampolines: \n");
+  for(i = 0; i< numOfThreads; i++){
+    fprintf(stdout, "\tThread %lu: %p\t", thread_args[i].thread_id, 
+           &(thread_args[i].trampoline_memory));
+    if(i % 2 == 1) fprintf(stdout,"\n");
+  }
+  fprintf(stdout, "\nValues of trampolines: \n");
+  for(i = 0; i< numOfThreads; i++){
+    fprintf(stdout, "\tThread %lu: %p\t", thread_args[i].thread_id, 
+           (void *) thread_args[i].trampoline_memory);
+    if(i % 2 == 1) fprintf(stdout,"\n");
+  }
+  fprintf(stdout, "\n");
+#endif
+  
+  fflush(stdout);
+  */
 
   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
   
@@ -115,6 +159,8 @@ __attribute__((constructor)) void __xbrtime_ctor(){
 
   // printf("CTOR: Init\n");
 }
+
+/* -------------------------------------------------------------- DESTRUCTOR */
 __attribute__((destructor)) void __xbrtime_dtor(){
   printf("[M] Entered __xbrtime_dtor()\n");
   
@@ -251,10 +297,14 @@ extern int xbrtime_init(){
     return -1;
   }
 
+  // Getting thread id:
+  //args *thread_args = (args*)(arg);
+  //uint64_t my_id = thread_args->thread_id;
+
   __XBRTIME_CONFIG->_MMAP       = malloc(sizeof(XBRTIME_MEM_T) * _XBRTIME_MEM_SLOTS_);
-  __XBRTIME_CONFIG->_ID         = 0;          // __xbrtime_asm_get_id();
+  __XBRTIME_CONFIG->_ID         = 0;//pthread_self(); // __xbrtime_asm_get_id();
   __XBRTIME_CONFIG->_MEMSIZE    = 4096 * 4096;// __xbrtime_asm_get_memsize();
-  __XBRTIME_CONFIG->_NPES       = 8;          // __xbrtime_asm_get_npes();
+  __XBRTIME_CONFIG->_NPES       = atoi(getenv("NUM_OF_THREADS"));//__xbrtime_asm_get_npes();
   __XBRTIME_CONFIG->_START_ADDR = 0x00ull;    // __xbrtime_asm_get_startaddr();
   __XBRTIME_CONFIG->_SENSE      = 0x00ull;    // __xbrtime_asm_get_sense();
   __XBRTIME_CONFIG->_BARRIER 		= xb_barrier; // malloc(sizeof(uint64_t)*2*10);
@@ -327,8 +377,8 @@ void __xbrtime_asm_fence();
 void __xbrtime_asm_quiet_fence();
 
 // ------------------------------------------------------- FUNCTION PROTOTYPES
-void __xbrtime_get_u8_seq( uint64_t* base_src, uint64_t* base_dest,//uint32_t pe,
-                           uint32_t nelems, uint32_t stride );
+void __xbrtime_get_u8_seq(uint64_t* base_src, uint64_t* base_dest,//uint32_t pe,
+                          uint32_t nelems, uint32_t stride );
 
 
 // ----------------------------------------------------------- U8 GET FUNCTION

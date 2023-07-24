@@ -399,6 +399,8 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
                            size_t nelems, int stride, int pe){
   //printf("[M] Entered xbrtime_ulonglong_get()\n");
 
+  fprintf(stdout, "\tThis thread has the handle %lu!\n", (uint64_t) pthread_self());
+
   printf("================================================================\n");
   printf("  DEST:\n"
       // "address: %p\n"

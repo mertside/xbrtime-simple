@@ -60,6 +60,7 @@ struct tpool_work_queue {
   size_t              working_cnt;   // number of threads actively working  
   size_t              num_threads;   // number of threads alive                    
   bool                stop;          // stops the threads                          
+  tpool_thread_t     *threads;
 };                                                                              
                                                                                 
 // ---------------------------------- Simple helper for creating work objects.  
@@ -161,23 +162,26 @@ tpool_work_queue_t *tpool_create(size_t num)
   // Handles for each thread thread
   //pthread_t thread_handles[num];
   //pthread_t  thread;                                                        
-  size_t     i;                                                                 
-                                                                                
+  //size_t     i;                                                                 
+  int i;    
+
   // The minumum acceptable number of threads is two threads.                   
   if (num == 0)                                                                 
     num = 2;                                                                    
   // XXX:IDEA: May set the number of core/processors + 1 as the default...      
-  tpool_thread_t threads[num];                            
+  tpool_thread_t temp_threads[num];                            
 
-    // initialize thread args
+  // initialize thread args
   for( i=0; i<num; i++ ){
-    threads[i].thread_id = i;
+    pthread_t  temp_thread_handle;
+    temp_threads[i].thread_id = i;//(uint64_t) pthread_self();
+    temp_threads[i].thread_handle = temp_thread_handle;
 #if XBGAS_DEBUG
-    fprintf(stdout, "\tThread #%lu set!\t", threads[i].thread_id);
+    fprintf(stdout, "\tThread #%d is set with ID %lu!",i,temp_threads[i].thread_id);
     if(i % 2 == 1) fprintf(stdout,"\n");
 #endif
   }
-
+  
   wq              = calloc(1, sizeof(*wq));                                     
   wq->num_threads = num;                                                        
                                                                                 
@@ -187,17 +191,22 @@ tpool_work_queue_t *tpool_create(size_t num)
                                                                                 
   wq->work_head = NULL;                                                         
   wq->work_tail = NULL;                                                         
-                                                                                
+  wq->threads = temp_threads;
+
+#if XBGAS_DEBUG
+  fprintf(stdout, "\tThread #0 has the handle %lu!\n", (uint64_t) pthread_self());
+#endif
+
   // The requested threads are started and tpool_worker is specified.           
   for (i=0; i<num; i++) {                                                       
     // Start num of threads; tpool_worker is specified as the thread function.  
-    pthread_create(&threads[i].thread_handle, NULL, tpool_worker, wq);                            
+    pthread_create(&temp_threads[i].thread_handle, NULL, tpool_worker, wq);                            
     // XXX:     Attempted fix via tpool_thread_t
     // Before:  20230718
     //      Did NOT store the thread ids; they are not accessed directly.       
     //      If we wanted to implement some kind of force exit,                  
     //      instead of having to wait then we’d need to track the ids.          
-    pthread_detach(threads[i].thread_handle);                                                     
+    pthread_detach(temp_threads[i].thread_handle);                                                     
   }                                                                             
                                                                                 
   return wq;                                                                    

@@ -73,8 +73,8 @@ int main( int argc, char **argv ){
 		printf(" xBGAS Gather Benchmark\n");
 		printf("=========================\n");
 		printf("Data size       = %d Bytes\n", (int)(sz) * (int)(ne) );
-		printf("Element #       = %d\n", ne);
-		printf("PE #            = %d\n", pe);
+		printf("Element #       = %d\n", (int) ne);
+		printf("PE #            = %d\n", (int) pe);
 		//printf("------------------------------------------\n");
 		t_start = mysecond();
 	}
@@ -98,7 +98,7 @@ int main( int argc, char **argv ){
 			remote++;
       
 		}
-    printf("[M] "BYEL"Completed iter: %d\n"RESET, i+1);
+    printf("[M] "BYEL"Completed iter: %lu\n"RESET, i+1);
 	}
   printf("[M] "BGRN"Passed xbrtime_ulonglong_get()\n"RESET);
   /* perform a barrier */

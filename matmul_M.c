@@ -16,7 +16,7 @@
 #include "test.h"
 
 #define _XBGAS_ALLOC_SIZE_ 8
-#define _XBGAS_ALLOC_NELEMS_ 4
+//#define _XBGAS_ALLOC_NELEMS_ 4
 
 int main( int argc, char **argv ){
 	printf("[M]"GRN " Entered Main matmul...\n"RESET);
@@ -101,7 +101,7 @@ int main( int argc, char **argv ){
 		printf("========================\n");
 		printf(" Data type: uint64_t\n");
 		printf(" Element #: %lu\n", ne);
-  	printf(" Data size: %lu bytes\n",  (int)(sz) * (int)(ne) );
+  	printf(" Data size: %lu bytes\n",  (uint64_t)(sz) * (uint64_t)(ne) );
 		printf(" PE #     : %d\n", xbrtime_num_pes());
     printf("========================\n");
 
@@ -113,13 +113,13 @@ int main( int argc, char **argv ){
     //xbrtime_ulonglong_get(&x,&y,1,1,1);
     for(i = 0; i < ne; i++){
       // remote access
-      xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])),  // dest
-                            (unsigned long long *)(&(shared[i])),  // src
-                            1,                                     // ne
-                            1,                                     // stride
-                            1);                                    // pe
+      xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])), // dest
+                            (unsigned long long *)(&(shared[i])), // src
+                            1,                                    // ne
+                            1,                                    // stride
+                            1);                                   // pe
       // shared[i] = i;
-      printf("[M] "BYEL"Completed iter: %d\n"RESET, i+1);
+      printf("[M] "BYEL"Completed iter: %lu\n"RESET, i+1);
     }
     printf("[M] "BGRN"Passed xbrtime_ulonglong_get()\n"RESET);
   }
@@ -141,11 +141,11 @@ int main( int argc, char **argv ){
 
  	// if(xbrtime_mype() == 0){
 	// 	// remote access
-  //   xbrtime_ulonglong_get((unsigned long long *)(&(shared[0])),			  // dest
-  //                         	(unsigned long long *)(&(shared[0])),			// src
-  //                         	ne,																				// ne
-  //                         	1,																				// stride
-  //                         	1);									 											// pe
+  //   xbrtime_ulonglong_get((unsigned long long *)(&(shared[0])), // dest
+  //                         (unsigned long long *)(&(shared[0])), // src
+  //                         ne,																	 // ne
+  //                         1,																		 // stride
+  //                         1);									 								 // pe
 	// }
 
   xbrtime_barrier();

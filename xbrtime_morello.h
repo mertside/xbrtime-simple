@@ -165,10 +165,10 @@ __attribute__((destructor)) void __xbrtime_dtor(){
   printf("[M] Entered __xbrtime_dtor()\n");
   
   // Will return when there is no work
-  tpool_wait(pool);
+  tpool_wait((tpool_work_queue_t *) pool);
 
   // Discard pending, clean queue, order stop, wait, destroy
-  tpool_destroy(pool); 
+  tpool_destroy((tpool_work_queue_t *) pool); 
 
   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
 
@@ -390,31 +390,31 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
   printf("=================================================================\n");
   printf("  DEST:\n"
       // "address: %p\n"
-          "\tbase  : %p\n"
+          "\tbase  : %lu\n"
           "\tlength: %lu\t"
           "\toffset: %lu\n"
-          "\tperms : %lu\t"
-          "\ttag   : %lu\n",
+          "\tperms : %u\t"
+          "\ttag   : %d\n",
       // cheri_address_get(dest),
-        cheri_base_get(dest),
-        cheri_length_get(dest),
-        cheri_offset_get(dest),
-        cheri_perms_get(dest),
-        cheri_tag_get(dest));
+        cheri_base_get((void *) dest),
+        cheri_length_get((void *) dest),
+        cheri_offset_get((void *) dest),
+        cheri_perms_get((void *) dest),
+        (int) cheri_tag_get((void *) dest));
   printf("=================================================================\n");
   printf("  SRC:\n"
       // "address: %p\n"
-          "\tbase  : %p\n"
+          "\tbase  : %lu\n"
           "\tlength: %lu\t"
           "\toffset: %lu\n"
-          "\tperms : %lu\t"
-          "\ttag   : %lu\n",
+          "\tperms : %u\t"
+          "\ttag   : %d\n",
       // cheri_address_get(dest),
-        cheri_base_get(src),
-        cheri_length_get(src),
-        cheri_offset_get(src),
-        cheri_perms_get(src),
-        cheri_tag_get(src));
+        cheri_base_get((void *) src),
+        cheri_length_get((void *) src),
+        cheri_offset_get((void *) src),
+        cheri_perms_get((void *) src),
+        (int) cheri_tag_get((void *) src));
   printf("=================================================================\n");
 
   if(nelems == 0){

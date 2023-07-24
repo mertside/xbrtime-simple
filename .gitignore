@@ -36,6 +36,10 @@
 *.x86_64
 *.hex
 
+# Temporary files
+*.swp
+*.core
+
 # Debug files
 *.dSYM/
 *.su

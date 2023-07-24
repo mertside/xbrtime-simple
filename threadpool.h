@@ -160,7 +160,6 @@ tpool_work_queue_t *tpool_create(size_t num)
 {                                                                               
   tpool_work_queue_t   *wq;                 
   // Handles for each thread thread
-  //pthread_t thread_handles[num];
   //pthread_t  thread;                                                        
   //size_t     i;                                                                 
   int i;    

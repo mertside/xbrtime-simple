@@ -433,21 +433,18 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
     return;
   }else /*if( (stride != 1) || (nelems == 1))*/{
     /* sequential execution */
+    //void* func_args = { (void*)src, (void*)dest, (void*)nelems,
+    //                    (void*)(stride*sizeof(unsigned long long)) };
+    //                  { (uint64_t*)src, (uint64_t*)(dest), (uint32_t)(nelems),
+    //                    (uint32_t)(stride*sizeof(unsigned long long)) };
+    // XXX: multiple arguments do not pass to work!
+    //tpool_add_work(pool, __xbrtime_get_u8_seq, func_args);
+    
     __xbrtime_get_u8_seq((uint64_t*)src,//__xbrtime_ltor((uint64_t)(src),pe),
                          (uint64_t*)(dest),
                          //xbrtime_decode_pe(pe),
                          (uint32_t)(nelems),
                          (uint32_t)(stride*sizeof(unsigned long long)));
-
-    // get src from dest 
-    // https://cnlelema.github.io/memo/en/cheri/cheriabi/llvm-builtins/
-    //dest = cheri_setoffset(dest, cheri_offset_get(src)); 
-
-    // FIXME:MERT: cheri_setoffset() is not working as expected
-    //memcpy(dest, src, sizeof(unsigned long long)); 
-    //*dest = *src;
-    //dest = src;
-
   }
   __xbrtime_asm_fence();
 

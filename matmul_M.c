@@ -113,11 +113,19 @@ int main( int argc, char **argv ){
     //xbrtime_ulonglong_get(&x,&y,1,1,1);
     for(i = 0; i < ne; i++){
       // remote access
+      void* func_args = {(unsigned long long *)(&(shared[i])),
+                         (unsigned long long *)(&(shared[i])),
+                         1, 1, 1};                                 
+
+      tpool_add_work(pool, xbrtime_ulonglong_get, func_args);
+
+      /*
       xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])), // dest
                             (unsigned long long *)(&(shared[i])), // src
                             1,                                    // ne
                             1,                                    // stride
                             1);                                   // pe
+      */
       // shared[i] = i;
       printf("[M] "BYEL"Completed iter: %lu\n"RESET, i+1);
     }

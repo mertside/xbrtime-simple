@@ -38,8 +38,9 @@ void tpool_wait(tpool_work_queue_t *wq);
 
 // --------------------------------------------------------------- OBJECT DATA  
 struct tpool_thread{
-  uint64_t    thread_id;
-  pthread_t   thread_handle;  
+  uint64_t            thread_id;
+  pthread_t           thread_handle;  
+  //tpool_work_unit_t  *thread_queue;
 };
 typedef struct tpool_thread tpool_thread_t;
 

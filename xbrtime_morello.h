@@ -398,11 +398,12 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
                            const unsigned long long *src, 
                            size_t nelems, int stride, int pe){
   //printf("[M] Entered xbrtime_ulonglong_get()\n");
+  fflush(stdout);
 
   fprintf(stdout, "\tThis thread has the handle %lu!\n", (uint64_t) pthread_self());
 
-  printf("================================================================\n");
-  printf("  DEST:\n"
+  fprintf(stdout, "================================================================\n");
+  fprintf(stdout, "  DEST:\t\t\t"
       // "address: %p\n"
           "\tbase  : %lu\n"
           "\tlength: %lu\t"
@@ -415,8 +416,8 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
         cheri_offset_get((void *) dest),
         cheri_perms_get((void *) dest),
         (int) cheri_tag_get((void *) dest));
-  printf("================================================================\n");
-  printf("  SRC:\n"
+  fprintf(stdout, "================================================================\n");
+  fprintf(stdout, "  SRC:\t\t\t"
       // "address: %p\n"
           "\tbase  : %lu\n"
           "\tlength: %lu\t"
@@ -429,7 +430,9 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
         cheri_offset_get((void *) src),
         cheri_perms_get((void *) src),
         (int) cheri_tag_get((void *) src));
-  printf("================================================================\n");
+  fprintf(stdout, "================================================================\n");
+
+  fflush(stdout);
 
   if(nelems == 0){
     return;

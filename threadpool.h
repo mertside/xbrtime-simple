@@ -22,12 +22,25 @@
 
 // ---------------------------------------------------------------- PROTOTYPES
 
+// Thread struct definition
+struct tpool_thread;
+typedef struct tpool_thread tpool_thread_t;
+
+// Work unit struct definition
+struct tpool_work_unit;
+typedef struct tpool_work_unit tpool_work_unit_t;
+
+// Queue struct definition
 struct tpool_work_queue;
 typedef struct tpool_work_queue tpool_work_queue_t;
 
+// Arguments for the function passed on the work unit
 typedef void (*thread_func_t)(void *arg);
 
+// Queue creation prototype
 tpool_work_queue_t *tpool_create(size_t num);
+
+// Queue destruction prototype
 void tpool_destroy(tpool_work_queue_t *wq);
 
 // Adds work to the queue for processing. 
@@ -36,13 +49,12 @@ bool tpool_add_work(tpool_work_queue_t *wq, thread_func_t func, void *arg);
 // Blocks until all work has been completed.
 void tpool_wait(tpool_work_queue_t *wq);
 
-// --------------------------------------------------------------- OBJECT DATA  
+// ------------------------------------------------------------------- STRUCTS  
 struct tpool_thread{
   uint64_t            thread_id;
   pthread_t           thread_handle;  
-  //tpool_work_unit_t  *thread_queue;
+  //tpool_work_queue_t  *thread_queue;
 };
-typedef struct tpool_thread tpool_thread_t;
 
 // Simple linked list which stores the function to call and its arguments.      
 struct tpool_work_unit {                                                             
@@ -50,7 +62,6 @@ struct tpool_work_unit {
   void                   *arg;                                                       
   struct tpool_work_unit *next;                                                      
 };                                                                              
-typedef struct tpool_work_unit tpool_work_unit_t;                                         
                                                                                 
 struct tpool_work_queue {                                                                  
   tpool_work_unit_t  *work_head;     // queue head pointer                         

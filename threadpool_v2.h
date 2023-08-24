@@ -18,7 +18,7 @@
 #include <pthread.h>
 #include <sys/types.h>
 
-#include "threadpool.h"
+//#include "threadpool.h"
 
 // ---------------------------------------------------------------- PROTOTYPES
 
@@ -177,8 +177,10 @@ tpool_thread_t *tpool_create(size_t num)
   // XXX:IDEA: May set the number of core/processors + 1 as the default... 
   // num = num + 1;     
 
-  tpool_thread_t threads[num];                              // array of threads        
-  
+  // tpool_thread_t threads[num];
+  tpool_thread_t *threads;
+  threads = calloc(num, sizeof(*threads));
+
   // initialize thread args
   for( i=0; i<num; i++ ){
     pthread_t  temp_thread_handle;
@@ -186,7 +188,7 @@ tpool_thread_t *tpool_create(size_t num)
     threads[i].thread_handle = temp_thread_handle;          // thread handle
                             // (uint64_t) pthread_self();
 #if XBGAS_DEBUG
-    fprintf(stdout, "\tThread #%d is set with ID %lu!",i,temp_threads[i].thread_id);
+    fprintf(stdout, "\tThread #%d is set with ID %lu!", i, threads[i].thread_id);
     if(i % 2 == 1) fprintf(stdout,"\n");
 #endif
   }

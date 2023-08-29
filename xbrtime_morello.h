@@ -107,10 +107,11 @@ __attribute__((constructor)) void __xbrtime_ctor(){
   if(str == NULL || atoi(str) <= 0 || atoi(str) > MAX_NUM_OF_THREADS){
     if(str == NULL) {
       // NOT found!
-      fprintf(stderr, "\n[R] NUM_OF_THREADS not set; set environment first!\n");
+      fprintf(stderr, "\n[E][R] NUM_OF_THREADS not set; set environment!!!\n");
+      fprintf(stderr, "\ne.g.:\texport NUM_OF_THREADS=4\n");
     } else {
       // NOT a reasonable number!
-      fprintf(stderr, "\n[R] NUM_OF_THREADS should be between %d and %d\n",
+      fprintf(stderr, "\n[E][R] NUM_OF_THREADS should be between %d and %d\n",
               1, MAX_NUM_OF_THREADS);
     }
     // Set MAX number of threads as an environment variable

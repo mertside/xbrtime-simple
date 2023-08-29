@@ -136,7 +136,8 @@ int main( int argc, char **argv ){
                            1, 1, 1};                                 
 
         //tpool_add_work(pool, xbrtime_ulonglong_get, func_args);
-        tpool_add_work( threads[i].thread_queue, 
+        bool check = false;
+        check = tpool_add_work( threads[i].thread_queue, 
                         xbrtime_ulonglong_get, 
                         func_args);
 
@@ -148,8 +149,8 @@ int main( int argc, char **argv ){
                               1);                                   // pe
         */
         // shared[i] = i;
-        printf("[M] "BYEL"Completed: \ti:%lu, j:%lu\n    Thread:\t%lu\n"RESET, 
-               i, j, threads[i].thread_handle);
+        printf("[M] "BYEL"Iter:\ti:%lu, j:%lu \t%s\n    Thread:\t%lu\n"RESET, 
+               i, j, check ? "true" : "false", threads[i].thread_handle);
       }
     }
     printf("[M] "BGRN"Passed xbrtime_ulonglong_get()\n"RESET);

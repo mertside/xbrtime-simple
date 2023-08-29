@@ -32,9 +32,9 @@ extern "C" {
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <pthread.h>                               // From xbgas-runtime-thread
-#include <unistd.h>                                // From xbgas-runtime-thread
-// #include "test.h"
+#include <pthread.h>                            // From xbgas-runtime-thread
+#include <unistd.h>                             // From xbgas-runtime-thread
+// #include "test.h" 
 /* ---------------------------------------- REQUIRED HEADERS */
 #include "xbMrtime-types.h"
 // #include "xbMrtime-api.h"
@@ -43,7 +43,7 @@ extern "C" {
 #include "xbMrtime-macros.h"
 // #include "xbrtime-collectives.h"
 // #include "xbrtime-atomics.h"
-#include "threadpool.h"                            // From xbgas-runtime-thread
+#include "threadpool.h"                     // From xbgas-runtime-thread
 #include <cheri.h>
 //#include <cheriintrin.h>
 
@@ -57,10 +57,11 @@ extern "C" {
 #define INIT_ADDR 0xBB00000000000000ull 
 #define END_ADDR 0xAA00000000000000ull
 
-#define MAX_NUM_OF_THREADS 16                      // From xbgas-runtime-thread
+#define MAX_NUM_OF_THREADS 16                    // From xbgas-runtime-thread
 
 volatile uint64_t *xb_barrier;
-volatile tpool_work_queue_t *pool;                 // From xbgas-runtime-thread
+//volatile tpool_work_queue_t *pool;             // From xbgas-runtime-thread
+volatile tpool_thread_t *threads;
 
 // ------------------------------------------------------------------- STRUCTS
 //typedef struct args{
@@ -85,7 +86,7 @@ volatile tpool_work_queue_t *pool;                 // From xbgas-runtime-thread
 
 /* ------------------------------------------------------------- CONSTRUCTOR */
 __attribute__((constructor)) void __xbrtime_ctor(){
-  printf("[M] Entered __xbrtime_ctor()\n");
+  printf("[R] Entered __xbrtime_ctor()\n");
 
   /* initialize the unnecessary registers */
   // __xbrtime_ctor_reg_reset();
@@ -106,10 +107,10 @@ __attribute__((constructor)) void __xbrtime_ctor(){
   if(str == NULL || atoi(str) <= 0 || atoi(str) > MAX_NUM_OF_THREADS){
     if(str == NULL) {
       // NOT found!
-      fprintf(stderr, "\nNUM_OF_THREADS not set; set environment first!\n");
+      fprintf(stderr, "\n[R] NUM_OF_THREADS not set; set environment first!\n");
     } else {
       // NOT a reasonable number!
-      fprintf(stderr, "\nNUM_OF_THREADS should be between %d and %d\n",
+      fprintf(stderr, "\n[R] NUM_OF_THREADS should be between %d and %d\n",
               1, MAX_NUM_OF_THREADS);
     }
     // Set MAX number of threads as an environment variable
@@ -121,7 +122,7 @@ __attribute__((constructor)) void __xbrtime_ctor(){
   numOfThreads = atoi(getenv("NUM_OF_THREADS"));
 
 #if XBGAS_DEBUG
-  fprintf(stdout, "[M] Number of threads: %d\n", numOfThreads);
+  fprintf(stdout, "[R] Number of threads: %d\n", numOfThreads);
   fflush(stdout);
 #endif
 
@@ -155,20 +156,21 @@ __attribute__((constructor)) void __xbrtime_ctor(){
   
   // Create a thread pool
   // tpool_work_queue_t *pool; // Redefined globally  
-  pool = tpool_create(numOfThreads);
+  //pool = tpool_create(numOfThreads);
+  threads = tpool_create(numOfThreads);
 
   // printf("CTOR: Init\n");
 }
 
 /* -------------------------------------------------------------- DESTRUCTOR */
 __attribute__((destructor)) void __xbrtime_dtor(){
-  printf("[M] Entered __xbrtime_dtor()\n");
+  printf("[R] Entered __xbrtime_dtor()\n");
   
   // Will return when there is no work
-  tpool_wait((tpool_work_queue_t *) pool);
+  //tpool_wait((tpool_work_queue_t *) pool);
 
   // Discard pending, clean queue, order stop, wait, destroy
-  tpool_destroy((tpool_work_queue_t *) pool); 
+  //tpool_destroy((tpool_work_queue_t *) pool); 
 
   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
 
@@ -286,7 +288,7 @@ extern void xbrtime_close(){
 }
 
 extern int xbrtime_init(){
-  printf("[M] Entered xbrtime_init()\n");
+  printf("[R] Entered xbrtime_init()\n");
   /* vars */
   int i = 0;
 
@@ -302,7 +304,7 @@ extern int xbrtime_init(){
   //uint64_t my_id = thread_args->thread_id;
 
   __XBRTIME_CONFIG->_MMAP       = malloc(sizeof(XBRTIME_MEM_T) * _XBRTIME_MEM_SLOTS_);
-  __XBRTIME_CONFIG->_ID         = pool->threads[0].thread_id; 
+  __XBRTIME_CONFIG->_ID         = threads[0].thread_id; 
                               // (uint64_t) pthread_self(); 
                               // __xbrtime_asm_get_id();
   __XBRTIME_CONFIG->_MEMSIZE    = 4096 * 4096;
@@ -342,21 +344,21 @@ extern int xbrtime_init(){
     free( __XBRTIME_CONFIG );
     return -1;
   }
-  printf("[M] init the pe mapping block\n");
+  printf("[R] init the pe mapping block\n");
 
   /* init the memory allocation slots */
   for( i=0;i<_XBRTIME_MEM_SLOTS_; i++ ){
     __XBRTIME_CONFIG->_MMAP[i].start_addr = 0x00ull;
     __XBRTIME_CONFIG->_MMAP[i].size       = 0;
   }
-  printf("[M] init the memory allocation slots\n");
+  printf("[R] init the memory allocation slots\n");
 
   /* init the PE mapping structure */
   for( i=0; i<__XBRTIME_CONFIG->_NPES; i++ ){
     __XBRTIME_CONFIG->_MAP[i]._LOGICAL   = i;
     __XBRTIME_CONFIG->_MAP[i]._PHYSICAL  = i+1;
   }
-  printf("[M] init the PE mapping structure\n");
+  printf("[R] init the PE mapping structure\n");
 
   // int init = 1;                    // MERT - COMMENTED OUT
   // *((uint64_t *)INIT_ADDR) = init; // MERT - COMMENTED OUT
@@ -397,10 +399,10 @@ void __xbrtime_get_u8_seq(uint64_t* base_src, uint64_t* base_dest,//uint32_t pe,
 void xbrtime_ulonglong_get(unsigned long long *dest, 
                            const unsigned long long *src, 
                            size_t nelems, int stride, int pe){
-  //printf("[M] Entered xbrtime_ulonglong_get()\n");
+  printf("[R] Entered xbrtime_ulonglong_get()\n");
   fflush(stdout);
 
-  fprintf(stdout, "\tThis thread has the handle %lu!\n", (uint64_t) pthread_self());
+  fprintf(stdout, "[R] Thread: \t%lu\n", (uint64_t) pthread_self());
 
   fprintf(stdout, "================================================================\n");
   fprintf(stdout, "  DEST:\t\t\t"
@@ -463,27 +465,27 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
 /* ========================================================================= */
 
 extern void xbrtime_barrier(){
-  printf("[M] Entered xbrtime_barrier()\n");
+  printf("[R] Entered xbrtime_barrier()\n");
 
   // MERT – skip the following code due to unimplemented SENSE
 
   // /* local variables */
-	// int64_t 	i 							= 0; 
-	// int64_t		stride 					= 1;
-  // volatile 	uint64_t sense 	= SENSE;
-  // uint64_t 	target 					= 0x00ull;
-  // uint64_t 	addr 						= 0x00ull;
-	// int64_t	 	num_pe 					= xbrtime_num_pes();
+	//int64_t 	i 							= 0; 
+	//int64_t		stride 					= 1;
+  //volatile 	uint64_t sense 	= SENSE;
+  //uint64_t 	target 					= 0x00ull;
+  //uint64_t 	addr 						= 0x00ull;
+	//int64_t	 	num_pe 					= xbrtime_num_pes();
 	
-  // /* sanity check */
-  // if( num_pe == 1 ){
+  /* sanity check */
+  //if( num_pe == 1 ){
   //   return ;
-  // }
+  //}
 	
-	// /*Get the total iterations */
-	// int64_t  mype   = xbrtime_mype();
-	// int64_t	 iter   = (int64_t)(log(num_pe)/log(2));
-	// if (iter < log(num_pe)/log(2))
+	/*Get the total iterations */
+	//int64_t  mype   = xbrtime_mype();
+	//int64_t	 iter   = (int64_t)(log(num_pe)/log(2));
+	//if (iter < log(num_pe)/log(2))
 	// 	iter++;
 
   /* force a heavy fence */
@@ -549,7 +551,7 @@ extern void xbrtime_barrier(){
 #ifdef XBGAS_DEBUG
   printf( "[XBGAS_DEBUG] PE=%d; BARRIER COMPLETE\n", xbrtime_mype() );
 #endif
-  printf("[M] Exiting xbrtime_barrier()\n");
+  printf("[R] Exiting xbrtime_barrier()\n");
 }
 
 /* ------------------------------------------------------------------------- */

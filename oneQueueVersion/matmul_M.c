@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <inttypes.h>
-#include "xbrtime_morello_v2.h"
+#include "xbrtime_morello.h"
 #include "test.h"
 
 #define _XBGAS_ALLOC_SIZE_ 8
@@ -26,15 +26,9 @@ int main( int argc, char **argv ){
   size_t 		sz 				= _XBGAS_ALLOC_SIZE_;
   size_t 		ne 				= _XBGAS_ALLOC_NELEMS_;
   uint64_t 	i   			= 0;
-  uint64_t  j         = 0;
-
-  int row = 0;
-  int col = 0;
-  
   uint64_t 	*private  = NULL;
 	uint64_t 	*shared  	= NULL;
-	
-  /* statistic gathering var */
+	/* statistic gathering var */
 	double 		t_mem	  	= 0;
 	double 		t_start  	= 0;
 	double 		t_end  		= 0;
@@ -76,33 +70,22 @@ int main( int argc, char **argv ){
 	printf("[M]"GRN " Passed vars\n"RESET);
 
 	/* init */
-  rtn = xbrtime_init();
-  printf("[M]"GRN " Passed xbrtime_init()\n"RESET);
-
-  int num_pes = xbrtime_num_pes();
-  row         = num_pes;
-  col         = ne;
-  // int *arr = malloc(N*M*sizeof(int));
-  // arr[i*M + j]
-
-	private = malloc( row * col * sizeof( uint64_t ));
+	private = malloc( sizeof( uint64_t ) * ne );
 	printf("[M]"GRN " Passed malloc\n"RESET);
 
-  //rtn = xbrtime_init();
-	//printf("[M]"GRN " Passed xbrtime_init()\n"RESET); 
+  rtn = xbrtime_init();
+	printf("[M]"GRN " Passed xbrtime_init()\n"RESET); 
 
-  shared = (uint64_t *)(xbrtime_malloc( row * col * sizeof( uint64_t ) ));
+  shared = (uint64_t *)(xbrtime_malloc( sz*ne ));
 	printf("[M]"GRN " Passed xbrtime_malloc()\n"RESET); 
 
 #ifdef DEBUG
   printf( "PE=%d; *SHARED = 0x%"PRIu64"\n", xbrtime_mype(), (uint64_t)(shared) );
 #endif
-  for( i = 0; i < row; i++ ){
- 	  for( j = 0; j < col; j++ ){
-		  shared[i*col + j] 	= (uint64_t)(j + xbrtime_mype());
-		  private[i*col + j] 	= 1;
-    }
-  }
+ 	for( i = 0; i< ne; i++ ){
+		shared[i] 	= (uint64_t)(i + xbrtime_mype());
+		private[i] 	= 1;
+	}
 
 	printf("[M]"GRN " Passed shared[] & private[] init\n"RESET);
 
@@ -128,30 +111,23 @@ int main( int argc, char **argv ){
   /* fetch via loop */
   if(xbrtime_mype() == 0){
     //xbrtime_ulonglong_get(&x,&y,1,1,1);
-    for( i = 0; i < row; i++ ){
-      for( j = 0; j < col; j++ ){
-        // remote access
-        void* func_args = {(unsigned long long *)(&(shared[i*col + j])),
-                           (unsigned long long *)(&(shared[i*col + j])),
-                           1, 1, 1};                                 
+    for(i = 0; i < ne; i++){
+      // remote access
+      void* func_args = {(unsigned long long *)(&(shared[i])),
+                         (unsigned long long *)(&(shared[i])),
+                         1, 1, 1};                                 
 
-        //tpool_add_work(pool, xbrtime_ulonglong_get, func_args);
-        bool check = false;
-        check = tpool_add_work( threads[i].thread_queue, 
-                        xbrtime_ulonglong_get, 
-                        func_args);
+      tpool_add_work(pool, xbrtime_ulonglong_get, func_args);
 
-        /*
-        xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])), // dest
-                              (unsigned long long *)(&(shared[i])), // src
-                              1,                                    // ne
-                              1,                                    // stride
-                              1);                                   // pe
-        */
-        // shared[i] = i;
-        printf("[M] "BYEL"Iter:\ti:%lu, j:%lu \t%s\n    Thread:\t%lu\n"RESET, 
-               i, j, check ? "true" : "false", threads[i].thread_handle);
-      }
+      /*
+      xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])), // dest
+                            (unsigned long long *)(&(shared[i])), // src
+                            1,                                    // ne
+                            1,                                    // stride
+                            1);                                   // pe
+      */
+      // shared[i] = i;
+      printf("[M] "BYEL"Completed iter: %lu\n"RESET, i+1);
     }
     printf("[M] "BGRN"Passed xbrtime_ulonglong_get()\n"RESET);
   }

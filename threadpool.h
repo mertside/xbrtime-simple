@@ -194,20 +194,20 @@ tpool_thread_t *tpool_create(size_t num)
 #endif
   }
 
-  tpool_work_queue_t   *wq;                     // work queue pointer
-  wq = calloc(1, sizeof(*wq));                  // allocate the work queue
-
-  wq->work_head = NULL;                         // queue head pointer                         
-  wq->work_tail = NULL;                         // queue tail pointer   
-  
-  pthread_mutex_init(&(wq->work_mutex), NULL);  // one mutex for all locking               
-  pthread_cond_init(&(wq->work_cond), NULL);    // there is work to process   
-  pthread_cond_init(&(wq->working_cond), NULL); // no threads processing         
-  
-  wq->working_cnt = (size_t) 0;                 // #threads actively working  
-  wq->num_threads = num;                        // number of threads alive
-  
   for( i=0; i<num; i++ ){
+    tpool_work_queue_t   *wq;                     // work queue pointer
+    wq = calloc(1, sizeof(*wq));                  // allocate the work queue
+
+    wq->work_head = NULL;                         // queue head pointer                         
+    wq->work_tail = NULL;                         // queue tail pointer   
+  
+    pthread_mutex_init(&(wq->work_mutex), NULL);  // one mutex for all locking               
+    pthread_cond_init(&(wq->work_cond), NULL);    // there is work to process   
+    pthread_cond_init(&(wq->working_cond), NULL); // no threads processing         
+  
+    wq->working_cnt = (size_t) 0;                 // #threads actively working  
+    wq->num_threads = num;                        // number of threads alive
+  
     threads[i].thread_queue = wq;               // thread queue pointer
   }                                                               
 

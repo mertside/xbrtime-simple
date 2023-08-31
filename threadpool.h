@@ -100,7 +100,7 @@ static void tpool_work_unit_destroy(tpool_work_unit_t *work)
 // --------------------------------------------------------- GET WORK FUNCTION  
 // Handles pulling an object from the list and                                  
 //   maintain the list work_head and work_tail references.                      
-static tpool_work_unit_t *tpool_work_unit_get(tpool_work_queue_t *wq)                                
+static tpool_work_unit_t *tpool_work_unit_get(tpool_work_queue_t *wq)                      
 {                                                                               
   tpool_work_unit_t *work;                                                           
                                                                                 
@@ -125,7 +125,7 @@ static tpool_work_unit_t *tpool_work_unit_get(tpool_work_queue_t *wq)
 // At a high level: this function waits for work and processes it.              
 static void *tpool_worker(void *arg)                                            
 {                                                                               
-  tpool_work_queue_t  *wq = (tpool_work_queue_t *) arg;                                                       
+  tpool_work_queue_t  *wq = (tpool_work_queue_t *) arg;                               
   tpool_work_unit_t   *work;                                                           
                                                                                 
   // This will keep the tread running until exit.                               
@@ -198,7 +198,7 @@ tpool_thread_t *tpool_create(size_t num)
     tpool_work_queue_t   *wq;                     // work queue pointer
     wq = calloc(1, sizeof(*wq));                  // allocate the work queue
 
-    wq->work_head = NULL;                         // queue head pointer                         
+    wq->work_head = NULL;                         // queue head pointer                    
     wq->work_tail = NULL;                         // queue tail pointer   
   
     pthread_mutex_init(&(wq->work_mutex), NULL);  // one mutex for all locking               
@@ -208,7 +208,7 @@ tpool_thread_t *tpool_create(size_t num)
     wq->working_cnt = (size_t) 0;                 // #threads actively working  
     wq->num_threads = num;                        // number of threads alive
   
-    threads[i].thread_queue = wq;               // thread queue pointer
+    threads[i].thread_queue = wq;                 // thread queue pointer
   }                                                               
 
 #if XBGAS_DEBUG
@@ -229,7 +229,7 @@ tpool_thread_t *tpool_create(size_t num)
     //      Did NOT store the thread ids; they are not accessed directly.       
     //      If we wanted to implement some kind of force exit,                  
     //      instead of having to wait then we’d need to track the ids.          
-    pthread_detach(threads[i].thread_handle);                                                     
+    pthread_detach(threads[i].thread_handle);                               
   }                                                                             
                                                                                 
   return threads;                                                                    

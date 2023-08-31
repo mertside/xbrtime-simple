@@ -95,7 +95,7 @@ int main( int argc, char **argv ){
 	printf("[M]"GRN " Passed xbrtime_malloc()\n"RESET); 
 
 #ifdef DEBUG
-  printf( "PE=%d; *SHARED = 0x%"PRIu64"\n", xbrtime_mype(), (uint64_t)(shared) );
+  printf("PE=%d; *SHARED = 0x%"PRIu64"\n", xbrtime_mype(), (uint64_t)(shared));
 #endif
   for( i = 0; i < row; i++ ){
  	  for( j = 0; j < col; j++ ){
@@ -149,8 +149,10 @@ int main( int argc, char **argv ){
                               1);                                   // pe
         */
         // shared[i] = i;
-        printf("[M] "BYEL"Iter:\ti:%lu, j:%lu \t%s\n    Thread:\t%lu\n"RESET, 
-               i, j, check ? "true" : "false", threads[i].thread_handle);
+        fflush(stdout);
+        fprintf(stdout,"[M] "BYEL"Iter:\ti:%lu, j:%lu \t%s\n    Thread:\t%lu\n"
+              RESET, i, j, check ? "true" : "false", threads[i].thread_handle);
+        fflush(stdout);
       }
     }
     printf("[M] "BGRN"Passed xbrtime_ulonglong_get()\n"RESET);
@@ -190,8 +192,11 @@ int main( int argc, char **argv ){
 		t_start = mysecond();
 	}
 
-	for( i = 0; i < ne; i ++)
-		private[i] *= shared[i];                           // matrix multiplication
+  for( i = 0; i < row; i++ ){
+    for( j = 0; j < col; j++ ){
+		  private[i*col + j] *= shared[i*col + j];        // matrix multiplication
+    }
+  }
 
 	if(xbrtime_mype() == 0){
 		t_end = mysecond();
@@ -208,6 +213,7 @@ int main( int argc, char **argv ){
   printf( "xBGAS is Closed\n" );
 #endif
 
+  sleep(1);
 	printf("[M]"GRN " Returning Main matmul...\n"RESET);
   return rtn;
 }

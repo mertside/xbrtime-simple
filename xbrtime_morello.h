@@ -304,7 +304,8 @@ extern int xbrtime_init(){
   //args *thread_args = (args*)(arg);
   //uint64_t my_id = thread_args->thread_id;
 
-  __XBRTIME_CONFIG->_MMAP       = malloc(sizeof(XBRTIME_MEM_T) * _XBRTIME_MEM_SLOTS_);
+  __XBRTIME_CONFIG->_MMAP       = malloc(sizeof(XBRTIME_MEM_T) * 
+                                         _XBRTIME_MEM_SLOTS_);
   __XBRTIME_CONFIG->_ID         = threads[0].thread_id; 
                               // (uint64_t) pthread_self(); 
                               // __xbrtime_asm_get_id();
@@ -400,40 +401,40 @@ void __xbrtime_get_u8_seq(uint64_t* base_src, uint64_t* base_dest,//uint32_t pe,
 void xbrtime_ulonglong_get(unsigned long long *dest, 
                            const unsigned long long *src, 
                            size_t nelems, int stride, int pe){
-  printf("[R] Entered xbrtime_ulonglong_get()\n");
+  //printf("[R] Entered xbrtime_ulonglong_get()\n");
   fflush(stdout);
 
   fprintf(stdout, "[R] Thread: \t%lu\n", (uint64_t) pthread_self());
 
-  fprintf(stdout, "================================================================\n");
-  fprintf(stdout, "  DEST:\t\t\t"
+  fprintf(stdout, "=======================================================\n");
+  fprintf(stdout, "DST:"
       // "address: %p\n"
-          "\tbase  : %lu\n"
-          "\tlength: %lu\t"
-          "\toffset: %lu\n"
-          "\tperms : %u\t"
-          "\ttag   : %d\n",
+          "\tbase  : %10lu"
+          "\tlength: %10lu\n"
+          "\toffset: %10lu"
+          "\tperms : %10u"
+          "\ttag   : %1d\n",
       // cheri_address_get(dest),
         cheri_base_get((void *) dest),
         cheri_length_get((void *) dest),
         cheri_offset_get((void *) dest),
         cheri_perms_get((void *) dest),
         (int) cheri_tag_get((void *) dest));
-  fprintf(stdout, "================================================================\n");
-  fprintf(stdout, "  SRC:\t\t\t"
+  fprintf(stdout, "=======================================================\n");
+  fprintf(stdout, "SRC:"
       // "address: %p\n"
-          "\tbase  : %lu\n"
-          "\tlength: %lu\t"
-          "\toffset: %lu\n"
-          "\tperms : %u\t"
-          "\ttag   : %d\n",
+          "\tbase  : %10lu"
+          "\tlength: %10lu\n"
+          "\toffset: %10lu"
+          "\tperms : %10u"
+          "\ttag   : %1d\n",
       // cheri_address_get(dest),
         cheri_base_get((void *) src),
         cheri_length_get((void *) src),
         cheri_offset_get((void *) src),
         cheri_perms_get((void *) src),
         (int) cheri_tag_get((void *) src));
-  fprintf(stdout, "================================================================\n");
+  fprintf(stdout, "=======================================================\n");
 
   fflush(stdout);
 

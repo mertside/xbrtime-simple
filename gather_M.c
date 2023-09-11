@@ -74,6 +74,7 @@ int main( int argc, char **argv ){
       idx[i*col + j] 			= (uint64_t)(rand()%(row*col-1));
       shared[i*col + j] 	= (uint64_t)(j + xbrtime_mype());
       private[i*col + j] 	= 99;
+    }
 	}
   printf("[M]"GRN " Passed idx[], shared[] & private[] init\n"RESET);
 

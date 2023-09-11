@@ -28,8 +28,10 @@ int main( int argc, char **argv ){
 	int64_t		index			= 0;
 	int64_t 	*idx     	= NULL;
   uint64_t 	i   			= 0;
+
   uint64_t 	*private  = NULL;
 	uint64_t 	*shared  	= NULL;
+
 	/* statistic gathering var */
 	double		local			= 0;
 	double		remote		= 0;
@@ -40,23 +42,33 @@ int main( int argc, char **argv ){
 
 	t_start = mysecond();
 	/* init */
-	private = malloc( sizeof( uint64_t ) * ne );
-	idx  		= malloc( sizeof( int64_t ) * ne );
-
   rtn 	= xbrtime_init();
   printf("[M]"GRN " Passed xbrtime_init()\n"RESET); 
-  shared = (uint64_t *)(xbrtime_malloc( sz*ne ));
+
+  int num_pes = xbrtime_num_pes();
+  row         = num_pes;
+  col         = ne;
+
+	idx  		= malloc( row * col * sizeof( uint64_t ));
+	private = malloc( row * col * sizeof( uint64_t ));
+  shared = (uint64_t *)(xbrtime_malloc( row * col * sizeof( uint64_t ) ));
+
   printf("[M]"GRN " Passed xbrtime_malloc()\n"RESET); 
 
 #ifdef DEBUG
   printf( "PE=%d; *SHARED = 0x%"PRIu64"\n", xbrtime_mype(), (uint64_t)(shared) );
 #endif
 	srand(1);
-	pe		=	xbrtime_num_pes();
- 	for( i = 0; i< ne; i++ ){
-		idx[i] 			= (uint64_t)(rand()%(pe*ne-1));
-		shared[i] 	= (uint64_t)(xbrtime_mype());
-		private[i] 	= 99;
+	// pe		=	xbrtime_num_pes();
+ 	for( i = 0; i< col; i++ ){
+    for( j = 0; j < col; j++ ){
+      // idx[i] 			= (uint64_t)(rand()%(pe*ne-1));
+      // shared[i] 	= (uint64_t)(xbrtime_mype());
+      // private[i] 	= 99;
+
+      idx[i*col + j] 			= (uint64_t)(rand()%(row*col-1));
+      shared[i*col + j] 	= (uint64_t)(j + xbrtime_mype());
+      private[i*col + j] 	= 99;
 	}
   printf("[M]"GRN " Passed idx[], shared[] & private[] init\n"RESET);
 
@@ -80,26 +92,37 @@ int main( int argc, char **argv ){
 	}
 
 	/* Gathering */
-  for(i = 0; i < ne; i++){
-		target = idx[i]/ne;
-		index  = idx[i] - target*ne;
-		// private access
-		if(target == xbrtime_mype()){
-			private[i] = shared[index];
-			local++;
-		}
-		// remote access
-		else{
-    	xbrtime_ulonglong_get((unsigned long long *)(&(private[i])),								// dest
-                          	(unsigned long long *)(&(shared[index])),							// src
-                          	1,																										// ne
-                          	1,																										// stride
-                          	target); 																							// pe
-			remote++;
-      
-		}
-    printf("[M] "BYEL"Completed iter: %lu\n"RESET, i+1);
-	}
+  for( i = 0; i < row; i++ ){
+    for( j = 0; j < col; j++ ){
+      target = idx[i*col + j]/ne;
+      index  = idx[i*col + j] - target*ne;
+      // private access
+      if(target == xbrtime_mype()){
+        private[i*col + j] = shared[index];
+        local++;
+      } else {
+        // remote access
+
+        void* func_args = {(unsigned long long *)(&(shared[i*col + j])),
+                          (unsigned long long *)(&(shared[index])),
+                            1, 1, 1};                                 
+
+        bool check = false;
+        check = tpool_add_work( threads[i].thread_queue, 
+                                xbrtime_ulonglong_get, 
+                                func_args);
+
+        // xbrtime_ulonglong_get((unsigned long long *)(&(private[i])),								// dest
+        //                       (unsigned long long *)(&(shared[index])),							// src
+        //                       1,																										// ne
+        //                       1,																										// stride
+        //                       target); 																							// pe
+        remote++;
+        
+      }
+      printf("[M] "BYEL"Completed iter: %lu\n"RESET, i+1);
+	  } 
+  }
   printf("[M] "BGRN"Passed xbrtime_ulonglong_get()\n"RESET);
   /* perform a barrier */
 #ifdef DEBUG
@@ -107,9 +130,9 @@ int main( int argc, char **argv ){
 #endif
   xbrtime_barrier();
 
-	if(xbrtime_mype() == 0){
-		t_end = mysecond();
-		t_mem = t_end - t_start;
+  if(xbrtime_mype() == 0){
+    t_end = mysecond();
+    t_mem = t_end - t_start;
 	}
 #ifdef DEBUG
   printf( "PE=%d; SHARED[0]=0x%"PRIu64"\n",

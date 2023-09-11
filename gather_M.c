@@ -27,7 +27,12 @@ int main( int argc, char **argv ){
 	int64_t		target		= 0;
 	int64_t		index			= 0;
 	int64_t 	*idx     	= NULL;
+  
   uint64_t 	i   			= 0;
+  uint64_t  j         = 0;
+
+  int row = 0;
+  int col = 0;
 
   uint64_t 	*private  = NULL;
 	uint64_t 	*shared  	= NULL;

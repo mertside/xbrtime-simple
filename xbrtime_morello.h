@@ -405,7 +405,7 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
   fflush(stdout);
 
   fprintf(stdout, "[R] Thread: \t%lu\n", (uint64_t) pthread_self());
-
+  
   fprintf(stdout, "=======================================================\n");
   fprintf(stdout, "DST:"
       // "address: %p\n"

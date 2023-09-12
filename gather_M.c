@@ -145,6 +145,7 @@ int main( int argc, char **argv ){
           xbrtime_mype(), shared[0]);
   printf( "PE=%d; xBGAS is Closing\n", xbrtime_mype() );
 #endif
+  sleep(1);
 
 	if(xbrtime_mype() == 0)
 		PRINT(local, remote, t_init, t_mem);

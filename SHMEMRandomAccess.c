@@ -65,6 +65,14 @@ typedef long long s64Int;
 #define PERIOD 1317624576693539401LL
 #endif
 
+/* For timing */
+static double RTSEC()
+{
+ struct timeval tp;
+ gettimeofday (&tp, NULL);
+ return tp.tv_sec + tp.tv_usec/(double)1.0e6;
+}
+
 extern s64Int starts (u64Int);
 
 #ifdef HPCC_MEMALLCTR

@@ -41,6 +41,21 @@
 #include <stdio.h>
 // #include "RandomAccess.h"
 
+/* Define 64-bit types and corresponding format strings for printf() and constants */
+#ifdef LONG_IS_64BITS
+typedef unsigned long u64Int;
+typedef long s64Int;
+#define FSTR64 "%ld"
+#define FSTRU64 "%lu"
+#define ZERO64B 0L
+#else
+typedef unsigned long long u64Int;
+typedef long long s64Int;
+#define FSTR64 "%lld"
+#define FSTRU64 "%llu"
+#define ZERO64B 0LL
+#endif
+
 void
 do_abort(char* f)
 {

@@ -65,6 +65,8 @@ typedef long long s64Int;
 #define PERIOD 1317624576693539401LL
 #endif
 
+extern s64Int starts (u64Int);
+
 void
 do_abort(char* f)
 {

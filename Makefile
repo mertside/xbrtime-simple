@@ -11,5 +11,8 @@ matMul:
 gather:
 	$(MY_CC) -O0 -lpthread -o gather_M.exe gather_M.c xbMrtime_api_asm.s
 
+gups:
+	$(MY_CC) -O0 -lpthread -o gups_M.exe SHMEMRandomAccess.c xbMrtime_api_asm.s
+
 clean:
 	rm -f ./*.o ./*.exe

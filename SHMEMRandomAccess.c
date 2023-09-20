@@ -67,6 +67,28 @@ typedef long long s64Int;
 
 extern s64Int starts (u64Int);
 
+#ifdef HPCC_MEMALLCTR
+extern int HPCC_alloc_init(size_t total_size);
+extern int HPCC_alloc_finalize();
+extern void *HPCC_malloc(size_t size);
+extern void HPCC_free(void *ptr);
+#define HPCC_fftw_malloc HPCC_malloc
+#define HPCC_fftw_free HPCC_free
+#define HPCC_XMALLOC(t,s) ((t*)HPCC_malloc(sizeof(t)*(s))) 
+#else
+/*
+#define HPCC_malloc malloc
+#define HPCC_free free
+*/
+
+#define HPCC_malloc malloc
+#define HPCC_free free
+
+#define HPCC_fftw_malloc fftw_malloc
+#define HPCC_fftw_free fftw_free
+#define HPCC_XMALLOC(t,s) XMALLOC(t,s)
+#endif
+
 void
 do_abort(char* f)
 {

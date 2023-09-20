@@ -56,6 +56,15 @@ typedef long long s64Int;
 #define ZERO64B 0LL
 #endif
 
+/* Random number generator */
+#ifdef LONG_IS_64BITS
+#define POLY 0x0000000000000007UL
+#define PERIOD 1317624576693539401L
+#else
+#define POLY 0x0000000000000007ULL
+#define PERIOD 1317624576693539401LL
+#endif
+
 void
 do_abort(char* f)
 {

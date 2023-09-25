@@ -502,7 +502,7 @@ void xbrtime_longlong_get(long long *dest,
     return;
   }else/* if( (stride != 1) || (nelems == 1))*/{
     /* sequential execution */
-    __xbrtime_get_s8_seq((uint64_t*)(src)//__xbrtime_ltor((uint64_t)(src),pe),
+    __xbrtime_get_s8_seq((uint64_t*)(src),//__xbrtime_ltor((uint64_t)(src),pe),
                          (uint64_t*)(dest),
                          //xbrtime_decode_pe(pe),
                          (uint32_t)(nelems),
@@ -553,7 +553,7 @@ void xbrtime_longlong_put(long long *dest,
   }else/* if( (stride != 1) || (nelems == 1))*/{
     /* sequential execution */
     __xbrtime_put_s8_seq((uint64_t*)(src),
-                         (uint64_t*)(dest)//__xbrtime_ltor((uint64_t)(dest),pe),
+                         (uint64_t*)(dest),//__xbrtime_ltor((uint64_t)(dest),pe),
                          //xbrtime_decode_pe(pe),
                          (uint32_t)(nelems),
                          (uint32_t)(stride*sizeof(long long)));

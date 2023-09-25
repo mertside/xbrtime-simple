@@ -197,8 +197,8 @@ int main(int argc, char **argv)
   HPCC_Table = (u64Int *)xbrtime_malloc( sizeof(u64Int)*LocalTableSize );
   if (! HPCC_Table) *sAbort = 1;
 
-  xbrtime_int_reduce_sum(rAbort, sAbort, 1, 1, 0);
-  xbrtime_int_broadcast(rAbort, rAbort, 1, 1, 0);
+  // xbrtime_int_reduce_sum(rAbort, sAbort, 1, 1, 0);    // ERROR-CHECK: Collect abort flags
+  // xbrtime_int_broadcast(rAbort, rAbort, 1, 1, 0);     // ERROR-CHECK: Broadcast abort flags
 
   if (*rAbort > 0) {
     if (MyProc == 0) fprintf(outFile, "Failed to allocate memory for the main table.\n");
@@ -317,8 +317,8 @@ int main(int argc, char **argv)
       pe_updates += updates[j];
     printf("PE%d updates:%d\n",MyProc,updates[0]);
 
-    xbrtime_longlong_reduce_sum(all_updates, updates, NumProcs, 1, 0);
-    xbrtime_longlong_broadcast(all_updates, all_updates, NumProcs, 1, 0);
+    // xbrtime_longlong_reduce_sum(all_updates, updates, NumProcs, 1, 0);       // ERROR-CHECK: Collect all updates
+    // xbrtime_longlong_broadcast(all_updates, all_updates, NumProcs, 1, 0);    // ERROR-CHECK: Broadcast all updates
 
     if(MyProc == 0){
       for (j = 1; j < numNodes; j++)

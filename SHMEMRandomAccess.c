@@ -284,15 +284,21 @@ int main(int argc, char **argv)
       if(remote_proc == MyProc)
         remote_proc = (remote_proc+1)/numNodes;
 
+      //  Get a long long integer value from a remote memory location
       xbrtime_longlong_get(&remote_val, &HPCC_Table[*ran & (LocalTableSize-1)], 1, 0, remote_proc);
       remote_val ^= *ran;
 
+      // Put a long long integer value to a remote memory location
       xbrtime_longlong_put(&HPCC_Table[*ran & (LocalTableSize-1)], &remote_val, 1, 0, remote_proc);
 
       xbrtime_barrier();
 
-      if(verify)
-        xbrtime_longlong_atomic_add(&updates[thisPeId], 1, remote_proc);
+      if(verify) {
+        // Atomic add of long long integer value to a remote memory location 
+        // xbrtime_longlong_atomic_add(&updates[thisPeId], 1, remote_proc); 
+        __atomic_add_fetch(&updates[thisPeId], 1, remote_proc);
+      }
+        
   }
 
   xbrtime_barrier();

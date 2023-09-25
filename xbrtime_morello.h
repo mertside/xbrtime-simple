@@ -406,7 +406,7 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
 
   fprintf(stdout, "[R] Thread: \t%lu\n", (uint64_t) pthread_self());
   
-  fprintf(stdout, "=======================================================\n");
+  fprintf(stdout, "==================================xbrtime_ulonglong_get\n");
   fprintf(stdout, "DST:"
       // "address: %p\n"
           "\tbase  : %10lu"
@@ -459,6 +459,106 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
 
 
   //printf("[M] Exiting \n");
+}
+
+// ----------------------------------------------------------- S8 GET FUNCTION
+void xbrtime_longlong_get(long long *dest, 
+                          const long long *src,
+                          size_t nelems, int stride, int pe){
+  //printf("[R] Entered xbrtime_ulonglong_get()\n");
+  fflush(stdout);
+  fprintf(stdout, "[R] Thread: \t%lu\n", (uint64_t) pthread_self());
+  fprintf(stdout, "GET================================xbrtime_longlong_get\n");
+  fprintf(stdout, "DST:"
+      // "address: %p\n"
+          "\tbase  : %10lu"
+          "\tlength: %10lu\n"
+          "\toffset: %10lu"
+          "\tperms : %10u"
+          "\ttag   : %1d\n",
+      // cheri_address_get(dest),
+        cheri_base_get((void *) dest),
+        cheri_length_get((void *) dest),
+        cheri_offset_get((void *) dest),
+        cheri_perms_get((void *) dest),
+        (int) cheri_tag_get((void *) dest));
+  fprintf(stdout, "=======================================================\n");
+  fprintf(stdout, "SRC:"
+      // "address: %p\n"
+          "\tbase  : %10lu"
+          "\tlength: %10lu\n"
+          "\toffset: %10lu"
+          "\tperms : %10u"
+          "\ttag   : %1d\n",
+      // cheri_address_get(dest),
+        cheri_base_get((void *) src),
+        cheri_length_get((void *) src),
+        cheri_offset_get((void *) src),
+        cheri_perms_get((void *) src),
+        (int) cheri_tag_get((void *) src));
+  fprintf(stdout, "=======================================================\n");
+  fflush(stdout);
+  if(nelems == 0){
+    return;
+  }else/* if( (stride != 1) || (nelems == 1))*/{
+    /* sequential execution */
+    __xbrtime_get_s8_seq((uint64_t*)(src)//__xbrtime_ltor((uint64_t)(src),pe),
+                         (uint64_t*)(dest),
+                         //xbrtime_decode_pe(pe),
+                         (uint32_t)(nelems),
+                         (uint32_t)(stride*sizeof(long long)));
+  }
+  __xbrtime_asm_fence();
+}
+
+// ----------------------------------------------------------- S8 PUT FUNCTION
+void xbrtime_longlong_put(long long *dest, 
+                          const long long *src,
+                          size_t nelems, int stride, int pe){
+  //printf("[R] Entered xbrtime_ulonglong_get()\n");
+  fflush(stdout);
+  fprintf(stdout, "[R] Thread: \t%lu\n", (uint64_t) pthread_self());
+  fprintf(stdout, "===================================xbrtime_longlong_put\n");
+  fprintf(stdout, "DST:"
+      // "address: %p\n"
+          "\tbase  : %10lu"
+          "\tlength: %10lu\n"
+          "\toffset: %10lu"
+          "\tperms : %10u"
+          "\ttag   : %1d\n",
+      // cheri_address_get(dest),
+        cheri_base_get((void *) dest),
+        cheri_length_get((void *) dest),
+        cheri_offset_get((void *) dest),
+        cheri_perms_get((void *) dest),
+        (int) cheri_tag_get((void *) dest));
+  fprintf(stdout, "=======================================================\n");
+  fprintf(stdout, "SRC:"
+      // "address: %p\n"
+          "\tbase  : %10lu"
+          "\tlength: %10lu\n"
+          "\toffset: %10lu"
+          "\tperms : %10u"
+          "\ttag   : %1d\n",
+      // cheri_address_get(dest),
+        cheri_base_get((void *) src),
+        cheri_length_get((void *) src),
+        cheri_offset_get((void *) src),
+        cheri_perms_get((void *) src),
+        (int) cheri_tag_get((void *) src));
+  fprintf(stdout, "=======================================================\n");
+  fflush(stdout);
+  if(nelems == 0){
+    return;
+  }else/* if( (stride != 1) || (nelems == 1))*/{
+    /* sequential execution */
+    __xbrtime_put_s8_seq((uint64_t*)(src),
+                         (uint64_t*)(dest)//__xbrtime_ltor((uint64_t)(dest),pe),
+                         //xbrtime_decode_pe(pe),
+                         (uint32_t)(nelems),
+                         (uint32_t)(stride*sizeof(long long)));
+  }
+  __xbrtime_asm_fence();
 }
 
 /* ------------------------------------------------------------------------- */

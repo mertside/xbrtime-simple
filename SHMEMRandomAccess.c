@@ -296,7 +296,8 @@ int main(int argc, char **argv)
       if(verify) {
         // Atomic add of long long integer value to a remote memory location 
         // xbrtime_longlong_atomic_add(&updates[thisPeId], 1, remote_proc); 
-        __atomic_add_fetch(&updates[thisPeId], 1, remote_proc);
+        __atomic_add_fetch(&updates[thisPeId], 1, remote_proc); 
+        // __atomic_add_fetch() from https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
       }
         
   }

@@ -275,6 +275,7 @@ int main(int argc, char **argv)
   xbrtime_barrier();
 
   /* Begin timed section */
+  fprintf( outFile, "niterate: %d\n", niterate );
   RealTime = -RTSEC();
   for (iterate = 0; iterate < niterate; iterate++) {
       *ran = (*ran << 1) ^ ((s64Int) *ran < ZERO64B ? POLY : ZERO64B);

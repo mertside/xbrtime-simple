@@ -291,7 +291,7 @@ int main(int argc, char **argv)
       // Get a long long integer value from a remote memory location
       checkGet = tpool_add_work( threads[i].thread_queue, 
                                  xbrtime_longlong_get, 
-                                 func_args);
+                                 func_args_get);
       remote_val ^= *ran;
 
       void* func_args_put = {(long long *)(&HPCC_Table[*ran & (LocalTableSize-1)]),
@@ -301,7 +301,7 @@ int main(int argc, char **argv)
       bool checkPut = false;
       checkPut = tpool_add_work( threads[i].thread_queue, 
                                  xbrtime_longlong_put, 
-                                 func_args);
+                                 func_args_put);
 
       xbrtime_barrier();
 

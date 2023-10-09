@@ -275,33 +275,64 @@ int main(int argc, char **argv)
   /* Begin timed section */
   fprintf( outFile, "niterate: %d\n", niterate );
   RealTime = -RTSEC();
+  for( currentPE = 0; currentPE < NumProcs; currentPE++ ){
+    for (iterate = 0; iterate < niterate; iterate++) {
+        *ran = (*ran << 1) ^ ((s64Int) *ran < ZERO64B ? POLY : ZERO64B);
+        remote_proc = (*ran >> logTableLocal) & (numNodes - 1);
+
+        /*Forces updates to remote PE only*/
+        if(remote_proc == MyProc)
+          remote_proc = (remote_proc+1)/numNodes;
+
+        void* func_args_get = {(long long *)(&remote_val),
+                              (long long *)(&HPCC_Table[*ran & (LocalTableSize-1)]),
+                              1, 0, remote_proc};     
+
+        bool checkGet = false;
+        // Get a long long integer value from a remote memory location
+        checkGet = tpool_add_work( threads[currentPE].thread_queue, 
+                                  xbrtime_longlong_get, 
+                                  func_args_get);
+        remote_val ^= *ran;
+
+        void* func_args_put = {(long long *)(&HPCC_Table[*ran & (LocalTableSize-1)]),
+                              (long long *)(&remote_val),
+                              1, 0, remote_proc};     
+        // Put a long long integer value to a remote memory location
+        bool checkPut = false;
+        checkPut = tpool_add_work( threads[currentPE].thread_queue, 
+                                  xbrtime_longlong_put, 
+                                  func_args_put);
+
+        xbrtime_barrier();
+
+        if(verify) {
+          // Atomic add of long long integer value to a remote memory location 
+          // xbrtime_longlong_atomic_add(&updates[thisPeId], 1, remote_proc); 
+          __atomic_add_fetch(&updates[thisPeId], 1, remote_proc); 
+          // __atomic_add_fetch() from https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
+        }    
+    }
+  }
+
+/*
+  // Begin timed section
+  fprintf( outFile, "niterate: %d\n", niterate );
+  RealTime = -RTSEC();
   for (iterate = 0; iterate < niterate; iterate++) {
       *ran = (*ran << 1) ^ ((s64Int) *ran < ZERO64B ? POLY : ZERO64B);
       remote_proc = (*ran >> logTableLocal) & (numNodes - 1);
 
-      /*Forces updates to remote PE only*/
+      // Forces updates to remote PE only
       if(remote_proc == MyProc)
         remote_proc = (remote_proc+1)/numNodes;
 
-      void* func_args_get = {(long long *)(&remote_val),
-                             (long long *)(&HPCC_Table[*ran & (LocalTableSize-1)]),
-                             1, 0, remote_proc};     
-
-      bool checkGet = false;
-      // Get a long long integer value from a remote memory location
-      checkGet = tpool_add_work( threads[i].thread_queue, 
-                                 xbrtime_longlong_get, 
-                                 func_args_get);
+      //  Get a long long integer value from a remote memory location
+      xbrtime_longlong_get(&remote_val, &HPCC_Table[*ran & (LocalTableSize-1)], 1, 0, remote_proc);
       remote_val ^= *ran;
 
-      void* func_args_put = {(long long *)(&HPCC_Table[*ran & (LocalTableSize-1)]),
-                             (long long *)(&remote_val),
-                             1, 0, remote_proc};     
       // Put a long long integer value to a remote memory location
-      bool checkPut = false;
-      checkPut = tpool_add_work( threads[i].thread_queue, 
-                                 xbrtime_longlong_put, 
-                                 func_args_put);
+      xbrtime_longlong_put(&HPCC_Table[*ran & (LocalTableSize-1)], &remote_val, 1, 0, remote_proc);
 
       xbrtime_barrier();
 
@@ -310,38 +341,9 @@ int main(int argc, char **argv)
         // xbrtime_longlong_atomic_add(&updates[thisPeId], 1, remote_proc); 
         __atomic_add_fetch(&updates[thisPeId], 1, remote_proc); 
         // __atomic_add_fetch() from https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
-      }
-        
+      }    
   }
-
-  // /* Begin timed section */
-  // fprintf( outFile, "niterate: %d\n", niterate );
-  // RealTime = -RTSEC();
-  // for (iterate = 0; iterate < niterate; iterate++) {
-  //     *ran = (*ran << 1) ^ ((s64Int) *ran < ZERO64B ? POLY : ZERO64B);
-  //     remote_proc = (*ran >> logTableLocal) & (numNodes - 1);
-
-  //     /*Forces updates to remote PE only*/
-  //     if(remote_proc == MyProc)
-  //       remote_proc = (remote_proc+1)/numNodes;
-
-  //     //  Get a long long integer value from a remote memory location
-  //     xbrtime_longlong_get(&remote_val, &HPCC_Table[*ran & (LocalTableSize-1)], 1, 0, remote_proc);
-  //     remote_val ^= *ran;
-
-  //     // Put a long long integer value to a remote memory location
-  //     xbrtime_longlong_put(&HPCC_Table[*ran & (LocalTableSize-1)], &remote_val, 1, 0, remote_proc);
-
-  //     xbrtime_barrier();
-
-  //     if(verify) {
-  //       // Atomic add of long long integer value to a remote memory location 
-  //       // xbrtime_longlong_atomic_add(&updates[thisPeId], 1, remote_proc); 
-  //       __atomic_add_fetch(&updates[thisPeId], 1, remote_proc); 
-  //       // __atomic_add_fetch() from https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
-  //     }
-        
-  // }
+*/
 
   xbrtime_barrier();
 

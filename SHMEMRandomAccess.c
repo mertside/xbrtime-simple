@@ -5,12 +5,11 @@
  * David Koester <dkoester@mitre.org> or Bob Lucas <rflucas@isi.edu>
  * if you have questions.
  *
- *
  * GUPS (Giga UPdates per Second) is a measurement that profiles the memory
  * architecture of a system and is a measure of performance similar to MFLOPS.
  * The HPCS HPCchallenge RandomAccess benchmark is intended to exercise the
  * GUPS capability of a system, much like the LINPACK benchmark is intended to
- * exercise the MFLOPS capability of a computer.  In each case, we would
+ * exercise the MFLOPS capability of a computer. In each case, we would
  * expect these benchmarks to achieve close to the "peak" capability of the
  * memory system. The extent of the similarities between RandomAccess and
  * LINPACK are limited to both benchmarks attempting to calculate a peak system
@@ -20,7 +19,7 @@
  * randomly updated in one second, divided by 1 billion (1e9). The term "randomly"
  * means that there is little relationship between one address to be updated and
  * the next, except that they occur in the space of one half the total system
- * memory.  An update is a read-modify-write operation on a table of 64-bit words.
+ * memory. An update is a read-modify-write operation on a table of 64-bit words.
  * An address is generated, the value at that address read from memory, modified
  * by an integer operation (add, and, or, xor) with a literal value, and that
  * new value is written back to memory.
@@ -28,9 +27,8 @@
  * We are interested in knowing the GUPS performance of both entire systems and
  * system subcomponents --- e.g., the GUPS rating of a distributed memory
  * multiprocessor the GUPS rating of an SMP node, and the GUPS rating of a
- * single processor.  While there is typically a scaling of FLOPS with processor
+ * single processor. While there is typically a scaling of FLOPS with processor
  * count, a similar phenomenon may not always occur for GUPS.
- *
  *
  */
 
@@ -285,12 +283,25 @@ int main(int argc, char **argv)
       if(remote_proc == MyProc)
         remote_proc = (remote_proc+1)/numNodes;
 
-      //  Get a long long integer value from a remote memory location
-      xbrtime_longlong_get(&remote_val, &HPCC_Table[*ran & (LocalTableSize-1)], 1, 0, remote_proc);
+      void* func_args_get = {(long long *)(&remote_val),
+                             (long long *)(&HPCC_Table[*ran & (LocalTableSize-1)]),
+                             1, 0, remote_proc};     
+
+      bool checkGet = false;
+      // Get a long long integer value from a remote memory location
+      checkGet = tpool_add_work( threads[i].thread_queue, 
+                                 xbrtime_longlong_get, 
+                                 func_args);
       remote_val ^= *ran;
 
+      void* func_args_put = {(long long *)(&HPCC_Table[*ran & (LocalTableSize-1)]),
+                             (long long *)(&remote_val),
+                             1, 0, remote_proc};     
       // Put a long long integer value to a remote memory location
-      xbrtime_longlong_put(&HPCC_Table[*ran & (LocalTableSize-1)], &remote_val, 1, 0, remote_proc);
+      bool checkPut = false;
+      checkPut = tpool_add_work( threads[i].thread_queue, 
+                                 xbrtime_longlong_put, 
+                                 func_args);
 
       xbrtime_barrier();
 
@@ -302,6 +313,35 @@ int main(int argc, char **argv)
       }
         
   }
+
+  // /* Begin timed section */
+  // fprintf( outFile, "niterate: %d\n", niterate );
+  // RealTime = -RTSEC();
+  // for (iterate = 0; iterate < niterate; iterate++) {
+  //     *ran = (*ran << 1) ^ ((s64Int) *ran < ZERO64B ? POLY : ZERO64B);
+  //     remote_proc = (*ran >> logTableLocal) & (numNodes - 1);
+
+  //     /*Forces updates to remote PE only*/
+  //     if(remote_proc == MyProc)
+  //       remote_proc = (remote_proc+1)/numNodes;
+
+  //     //  Get a long long integer value from a remote memory location
+  //     xbrtime_longlong_get(&remote_val, &HPCC_Table[*ran & (LocalTableSize-1)], 1, 0, remote_proc);
+  //     remote_val ^= *ran;
+
+  //     // Put a long long integer value to a remote memory location
+  //     xbrtime_longlong_put(&HPCC_Table[*ran & (LocalTableSize-1)], &remote_val, 1, 0, remote_proc);
+
+  //     xbrtime_barrier();
+
+  //     if(verify) {
+  //       // Atomic add of long long integer value to a remote memory location 
+  //       // xbrtime_longlong_atomic_add(&updates[thisPeId], 1, remote_proc); 
+  //       __atomic_add_fetch(&updates[thisPeId], 1, remote_proc); 
+  //       // __atomic_add_fetch() from https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
+  //     }
+        
+  // }
 
   xbrtime_barrier();
 

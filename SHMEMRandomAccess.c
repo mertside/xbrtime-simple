@@ -275,7 +275,7 @@ int main(int argc, char **argv)
   /* Begin timed section */
   fprintf( outFile, "niterate: %d\n", niterate );
   RealTime = -RTSEC();
-  for( currentPE = 0; currentPE < NumProcs; currentPE++ ){
+  for(int currentPE = 0; currentPE < NumProcs; currentPE++){
     for (iterate = 0; iterate < niterate; iterate++) {
         *ran = (*ran << 1) ^ ((s64Int) *ran < ZERO64B ? POLY : ZERO64B);
         remote_proc = (*ran >> logTableLocal) & (numNodes - 1);

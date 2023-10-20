@@ -566,6 +566,8 @@ void xbrtime_longlong_put(long long *dest,
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
 
+#define SENSE __XBRTIME_CONFIG->_SENSE
+
 static pthread_mutex_t barrier_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t barrier_cond = PTHREAD_COND_INITIALIZER;
 static int barrier_counter = 0;

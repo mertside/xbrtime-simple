@@ -553,7 +553,9 @@ extern void xbrtime_barrier(){
 #ifdef XBGAS_DEBUG
   printf( "[XBGAS_DEBUG] PE=%d; BARRIER COMPLETE\n", xbrtime_mype() );
 #endif
+#ifdef XBGAS_PRINT
   printf("[R] Exiting xbrtime_barrier()\n");
+#endif
 }
 
 #ifdef __cplusplus

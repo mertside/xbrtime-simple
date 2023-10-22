@@ -282,7 +282,8 @@ int main(int argc, char **argv)
   RealTime = -RTSEC();
   for(int currentPE = 0; currentPE < NumProcs; currentPE++){
     for (iterate = 0; iterate < niterate; iterate++) {
-        ran[currentPE] = (ran[currentPE] << 1) ^ ((s64Int) ran[currentPE] < ZERO64B ? POLY : ZERO64B);
+        ran[currentPE] = (ran[currentPE] << 1) ^ (
+                         (s64Int) ran[currentPE] < ZERO64B ? POLY : ZERO64B);
         remote_proc[currentPE] = (ran[currentPE] >> logTableLocal) & (numNodes - 1);
 
         /*Forces updates to remote PE only*/

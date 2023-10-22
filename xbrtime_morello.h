@@ -28,7 +28,9 @@ extern "C" {
 #endif
 
 // #define XBGAS_DEBUG 1
-// #define XBGAS_PRINT 0
+// #define XBGAS_PRINT 1
+// #define EXPERIMENTAL_A 1
+#define EXPERIMENTAL_B 1
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -108,11 +110,19 @@ __attribute__((destructor)) void __xbrtime_dtor(){
   printf("[R] Entered __xbrtime_dtor()\n");
 #endif
   
+  numOfThreads = atoi(getenv("NUM_OF_THREADS"));
+
   // Will return when there is no work
   // tpool_wait((tpool_work_queue_t *) pool);
+  if(int i = 0; i < numOfThreads; i++){
+    tpool_wait(threads[i].thread_queue);
+  }
 
   // Discard pending, clean queue, order stop, wait, destroy
   // tpool_destroy((tpool_work_queue_t *) pool); 
+    if(int i = 0; i < numOfThreads; i++){
+    tpool_destroy(threads[i].thread_queue);
+  }
 
   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
 
@@ -513,33 +523,34 @@ void xbrtime_longlong_put(long long *dest,
   __xbrtime_asm_fence();
 }
 
-// #define SENSE __XBRTIME_CONFIG->_SENSE
+#ifdef EXPERIMENTAL_B
+#define SENSE __XBRTIME_CONFIG->_SENSE
 
-// static pthread_mutex_t barrier_lock = PTHREAD_MUTEX_INITIALIZER;
-// static pthread_cond_t barrier_cond = PTHREAD_COND_INITIALIZER;
-// static int barrier_counter = 0;
+static pthread_mutex_t barrier_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t barrier_cond = PTHREAD_COND_INITIALIZER;
+static int barrier_counter = 0;
 
-// extern void xbrtime_barrier() {
-//     int num_threads = xbrtime_num_pes(); // assumption: returns number of threads
-//     static volatile int sense = 1;  // local sense
+extern void xbrtime_barrier() {
+    int num_threads = xbrtime_num_pes(); // assumption: returns number of threads
+    static volatile int sense = 1;  // local sense
 
-//     pthread_mutex_lock(&barrier_lock);
+    pthread_mutex_lock(&barrier_lock);
 
-//     barrier_counter++;  // Increase the counter as a thread reaches the barrier
+    barrier_counter++;  // Increase the counter as a thread reaches the barrier
 
-//     if (barrier_counter == num_threads) {  // If all threads have reached the barrier
-//         barrier_counter = 0; // Reset the counter
-//         sense = 1 - sense;  // Toggle the sense
-//         pthread_cond_broadcast(&barrier_cond);  // Wake up all waiting threads
-//     } else {
-//         while (SENSE != sense) {  // Wait until sense is toggled
-//             pthread_cond_wait(&barrier_cond, &barrier_lock);
-//         }
-//     }
+    if (barrier_counter == num_threads) {  // If all threads have reached the barrier
+        barrier_counter = 0; // Reset the counter
+        sense = 1 - sense;  // Toggle the sense
+        pthread_cond_broadcast(&barrier_cond);  // Wake up all waiting threads
+    } else {
+        while (SENSE != sense) {  // Wait until sense is toggled
+            pthread_cond_wait(&barrier_cond, &barrier_lock);
+        }
+    }
 
-//     pthread_mutex_unlock(&barrier_lock);
-// }
-
+    pthread_mutex_unlock(&barrier_lock);
+}
+#else
 extern void xbrtime_barrier(){
 #ifdef XBGAS_PRINT
   printf("[R] Entered xbrtime_barrier()\n");
@@ -557,6 +568,7 @@ extern void xbrtime_barrier(){
   printf("[R] Exiting xbrtime_barrier()\n");
 #endif
 }
+#endif
 
 #ifdef __cplusplus
 }

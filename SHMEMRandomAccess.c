@@ -282,8 +282,8 @@ int main(int argc, char **argv)
   RealTime = -RTSEC();
   for(int currentPE = 0; currentPE < NumProcs; currentPE++){
     for (iterate = 0; iterate < niterate; iterate++) {
-        *ran[currentPE] = (*ran[currentPE] << 1) ^ ((s64Int) *ran[currentPE] < ZERO64B ? POLY : ZERO64B);
-        remote_proc[currentPE] = (*ran[currentPE] >> logTableLocal) & (numNodes - 1);
+        ran[currentPE] = (ran[currentPE] << 1) ^ ((s64Int) ran[currentPE] < ZERO64B ? POLY : ZERO64B);
+        remote_proc[currentPE] = (ran[currentPE] >> logTableLocal) & (numNodes - 1);
 
         /*Forces updates to remote PE only*/
         if(remote_proc[currentPE] == MyProc)
@@ -293,7 +293,7 @@ int main(int argc, char **argv)
                               (long long *)(
                                 &HPCC_Table[
                                             currentPE * niterate + 
-                                            (*ran[currentPE] & (LocalTableSize-1))
+                                            (ran[currentPE] & (LocalTableSize-1))
                                            ]),
                               1, 0, remote_proc[currentPE]};     
 
@@ -302,12 +302,12 @@ int main(int argc, char **argv)
         checkGet = tpool_add_work( threads[currentPE].thread_queue, 
                                   xbrtime_longlong_get, 
                                   func_args_get);
-        remote_val[currentPE] ^= *ran[currentPE];
+        remote_val[currentPE] ^= ran[currentPE];
 
         void* func_args_put = {(long long *)(
                                 &HPCC_Table[ 
                                             currentPE * niterate + 
-                                            (*ran[currentPE] & (LocalTableSize-1))
+                                            (ran[currentPE] & (LocalTableSize-1))
                                            ]),
                               (long long *)(&remote_val[currentPE]),
                               1, 0, remote_proc[currentPE]};     

@@ -110,7 +110,7 @@ __attribute__((destructor)) void __xbrtime_dtor(){
   printf("[R] Entered __xbrtime_dtor()\n");
 #endif
   
-#ifdef EXPERIMENTAL_B
+#ifdef EXPERIMENTAL_A
   int i = 0;
   int numOfThreads = MAX_NUM_OF_THREADS;
   numOfThreads = atoi(getenv("NUM_OF_THREADS"));

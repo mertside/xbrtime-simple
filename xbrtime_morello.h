@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-#define XBGAS_DEBUG 1
+// #define XBGAS_DEBUG 1
 // #define XBGAS_PRINT 0
 
 #include <stdlib.h>

@@ -192,7 +192,7 @@ int main(int argc, char **argv)
   *sAbort = 0;
 
   /*Shmalloc HPCC_Table for RMA*/
-  HPCC_Table = (u64Int *)xbrtime_malloc( sizeof(u64Int)*LocalTableSize );
+  HPCC_Table = (u64Int *)xbrtime_malloc( NumProcs * sizeof(u64Int)*LocalTableSize );
   if (! HPCC_Table) *sAbort = 1;
 
   // xbrtime_int_reduce_sum(rAbort, sAbort, 1, 1, 0);    // ERROR-CHECK: Collect abort flags
@@ -224,9 +224,10 @@ int main(int argc, char **argv)
   }
 
   /* Initialize main table */
-  for (i=0; i<LocalTableSize; i++)
-    HPCC_Table[i] = MyProc;
-
+  for(int currentPE = 0; currentPE < NumProcs; currentPE++){
+    for (i=0; i<LocalTableSize; i++)
+      HPCC_Table[currentPE * LocalTableSize + i] = MyProc;
+  }
   xbrtime_barrier();
 
   int j,k;
@@ -236,7 +237,7 @@ int main(int argc, char **argv)
   u64Int datum,procmask;
   u64Int *data,*send;
   void * tstatus;
-  int remote_proc, offset;
+  int *remote_proc, offset;
   u64Int *tb;
   s64Int remotecount;
   int thisPeId;
@@ -252,8 +253,8 @@ int main(int argc, char **argv)
   numNodes = xbrtime_num_pes();
 
   count = (s64Int *) xbrtime_malloc(sizeof(s64Int));
-  ran = (s64Int *) xbrtime_malloc(sizeof(s64Int));
-  updates = (s64Int *) xbrtime_malloc(sizeof(s64Int) * numNodes); /* An array of length npes to avoid overwrites*/
+  ran = (s64Int *) xbrtime_malloc(NumProcs * sizeof(s64Int)); // Random number generator
+  updates = (s64Int *) xbrtime_malloc(NumProcs * sizeof(s64Int) * numNodes); /* An array of length npes to avoid overwrites*/
   all_updates = (s64Int *) xbrtime_malloc(sizeof(s64Int) * numNodes); /*: An array to collect sum*/
 
   *ran = starts(4*GlobalStartMyProc);
@@ -268,7 +269,11 @@ int main(int argc, char **argv)
     all_updates[j] = 0;
   }
   int verify=1;
-  u64Int remote_val;
+  u64Int *remote_val;
+  remote_val = (u64Int *) xbrtime_malloc(NumProcs * sizeof(u64Int));
+
+  remote_proc = (int *) xbrtime_malloc(NumProcs * sizeof(int));
+
 
   xbrtime_barrier();
 
@@ -277,16 +282,20 @@ int main(int argc, char **argv)
   RealTime = -RTSEC();
   for(int currentPE = 0; currentPE < NumProcs; currentPE++){
     for (iterate = 0; iterate < niterate; iterate++) {
-        *ran = (*ran << 1) ^ ((s64Int) *ran < ZERO64B ? POLY : ZERO64B);
-        remote_proc = (*ran >> logTableLocal) & (numNodes - 1);
+        *ran[currentPE] = (*ran << 1) ^ ((s64Int) *ran < ZERO64B ? POLY : ZERO64B);
+        remote_proc[currentPE] = (*ran >> logTableLocal) & (numNodes - 1);
 
         /*Forces updates to remote PE only*/
-        if(remote_proc == MyProc)
+        if(remote_proc[currentPE] == MyProc)
           remote_proc = (remote_proc+1)/numNodes;
 
-        void* func_args_get = {(long long *)(&remote_val),
-                              (long long *)(&HPCC_Table[*ran & (LocalTableSize-1)]),
-                              1, 0, remote_proc};     
+        void* func_args_get = {(long long *)(&remote_val[currentPE]),
+                              (long long *)(
+                                &HPCC_Table[
+                                            currentPE * niterate + 
+                                            (*ran & (LocalTableSize-1))
+                                           ]),
+                              1, 0, remote_proc[currentPE]};     
 
         bool checkGet = false;
         // Get a long long integer value from a remote memory location
@@ -295,9 +304,13 @@ int main(int argc, char **argv)
                                   func_args_get);
         remote_val ^= *ran;
 
-        void* func_args_put = {(long long *)(&HPCC_Table[*ran & (LocalTableSize-1)]),
-                              (long long *)(&remote_val),
-                              1, 0, remote_proc};     
+        void* func_args_put = {(long long *)(
+                                &HPCC_Table[ 
+                                            currentPE * niterate + 
+                                            (*ran & (LocalTableSize-1))
+                                           ]),
+                              (long long *)(&remote_val[currentPE]),
+                              1, 0, remote_proc[currentPE]};     
         // Put a long long integer value to a remote memory location
         bool checkPut = false;
         checkPut = tpool_add_work( threads[currentPE].thread_queue, 

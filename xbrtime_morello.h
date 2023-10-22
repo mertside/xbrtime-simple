@@ -29,7 +29,7 @@ extern "C" {
 
 // #define XBGAS_DEBUG 1
 // #define XBGAS_PRINT 1
-// #define EXPERIMENTAL_A 1
+#define EXPERIMENTAL_A 1
 // #define EXPERIMENTAL_B 1
 
 #include <stdlib.h>
@@ -110,9 +110,12 @@ __attribute__((destructor)) void __xbrtime_dtor(){
   printf("[R] Entered __xbrtime_dtor()\n");
 #endif
   
+#ifdef EXPERIMENTAL_B
   int i = 0;
   int numOfThreads = MAX_NUM_OF_THREADS;
   numOfThreads = atoi(getenv("NUM_OF_THREADS"));
+
+  fprintf(stdout, "[R][DTOR] Number of threads: %d\n", numOfThreads);
 
   // Will return when there is no work
   // tpool_wait((tpool_work_queue_t *) pool);
@@ -125,6 +128,7 @@ __attribute__((destructor)) void __xbrtime_dtor(){
   for(i = 0; i < numOfThreads; i++){
     tpool_destroy(threads[i].thread_queue);
   }
+#endif
 
   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
 

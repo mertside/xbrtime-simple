@@ -123,48 +123,54 @@ static tpool_work_unit_t *tpool_work_unit_get(tpool_work_queue_t *wq)
                                                                                 
 // ----------------------------------------------------------- WORKER FUNCTION  
 // At a high level: this function waits for work and processes it.              
-static void *tpool_worker(void *arg)                                            
-{                                                                               
-  tpool_work_queue_t  *wq = (tpool_work_queue_t *) arg;                               
-  tpool_work_unit_t   *work;                                                           
-                                                                                
-  // This will keep the tread running until exit.                               
-  while (1) {                                                                   
-    // Locking the mutex so nothing manipulates the pool’s members.             
-    pthread_mutex_lock(&(wq->work_mutex));                                      
-                                                                                
-    // Check if any work available for processing.                              
-    while (wq->work_head == NULL && !wq->stop)                                  
-      pthread_cond_wait(&(wq->work_cond), &(wq->work_mutex));                   
-                                                                                
-    // Check if the pool has requested that all threads stop and exit.          
-    if (wq->stop)                                                               
-      break;                                                                    
-    // The thread was signaled there is work.                                   
-    work = tpool_work_unit_get(wq);                                                  
-    wq->working_cnt++;                                                          
-    pthread_mutex_unlock(&(wq->work_mutex));                                    
-                                                                                
-    // If there was work, process it and destroy the work object.               
-    if (work != NULL) {                                                         
-      work->func(work->arg);                                                    
-      tpool_work_unit_destroy(work);                                                 
-    }                                                                           
-                                                                                
-    // The work has been processed.                                             
-    pthread_mutex_lock(&(wq->work_mutex));                                      
-    wq->working_cnt--;                                                          
-    if (!wq->stop && wq->working_cnt == 0 && wq->work_head == NULL)             
-      pthread_cond_signal(&(wq->working_cond));                                 
-    pthread_mutex_unlock(&(wq->work_mutex));                                    
-  }                                                                             
-                                                                                
-  // Arrival from break out.                                                    
-  wq->num_threads--;                                                            
-  pthread_cond_signal(&(wq->working_cond));                                     
-  pthread_mutex_unlock(&(wq->work_mutex));                                      
-  return NULL;                                                                  
-}   
+static void *tpool_worker(void *arg) {
+  tpool_work_queue_t *wq = (tpool_work_queue_t *) arg;
+  tpool_work_unit_t *work;
+
+  while (1) {
+    pthread_mutex_lock(&(wq->work_mutex));
+
+    // Wait for work to be available or for a stop signal.
+    while (wq->work_head == NULL && !wq->stop) {
+      pthread_cond_wait(&(wq->work_cond), &(wq->work_mutex));
+    }
+
+    // Exit if the stop signal is received.
+    if (wq->stop) {
+      wq->num_threads--;
+      if (wq->num_threads == 0 || wq->working_cnt == 0) {
+        pthread_cond_signal(&(wq->working_cond));
+      }
+      pthread_mutex_unlock(&(wq->work_mutex));
+      break;
+    }
+
+    // Retrieve work and increase working count.
+    work = tpool_work_unit_get(wq);
+    wq->working_cnt++;
+
+    pthread_mutex_unlock(&(wq->work_mutex));
+
+    // Process work.
+    if (work != NULL) {
+      work->func(work->arg);
+      tpool_work_unit_destroy(work);
+    }
+
+    pthread_mutex_lock(&(wq->work_mutex));
+
+    // Decrement working count and signal if needed.
+    wq->working_cnt--;
+    if (!wq->stop && wq->working_cnt == 0 && wq->work_head == NULL) {
+      pthread_cond_signal(&(wq->working_cond));
+    }
+
+    pthread_mutex_unlock(&(wq->work_mutex));
+  }
+
+    return NULL;
+}
+ 
 
 // ------------------------------------------------------ POOL CREATE FUNCTION  
 tpool_thread_t *tpool_create(size_t num)                                               
@@ -236,37 +242,42 @@ tpool_thread_t *tpool_create(size_t num)
 }                                                                               
                                                                                
 // ----------------------------------------------------- POOL DESTROY FUNCTION  
-void tpool_destroy(tpool_work_queue_t *wq)                                                 
-{                                                                               
-  tpool_work_unit_t *work;                                                           
-  tpool_work_unit_t *work2;                                                          
-                                                                                
-  if (wq == NULL)                                                               
-    return;                                                                     
-                                                                                
-  // Throwing away all pending work; caller BEWARE!!!                           
-  pthread_mutex_lock(&(wq->work_mutex));                                        
-  work = wq->work_head;                                                         
-  while (work != NULL) {                                                        
-    work2 = work->next;                                                         
-    tpool_work_unit_destroy(work);                                                   
-    work = work2;                                                               
-  }                                                                             
-                                                                                
-  // Cleaned up the queue; tell the threads they need to stop.                  
-  wq->stop = true;                                                              
-  pthread_cond_broadcast(&(wq->work_cond));                                     
-  pthread_mutex_unlock(&(wq->work_mutex));                                      
-                                                                                
-  // Wait for the processing threads to finish.                                 
-  tpool_wait(wq);                                                               
-                                                                                
-  pthread_mutex_destroy(&(wq->work_mutex));                                     
-  pthread_cond_destroy(&(wq->work_cond));                                       
-  pthread_cond_destroy(&(wq->working_cond));                                    
-                                                                                
-  free(wq);                                                                     
-}     
+void tpool_destroy(tpool_work_queue_t *wq) {
+  tpool_work_unit_t *work;
+  tpool_work_unit_t *work2;
+
+  if (wq == NULL)
+    return;
+
+  // Lock the work queue to safely manipulate it.
+  pthread_mutex_lock(&(wq->work_mutex));
+
+  // Throwing away all pending work; caller BEWARE!!!
+  work = wq->work_head;
+  while (work != NULL) {
+    work2 = work->next;
+    tpool_work_unit_destroy(work);
+    work = work2;
+  }
+
+  // Cleaned up the queue; tell the threads they need to stop.
+  wq->stop = true;
+
+  // Broadcasting to all waiting threads that they should stop.
+  pthread_cond_broadcast(&(wq->work_cond));
+
+  pthread_mutex_unlock(&(wq->work_mutex));
+
+  // Wait for the processing threads to finish.
+  tpool_wait(wq);
+
+  // Destroy mutex and condition variables.
+  pthread_mutex_destroy(&(wq->work_mutex));
+  pthread_cond_destroy(&(wq->work_cond));
+  pthread_cond_destroy(&(wq->working_cond));
+
+  free(wq);
+} 
 
 // ---
 /*enrty func
@@ -315,23 +326,23 @@ bool tpool_add_work(tpool_work_queue_t *wq, thread_func_t func, void *arg)
                                                                                 
   return true;                                                                  
 }                                                                               
-                                                                                
+
 // ---------------------------------------- Waiting for processing to complete  
-void tpool_wait(tpool_work_queue_t *wq)                                                    
-{                                                                               
-  if (wq == NULL) // Will only return when there is no work.                    
-    return;                                                                     
-                                                                                
-  pthread_mutex_lock(&(wq->work_mutex));                                        
-  while (1) {                                                                   
-    if ((!wq->stop && wq->working_cnt != 0) ||                                  
-        (wq->stop && wq->num_threads != 0)) {                                   
-      pthread_cond_wait(&(wq->working_cond), &(wq->work_mutex));                
-    } else {                                                                    
-      break;                                                                    
-    }                                                                           
-  }                                                                             
-  pthread_mutex_unlock(&(wq->work_mutex));                                      
+void tpool_wait(tpool_work_queue_t *wq)
+{
+  if (wq == NULL) // Will only return when there is no work.
+    return;
+
+  pthread_mutex_lock(&(wq->work_mutex));
+  while (1) {
+    if ((!wq->stop && wq->working_cnt != 0) ||
+        (wq->stop && wq->num_threads != 0)) {
+      pthread_cond_wait(&(wq->working_cond), &(wq->work_mutex));
+    } else {
+      break;
+    }
+  }
+  pthread_mutex_unlock(&(wq->work_mutex));
 } 
 
 #endif /* __THREADPOOL_H__ */

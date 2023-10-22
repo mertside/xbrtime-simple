@@ -110,17 +110,19 @@ __attribute__((destructor)) void __xbrtime_dtor(){
   printf("[R] Entered __xbrtime_dtor()\n");
 #endif
   
+  int i = 0;
+  int numOfThreads = MAX_NUM_OF_THREADS;
   numOfThreads = atoi(getenv("NUM_OF_THREADS"));
 
   // Will return when there is no work
   // tpool_wait((tpool_work_queue_t *) pool);
-  if(int i = 0; i < numOfThreads; i++){
+  for(i = 0; i < numOfThreads; i++){
     tpool_wait(threads[i].thread_queue);
   }
 
   // Discard pending, clean queue, order stop, wait, destroy
   // tpool_destroy((tpool_work_queue_t *) pool); 
-    if(int i = 0; i < numOfThreads; i++){
+  for(i = 0; i < numOfThreads; i++){
     tpool_destroy(threads[i].thread_queue);
   }
 

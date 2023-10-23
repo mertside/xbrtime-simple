@@ -307,7 +307,7 @@ int main(int argc, char **argv)
         // Using modulo instead of division
       }
 
-      void func_args_get = {
+      void *func_args_get = {
         (long long *)(&remote_val[currentPE]),
         (long long *)(&HPCC_Table[currentPE * niterate + 
                       (ran[currentPE] & (LocalTableSize-1))]),
@@ -323,7 +323,7 @@ int main(int argc, char **argv)
           
       remote_val[currentPE] ^= ran[currentPE];
 
-      void func_args_put = {
+      void *func_args_put = {
         (long long *)(&HPCC_Table[currentPE * niterate + 
                       (ran[currentPE] & (LocalTableSize-1))]),
         (long long *)(&remote_val[currentPE]),

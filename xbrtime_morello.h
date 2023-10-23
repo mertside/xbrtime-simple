@@ -29,7 +29,7 @@ extern "C" {
 
 // #define XBGAS_DEBUG 1
 // #define XBGAS_PRINT 1
-// #define EXPERIMENTAL_A 1
+#define EXPERIMENTAL_A 1
 // #define EXPERIMENTAL_B 1
 
 #include <stdlib.h>
@@ -105,12 +105,37 @@ __attribute__((constructor)) void __xbrtime_ctor(){
 }
 
 /* -------------------------------------------------------------- DESTRUCTOR */
+#ifdef EXPERIMENTAL_A
+__attribute__((destructor)) void __xbrtime_dtor() {
+#ifdef XBGAS_PRINT
+    printf("[R] Entered __xbrtime_dtor()\n");
+#endif
+
+    // First, ensure that the thread pool finishes its work and is then destroyed.
+    int numOfThreads = atoi(getenv("NUM_OF_THREADS"));
+    for (int i = 0; i < numOfThreads; i++) {
+        // Wait for each thread to finish its work
+        tpool_wait(threads[i].thread_queue);
+        // Destroy the thread pool
+        tpool_destroy(threads[i].thread_queue);
+    }
+    // Free the memory associated with the threads
+    free(threads);
+
+    // Cleanup the allocated memory for `xb_barrier`
+    free(xb_barrier);
+
+#if XBGAS_DEBUG
+    fprintf(stdout, "[R] Destructor completed.\n");
+    fflush(stdout);
+#endif
+}
+#else
 __attribute__((destructor)) void __xbrtime_dtor(){
 #ifdef XBGAS_PRINT
   printf("[R] Entered __xbrtime_dtor()\n");
 #endif
   
-#ifdef EXPERIMENTAL_A
   int i = 0;
   int numOfThreads = MAX_NUM_OF_THREADS;
   numOfThreads = atoi(getenv("NUM_OF_THREADS"));
@@ -125,10 +150,9 @@ __attribute__((destructor)) void __xbrtime_dtor(){
 
   // Discard pending, clean queue, order stop, wait, destroy
   // tpool_destroy((tpool_work_queue_t *) pool); 
-  for(i = 0; i < numOfThreads; i++){
-    tpool_destroy(threads[i].thread_queue);
-  }
-#endif
+  // for(i = 0; i < numOfThreads; i++){
+  //   tpool_destroy(threads[i].thread_queue);
+  // }
 
   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
 
@@ -138,6 +162,7 @@ __attribute__((destructor)) void __xbrtime_dtor(){
   free ((void*)xb_barrier); 	
   // printf("DTOR: Free\n");
 }
+#endif
 
 /* ---------------------------------------- FUNCTION PROTOTYPES */
 

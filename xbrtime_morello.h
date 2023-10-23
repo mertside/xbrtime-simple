@@ -30,7 +30,7 @@ extern "C" {
 // #define XBGAS_DEBUG 1
 // #define XBGAS_PRINT 1
 #define EXPERIMENTAL_A 1
-// #define EXPERIMENTAL_B 1
+#define EXPERIMENTAL_B 1
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -239,43 +239,51 @@ extern void xbrtime_close(){
 
 #ifdef EXPERIMENTAL_A
 extern int xbrtime_init() {
+  // Check if the XBGAS_PRINT flag is set to display debug info
 #ifdef XBGAS_PRINT
   printf("[R] Entered xbrtime_init()\n");
 #endif
 
-  // Ensure global config is not previously allocated
+  // Ensure that the global configuration isn't already initialized
   if (__XBRTIME_CONFIG) {
     fprintf(stderr, "Error: __XBRTIME_CONFIG is already initialized.\n");
     return -1;
   }
 
-  // Allocate memory for global config
+  // Allocate memory for the global configuration
   __XBRTIME_CONFIG = malloc(sizeof(XBRTIME_DATA));
+  // Check if the memory allocation for the global config was successful
   if (!__XBRTIME_CONFIG) {
     fprintf(stderr, "Error: Failed to allocate memory for __XBRTIME_CONFIG.\n");
     return -1;
   }
 
+  // Allocate memory for the memory map in the configuration
   __XBRTIME_CONFIG->_MMAP = malloc(sizeof(XBRTIME_MEM_T) * _XBRTIME_MEM_SLOTS_);
+  // Check if the memory allocation for the memory map was successful
   if (!__XBRTIME_CONFIG->_MMAP) {
     fprintf(stderr, "Error: Failed to allocate memory for _MMAP.\n");
-    free(__XBRTIME_CONFIG);
+    free(__XBRTIME_CONFIG);  
+      // Free the previously allocated memory for the global config
     return -1;
   }
 
-  // Initialize values for global config
-  __XBRTIME_CONFIG->_ID = threads[0].thread_id; 
-  __XBRTIME_CONFIG->_MEMSIZE = 4096 * 4096;
-  __XBRTIME_CONFIG->_NPES = atoi(getenv("NUM_OF_THREADS"));
-  __XBRTIME_CONFIG->_START_ADDR = 0x00ull;
-  __XBRTIME_CONFIG->_SENSE = 0x00ull;
-  __XBRTIME_CONFIG->_BARRIER = xb_barrier; 
+  // Assign values to the global configuration
+  __XBRTIME_CONFIG->_ID = threads[0].thread_id;  // Assign the thread ID
+  __XBRTIME_CONFIG->_MEMSIZE = 4096 * 4096;      // Define the memory size
+  __XBRTIME_CONFIG->_NPES = atoi(getenv("NUM_OF_THREADS"));  
+    // Get the number of threads from environment variable
+  __XBRTIME_CONFIG->_START_ADDR = 0x00ull;      // Initialize start address
+  __XBRTIME_CONFIG->_SENSE = 0x00ull;           // Initialize sense
+  __XBRTIME_CONFIG->_BARRIER = xb_barrier;      // Set the barrier
 
+  // Initialize barrier values
   for (int i = 0; i < 10; i++) {
     __XBRTIME_CONFIG->_BARRIER[i] = 0xfffffffffull;
     __XBRTIME_CONFIG->_BARRIER[10 + i] = 0xaaaaaaaaaull;
   }
 
+  // If the XBGAS_DEBUG flag is set, display barrier values
 #ifdef XBGAS_DEBUG
   printf("[XBGAS_DEBUG] PE:%d----BARRIER[0] = 0x%lx\n", 
           __XBRTIME_CONFIG->_ID, __XBRTIME_CONFIG->_BARRIER[0]);
@@ -283,47 +291,49 @@ extern int xbrtime_init() {
           __XBRTIME_CONFIG->_ID, __XBRTIME_CONFIG->_BARRIER[1]);
 #endif
 
+  // Ensure that the number of threads does not exceed the maximum allowed value
   if (__XBRTIME_CONFIG->_NPES > __XBRTIME_MAX_PE) {
     fprintf(stderr, "Error: Too many total PEs.\n");
-    free(__XBRTIME_CONFIG->_MMAP);
-    free(__XBRTIME_CONFIG);
+    free(__XBRTIME_CONFIG->_MMAP);  // Free memory map
+    free(__XBRTIME_CONFIG);        // Free global config
     return -1;
   }
 
-  // Initialize PE mapping block
+  // Allocate memory for the PE mapping block
   __XBRTIME_CONFIG->_MAP = malloc(sizeof(XBRTIME_PE_MAP) * __XBRTIME_CONFIG->_NPES);
+  // Check if memory allocation for the PE mapping block was successful
   if (!__XBRTIME_CONFIG->_MAP) {
     fprintf(stderr, "Error: Failed to allocate memory for _MAP.\n");
-    free(__XBRTIME_CONFIG->_MMAP);
-    free(__XBRTIME_CONFIG);
+    free(__XBRTIME_CONFIG->_MMAP);  // Free memory map
+    free(__XBRTIME_CONFIG);        // Free global config
     return -1;
   }
 
 #ifdef XBGAS_PRINT
-    printf("[R] init the pe mapping block\n");
+  printf("[R] init the pe mapping block\n");
 #endif
 
-  // Initialize memory allocation slots
+  // Initialize the memory allocation slots to default values
   for (int i = 0; i < _XBRTIME_MEM_SLOTS_; i++) {
-    __XBRTIME_CONFIG->_MMAP[i].start_addr = 0x00ull;
-    __XBRTIME_CONFIG->_MMAP[i].size = 0;
+    __XBRTIME_CONFIG->_MMAP[i].start_addr = 0x00ull;  // Default start address
+    __XBRTIME_CONFIG->_MMAP[i].size = 0;               // Default size
   }
 
 #ifdef XBGAS_PRINT
-  printf("[R] init the memory allocation slots\n");
+    printf("[R] init the memory allocation slots\n");
 #endif
 
-  // Initialize PE mapping structure
+  // Initialize the PE mapping structure with logical and physical values
   for (int i = 0; i < __XBRTIME_CONFIG->_NPES; i++) {
-    __XBRTIME_CONFIG->_MAP[i]._LOGICAL = i;
-    __XBRTIME_CONFIG->_MAP[i]._PHYSICAL = i + 1;
+    __XBRTIME_CONFIG->_MAP[i]._LOGICAL = i;         // Set logical value
+    __XBRTIME_CONFIG->_MAP[i]._PHYSICAL = i + 1;    // Set physical value
   }
 
 #ifdef XBGAS_PRINT
   printf("[R] init the PE mapping structure\n");
 #endif
 
-  return 0;
+  return 0;  // Return 0 to indicate successful initialization
 }
 
 #else
@@ -618,32 +628,84 @@ void xbrtime_longlong_put(long long *dest,
 }
 
 #ifdef EXPERIMENTAL_B
-#define SENSE __XBRTIME_CONFIG->_SENSE
+// #define SENSE __XBRTIME_CONFIG->_SENSE
 
-static pthread_mutex_t barrier_lock = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t barrier_cond = PTHREAD_COND_INITIALIZER;
-static int barrier_counter = 0;
+// static pthread_mutex_t barrier_lock = PTHREAD_MUTEX_INITIALIZER;
+// static pthread_cond_t barrier_cond = PTHREAD_COND_INITIALIZER;
+// static int barrier_counter = 0;
 
-extern void xbrtime_barrier() {
-    int num_threads = xbrtime_num_pes(); // assumption: returns number of threads
-    static volatile int sense = 1;  // local sense
+// extern void xbrtime_barrier() {
+//     int num_threads = xbrtime_num_pes(); // assumption: returns number of threads
+//     static volatile int sense = 1;  // local sense
 
-    pthread_mutex_lock(&barrier_lock);
+//     pthread_mutex_lock(&barrier_lock);
 
-    barrier_counter++;  // Increase the counter as a thread reaches the barrier
+//     barrier_counter++;  // Increase the counter as a thread reaches the barrier
 
-    if (barrier_counter == num_threads) {  // If all threads have reached the barrier
-        barrier_counter = 0; // Reset the counter
-        sense = 1 - sense;  // Toggle the sense
-        pthread_cond_broadcast(&barrier_cond);  // Wake up all waiting threads
-    } else {
-        while (SENSE != sense) {  // Wait until sense is toggled
-            pthread_cond_wait(&barrier_cond, &barrier_lock);
-        }
+//     if (barrier_counter == num_threads) {  // If all threads have reached the barrier
+//         barrier_counter = 0; // Reset the counter
+//         sense = 1 - sense;  // Toggle the sense
+//         pthread_cond_broadcast(&barrier_cond);  // Wake up all waiting threads
+//     } else {
+//         while (SENSE != sense) {  // Wait until sense is toggled
+//             pthread_cond_wait(&barrier_cond, &barrier_lock);
+//         }
+//     }
+
+//     pthread_mutex_unlock(&barrier_lock);
+// }
+
+// Assuming there's a global mutex defined somewhere in your program
+pthread_mutex_t barrier_mutex = PTHREAD_MUTEX_INITIALIZER;
+int counter = 0; // To keep track of threads that have reached the barrier
+
+void xbrtime_barrier() {
+  if (!__XBRTIME_CONFIG) {
+    fprintf(stderr, "Error: __XBRTIME_CONFIG is not initialized. Call xbrtime_init() first.\n");
+    return;
+  }
+
+  __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
+
+  // Mutex is used to ensure that only one thread updates the counter at a time
+  pthread_mutex_lock(&barrier_mutex);
+    
+  counter++;  // Increment the counter when a thread reaches the barrier
+
+  // If not all threads have reached the barrier
+  if (counter < __XBRTIME_CONFIG->_NPES) {
+    // Flip the sense. If it was 0, make it 1, and vice versa
+    uint64_t current_sense = __XBRTIME_CONFIG->_SENSE;
+    uint64_t opposite_sense = (current_sense == 0x00ull) ? 0xfffffffffull : 0x00ull;
+    
+    __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
+
+    // Wait until the global sense is the opposite
+    while (__XBRTIME_CONFIG->_BARRIER[__XBRTIME_CONFIG->_ID] != opposite_sense) {
+      // Busy wait. Threads that arrive early will be stuck here until the last one arrives
+      __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
+    }
+  } else {
+    // The current thread is the last one to arrive
+    // So, flip the sense for all barrier slots, effectively releasing all waiting threads
+    uint64_t new_sense = (__XBRTIME_CONFIG->_SENSE == 0x00ull) ? 0xfffffffffull : 0x00ull;
+    for (int i = 0; i < 10; i++) {
+      __XBRTIME_CONFIG->_BARRIER[i] = new_sense;
     }
 
-    pthread_mutex_unlock(&barrier_lock);
+    // Also, flip the global sense
+    __XBRTIME_CONFIG->_SENSE = new_sense;
+
+    // Reset the counter for the next barrier call
+    counter = 0;
+  }
+
+  __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
+  
+  pthread_mutex_unlock(&barrier_mutex);
 }
+
+
 #else
 extern void xbrtime_barrier(){
 #ifdef XBGAS_PRINT

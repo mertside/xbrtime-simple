@@ -57,73 +57,71 @@ struct tpool_thread{
 };
 
 // Simple linked list which stores the function to call and its arguments.      
-struct tpool_work_unit {                                                             
-  thread_func_t           func;                                                      
-  void                   *arg;                                                       
-  struct tpool_work_unit *next;                                                      
-};                                                                              
-                                                                                
-struct tpool_work_queue {                                                                  
-  tpool_work_unit_t  *work_head;     // queue head pointer                         
-  tpool_work_unit_t  *work_tail;     // queue tail pointer                         
-  pthread_mutex_t     work_mutex;    // single mutex for all locking               
-  pthread_cond_t      work_cond;     // signal: there is work to process   
-  pthread_cond_t      working_cond;  // signal: no threads processing              
-  size_t              working_cnt;   // number of threads actively working  
-  size_t              num_threads;   // number of threads alive                    
-  bool                stop;          // stops the threads                          
-};                                                                              
-                                                                                
+struct tpool_work_unit {
+  thread_func_t           func;
+  void                   *arg;
+  struct tpool_work_unit *next;
+};
+
+struct tpool_work_queue {
+  tpool_work_unit_t  *work_head;     // queue head pointer
+  tpool_work_unit_t  *work_tail;     // queue tail pointer
+  pthread_mutex_t     work_mutex;    // single mutex for all locking
+  pthread_cond_t      work_cond;     // signal: there is work to process
+  pthread_cond_t      working_cond;  // signal: no threads processing
+  size_t              working_cnt;   // number of threads actively working
+  size_t              num_threads;   // number of threads alive
+  bool                stop;          // stops the threads
+};
+
 // ---------------------------------- Simple helper for creating work objects.  
-static tpool_work_unit_t *tpool_work_unit_create(thread_func_t func, void *arg)           
-{                                                                               
-  tpool_work_unit_t *work;                                                           
-                                                                                
-  if (func == NULL)                                                             
-    return NULL;                                                                
-                                                                                
-  work       = malloc(sizeof(tpool_work_unit_t));                                           
-  work->func = func;                                                            
-  work->arg  = arg;                                                             
-  work->next = NULL;                                                            
-  return work;                                                                  
-}                                                                               
-                                                                                
+static tpool_work_unit_t *tpool_work_unit_create(thread_func_t func, void *arg)
+{
+  if (func == NULL)
+    return NULL;
+
+  tpool_work_unit_t *work = malloc(sizeof(tpool_work_unit_t));
+  
+  if (work == NULL)  // Handle malloc failure
+    return NULL;
+
+  work->func = func;
+  work->arg  = arg;
+  work->next = NULL;
+  
+  return work;
+} 
+ 
 // -------------------------------- Simple helper for destroying work objects.  
 static void tpool_work_unit_destroy(tpool_work_unit_t *work)                              
-{                                                                               
-  if (work == NULL)                                                             
-    return;                                                                     
-  free(work);                                                                   
-}                                                 
+{ 
+  if (work == NULL) 
+    return; 
+  free(work); 
+} 
 
 // --------------------------------------------------------- GET WORK FUNCTION  
 // Handles pulling an object from the list and                                  
 //   maintain the list work_head and work_tail references.                      
-static tpool_work_unit_t *tpool_work_unit_get(tpool_work_queue_t *wq)                      
-{                                                                               
-  tpool_work_unit_t *work;                                                           
-                                                                                
-  if (wq == NULL)                                                               
-    return NULL;                                                                
-                                                                                
-  work = wq->work_head;                                                         
-  if (work == NULL)                                                             
-    return NULL;                                                                
-                                                                                
-  if (work->next == NULL) {                                                     
-    wq->work_head = NULL;                                                       
-    wq->work_tail = NULL;                                                       
-  } else {                                                                      
-    wq->work_head = work->next;                                                 
-  }                                                                             
-                                                                                
-  return work;                                                                  
-}                                                                               
+static tpool_work_unit_t *tpool_work_unit_get(tpool_work_queue_t *wq)
+{
+  if (wq == NULL || wq->work_head == NULL)
+    return NULL;
+
+  tpool_work_unit_t *work = wq->work_head;
+  wq->work_head = work->next;
+
+  // If the work_head becomes NULL after the update, then reset the work_tail as well.
+  if (wq->work_head == NULL)
+    wq->work_tail = NULL;
+
+  return work;
+}                                                                             
                                                                                 
 // ----------------------------------------------------------- WORKER FUNCTION  
 // At a high level: this function waits for work and processes it.              
-static void *tpool_worker(void *arg) {
+static void *tpool_worker(void *arg) 
+{
   tpool_work_queue_t *wq = (tpool_work_queue_t *) arg;
   tpool_work_unit_t *work;
 
@@ -170,79 +168,169 @@ static void *tpool_worker(void *arg) {
 
     return NULL;
 }
- 
 
 // ------------------------------------------------------ POOL CREATE FUNCTION  
-tpool_thread_t *tpool_create(size_t num)                                               
-{     
-  int i;                                                                           
-  // The minumum acceptable number of threads is two threads.                   
-  if (num == 0) {
+tpool_thread_t *tpool_create(size_t num)
+{
+  int i;
+
+  // If the specified number of threads is zero, use the default of 2 threads.
+  if (num == 0)
     num = 2; 
-  }                                                 
-  // XXX:IDEA: May set the number of core/processors + 1 as the default... 
-  // num = num + 1;     
 
-  // tpool_thread_t threads[num];
-  tpool_thread_t *threads;
-  threads = calloc(num, sizeof(*threads));
-
-  // initialize thread args
-  for( i=0; i<num; i++ ){
-    pthread_t  temp_thread_handle;
-    threads[i].thread_id     = i;                           // thread id
-    threads[i].thread_handle = temp_thread_handle;          // thread handle
-                            // (uint64_t) pthread_self();
-#if XBGAS_DEBUG
-    fprintf(stdout, "\tThread #%d is set with ID %lu!", 
-            i, threads[i].thread_id);
-    if(i % 2 == 1) fprintf(stdout,"\n");
-#endif
+  // Allocate memory for the thread structures.
+  tpool_thread_t *threads = calloc(num, sizeof(*threads));
+    
+  // Check if memory allocation for threads succeeded.
+  if (!threads) {
+    perror("Failed to allocate memory for threads");
+    return NULL;  // Return early on failure.
   }
 
-  for( i=0; i<num; i++ ){
-    tpool_work_queue_t   *wq;                     // work queue pointer
-    wq = calloc(1, sizeof(*wq));                  // allocate the work queue
-
-    wq->work_head = NULL;                         // queue head pointer                    
-    wq->work_tail = NULL;                         // queue tail pointer   
-  
-    pthread_mutex_init(&(wq->work_mutex), NULL);  // one mutex for all locking               
-    pthread_cond_init(&(wq->work_cond), NULL);    // there is work to process   
-    pthread_cond_init(&(wq->working_cond), NULL); // no threads processing         
-  
-    wq->working_cnt = (size_t) 0;                 // #threads actively working  
-    wq->num_threads = num;                        // number of threads alive
-  
-    threads[i].thread_queue = wq;                 // thread queue pointer
-  }                                                               
+  // Loop to initialize thread structures and work queues.
+  for (i = 0; i < num; i++) {
+    // Assign thread ID
+    threads[i].thread_id = i;
 
 #if XBGAS_DEBUG
-  fprintf(stdout, "\tThread #0 has the handle %lu!\n", 
-          (uint64_t) pthread_self());
+    // Debug output for thread initialization
+    fprintf(stdout, "\tThread #%d is set with ID %lu!", i, threads[i].thread_id);
+    if (i % 2 == 1) fprintf(stdout, "\n");
 #endif
 
-  // The requested threads are started and tpool_worker is specified.           
-  for (i=0; i<num; i++) {                                                       
-    // Start num of threads; tpool_worker is specified as the thread function.  
-    pthread_create(&threads[i].thread_handle,
-                   NULL,
-                   tpool_worker, 
-                   threads[i].thread_queue
-                  );                            
-    // XXX:     Attempted fix via tpool_thread_t
-    // Before:  20230718
-    //      Did NOT store the thread ids; they are not accessed directly.       
-    //      If we wanted to implement some kind of force exit,                  
-    //      instead of having to wait then we’d need to track the ids.          
-    pthread_detach(threads[i].thread_handle);                               
-  }                                                                             
+    // Allocate and initialize a work queue for the current thread.
+    tpool_work_queue_t *wq = calloc(1, sizeof(*wq));
+        
+    // Check if memory allocation for the work queue succeeded.
+    if (!wq) {
+      perror("Failed to allocate memory for work queue");
+
+      // Clean up previously allocated work queues before returning.
+      while (i--)
+        free(threads[i].thread_queue);
+      free(threads);
+      return NULL;  // Return early on failure.
+    }
+
+    // Initialize the mutex and condition variables for the work queue.
+    // If any of these initializations fail, print an error and clean up.
+    if (pthread_mutex_init(&(wq->work_mutex), NULL) ||
+      pthread_cond_init(&(wq->work_cond), NULL) ||
+      pthread_cond_init(&(wq->working_cond), NULL)) {
+      perror("Failed to initialize mutex or cond variable");
+            
+      // Clean up on failure
+      free(wq);
+      free(threads);
+      return NULL;
+    }
+
+    // Set the number of threads in the work queue.
+    wq->num_threads = num;
+        
+    // Associate the thread with its work queue.
+    threads[i].thread_queue = wq;
+  }
+
+#if XBGAS_DEBUG
+  // Debug output for the first thread's handle
+  fprintf(stdout, "\tThread #0 has the handle %lu!\n", (uint64_t)pthread_self());
+#endif
+
+  // Loop to create the threads.
+  for (i = 0; i < num; i++) {
+    // Create a new thread with the `tpool_worker` function, 
+    //   passing the work queue as its argument.
+    if (pthread_create(&threads[i].thread_handle, 
+                       NULL, tpool_worker, threads[i].thread_queue)) {
+      perror("Failed to create thread");
+      // You can add more cleanup or error handling here 
+      //   if thread creation fails.
+    }
+        
+    // Detach the thread. After a detached thread terminates, 
+    //   its resources are automatically released back to the system.
+    pthread_detach(threads[i].thread_handle);
+  }
+
+  // Return the array of thread structures.
+  return threads;
+}
+
+
+
+// // ------------------------------------------------------ POOL CREATE FUNCTION  
+// tpool_thread_t *tpool_create(size_t num)                                               
+// {     
+//   int i;                                                                           
+//   // The minumum acceptable number of threads is two threads.                   
+//   if (num == 0) {
+//     num = 2; 
+//   }                                                 
+//   // XXX:IDEA: May set the number of core/processors + 1 as the default... 
+//   // num = num + 1;     
+
+//   // tpool_thread_t threads[num];
+//   tpool_thread_t *threads;
+//   threads = calloc(num, sizeof(*threads));
+
+//   // initialize thread args
+//   for( i=0; i<num; i++ ){
+//     pthread_t  temp_thread_handle;
+//     threads[i].thread_id     = i;                           // thread id
+//     threads[i].thread_handle = temp_thread_handle;          // thread handle
+//                             // (uint64_t) pthread_self();
+// #if XBGAS_DEBUG
+//     fprintf(stdout, "\tThread #%d is set with ID %lu!", 
+//             i, threads[i].thread_id);
+//     if(i % 2 == 1) fprintf(stdout,"\n");
+// #endif
+//   }
+
+//   for( i=0; i<num; i++ ){
+//     tpool_work_queue_t   *wq;                     // work queue pointer
+//     wq = calloc(1, sizeof(*wq));                  // allocate the work queue
+
+//     wq->work_head = NULL;                         // queue head pointer                    
+//     wq->work_tail = NULL;                         // queue tail pointer   
+  
+//     pthread_mutex_init(&(wq->work_mutex), NULL);  // one mutex for all locking               
+//     pthread_cond_init(&(wq->work_cond), NULL);    // there is work to process   
+//     pthread_cond_init(&(wq->working_cond), NULL); // no threads processing         
+  
+//     wq->working_cnt = (size_t) 0;                 // #threads actively working  
+//     wq->num_threads = num;                        // number of threads alive
+  
+//     threads[i].thread_queue = wq;                 // thread queue pointer
+//   }                                                               
+
+// #if XBGAS_DEBUG
+//   fprintf(stdout, "\tThread #0 has the handle %lu!\n", 
+//           (uint64_t) pthread_self());
+// #endif
+
+//   // The requested threads are started and tpool_worker is specified.           
+//   for (i=0; i<num; i++) {                                                       
+//     // Start num of threads; tpool_worker is specified as the thread function.  
+//     pthread_create(&threads[i].thread_handle,
+//                    NULL,
+//                    tpool_worker, 
+//                    threads[i].thread_queue
+//                   );                            
+//     // XXX:     Attempted fix via tpool_thread_t
+//     // Before:  20230718
+//     //      Did NOT store the thread ids; they are not accessed directly.       
+//     //      If we wanted to implement some kind of force exit,                  
+//     //      instead of having to wait then we’d need to track the ids.          
+//     pthread_detach(threads[i].thread_handle);                               
+//   }                                                                             
                                                                                 
-  return threads;                                                                    
-}                                                                               
+//   return threads;                                                                    
+// }                                                                               
                                                                                
 // ----------------------------------------------------- POOL DESTROY FUNCTION  
-void tpool_destroy(tpool_work_queue_t *wq) {
+void tpool_destroy(tpool_work_queue_t *wq) 
+{
   tpool_work_unit_t *work;
   tpool_work_unit_t *work2;
 
@@ -288,61 +376,54 @@ void tpool_destroy(tpool_work_queue_t *wq) {
 }
 */
 
-// -------------------------------------------------- Adding work to the queue  
+// -------------------------------------------------- Adding work to the queue     
 bool tpool_add_work(tpool_work_queue_t *wq, thread_func_t func, void *arg)                 
-{    
+{
   /*
    * calculate number of bytes in func to travel up the stack by 
    *    tpool_work_queue_t *wq, thread_func_t func, void *arg
-   *
-   * 
    * __asm__
    *   get rtrn adrr
-   *   
    */
-                                                                            
-  tpool_work_unit_t *work;                                                           
-                                                                                
-  if (wq == NULL)                                                               
-    return false;                                                               
-                                                                                
-  // Creating a work object.                                                    
-  work = tpool_work_unit_create(func, arg);                                          
-  if (work == NULL)                                                             
-    return false;                                                               
-                                                                                
-  pthread_mutex_lock(&(wq->work_mutex));                                        
-  // Adding the object to the linked list.                                      
-  if (wq->work_head == NULL) {                                                  
-    wq->work_head = work;                                                       
-    wq->work_tail = wq->work_head;                                              
-  } else {                                                                      
-    wq->work_tail->next = work;                                                 
-    wq->work_tail       = work;                                                 
-  }                                                                             
-                                                                                
-  pthread_cond_broadcast(&(wq->work_cond));                                     
-  pthread_mutex_unlock(&(wq->work_mutex));                                      
-                                                                                
-  return true;                                                                  
-}                                                                               
+  if (wq == NULL)
+    return false;
+
+  // Create a work object outside the locked region.
+  tpool_work_unit_t *work = tpool_work_unit_create(func, arg);
+  if (work == NULL)
+    return false;
+
+  pthread_mutex_lock(&(wq->work_mutex));
+
+  // Add the object to the linked list.
+  if (wq->work_head == NULL) {
+    wq->work_head = wq->work_tail = work;
+  } else {
+    wq->work_tail->next = work;
+    wq->work_tail = work;
+  }
+
+  pthread_cond_broadcast(&(wq->work_cond));
+  pthread_mutex_unlock(&(wq->work_mutex));
+
+  return true;
+}
+
 
 // ---------------------------------------- Waiting for processing to complete  
 void tpool_wait(tpool_work_queue_t *wq)
 {
-  if (wq == NULL) // Will only return when there is no work.
+  if (wq == NULL)
     return;
 
   pthread_mutex_lock(&(wq->work_mutex));
-  while (1) {
-    if ((!wq->stop && wq->working_cnt != 0) ||
-        (wq->stop && wq->num_threads != 0)) {
-      pthread_cond_wait(&(wq->working_cond), &(wq->work_mutex));
-    } else {
-      break;
-    }
+  
+  while ((!wq->stop && wq->working_cnt != 0) || (wq->stop && wq->num_threads != 0)) {
+    pthread_cond_wait(&(wq->working_cond), &(wq->work_mutex));
   }
+
   pthread_mutex_unlock(&(wq->work_mutex));
-} 
+}
+
 
 #endif /* __THREADPOOL_H__ */

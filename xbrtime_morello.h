@@ -105,64 +105,36 @@ __attribute__((constructor)) void __xbrtime_ctor(){
 }
 
 /* -------------------------------------------------------------- DESTRUCTOR */
-#ifdef EXPERIMENTAL_A
 __attribute__((destructor)) void __xbrtime_dtor() {
-#ifdef XBGAS_PRINT
-    printf("[R] Entered __xbrtime_dtor()\n");
-#endif
-
-    // First, ensure that the thread pool finishes its work and is then destroyed.
-    int numOfThreads = atoi(getenv("NUM_OF_THREADS"));
-    for (int i = 0; i < numOfThreads; i++) {
-        // Wait for each thread to finish its work
-        tpool_wait(threads[i].thread_queue);
-        // Destroy the thread pool
-        tpool_destroy(threads[i].thread_queue);
-    }
-    // Free the memory associated with the threads
-    free(threads);
-
-    // Cleanup the allocated memory for `xb_barrier`
-    free(xb_barrier);
-
-#if XBGAS_DEBUG
-    fprintf(stdout, "[R] Destructor completed.\n");
-    fflush(stdout);
-#endif
-}
-#else
-__attribute__((destructor)) void __xbrtime_dtor(){
 #ifdef XBGAS_PRINT
   printf("[R] Entered __xbrtime_dtor()\n");
 #endif
-  
-  int i = 0;
-  int numOfThreads = MAX_NUM_OF_THREADS;
-  numOfThreads = atoi(getenv("NUM_OF_THREADS"));
 
-  fprintf(stdout, "[R][DTOR] Number of threads: %d\n", numOfThreads);
-
-  // Will return when there is no work
-  // tpool_wait((tpool_work_queue_t *) pool);
-  for(i = 0; i < numOfThreads; i++){
+  // First, ensure that the thread pool finishes its work and is then destroyed.
+  int numOfThreads = atoi(getenv("NUM_OF_THREADS"));
+  for (int i = 0; i < numOfThreads; i++) {
+    // Wait for each thread to finish its work
     tpool_wait(threads[i].thread_queue);
+    // Destroy the thread pool
+    // tpool_destroy(threads[i].thread_queue);
   }
-
-  // Discard pending, clean queue, order stop, wait, destroy
-  // tpool_destroy((tpool_work_queue_t *) pool); 
-  // for(i = 0; i < numOfThreads; i++){
-  //   tpool_destroy(threads[i].thread_queue);
-  // }
+  // Free the memory associated with the threads
+  free(threads);
 
   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
-
   /* free_barrier */
 	uint64_t end = 0;
 	// *((uint64_t *)END_ADDR) = end;
-  free ((void*)xb_barrier); 	
   // printf("DTOR: Free\n");
-}
+
+  // Cleanup the allocated memory for `xb_barrier`
+  free(xb_barrier);
+
+#if XBGAS_DEBUG
+  fprintf(stdout, "[R] Destructor completed.\n");
+  fflush(stdout);
 #endif
+}
 
 /* ---------------------------------------- FUNCTION PROTOTYPES */
 
@@ -265,6 +237,96 @@ extern void xbrtime_close(){
   }
 }
 
+#ifdef EXPERIMENTAL_A
+extern int xbrtime_init() {
+#ifdef XBGAS_PRINT
+  printf("[R] Entered xbrtime_init()\n");
+#endif
+
+  // Ensure global config is not previously allocated
+  if (__XBRTIME_CONFIG) {
+    fprintf(stderr, "Error: __XBRTIME_CONFIG is already initialized.\n");
+    return -1;
+  }
+
+  // Allocate memory for global config
+  __XBRTIME_CONFIG = malloc(sizeof(XBRTIME_DATA));
+  if (!__XBRTIME_CONFIG) {
+    fprintf(stderr, "Error: Failed to allocate memory for __XBRTIME_CONFIG.\n");
+    return -1;
+  }
+
+  __XBRTIME_CONFIG->_MMAP = malloc(sizeof(XBRTIME_MEM_T) * _XBRTIME_MEM_SLOTS_);
+  if (!__XBRTIME_CONFIG->_MMAP) {
+    fprintf(stderr, "Error: Failed to allocate memory for _MMAP.\n");
+    free(__XBRTIME_CONFIG);
+    return -1;
+  }
+
+  // Initialize values for global config
+  __XBRTIME_CONFIG->_ID = threads[0].thread_id; 
+  __XBRTIME_CONFIG->_MEMSIZE = 4096 * 4096;
+  __XBRTIME_CONFIG->_NPES = atoi(getenv("NUM_OF_THREADS"));
+  __XBRTIME_CONFIG->_START_ADDR = 0x00ull;
+  __XBRTIME_CONFIG->_SENSE = 0x00ull;
+  __XBRTIME_CONFIG->_BARRIER = xb_barrier; 
+
+  for (int i = 0; i < 10; i++) {
+    __XBRTIME_CONFIG->_BARRIER[i] = 0xfffffffffull;
+    __XBRTIME_CONFIG->_BARRIER[10 + i] = 0xaaaaaaaaaull;
+  }
+
+#ifdef XBGAS_DEBUG
+  printf("[XBGAS_DEBUG] PE:%d----BARRIER[0] = 0x%lx\n", 
+          __XBRTIME_CONFIG->_ID, __XBRTIME_CONFIG->_BARRIER[0]);
+  printf("[XBGAS_DEBUG] PE:%d----BARRIER[1] = 0x%lx\n", 
+          __XBRTIME_CONFIG->_ID, __XBRTIME_CONFIG->_BARRIER[1]);
+#endif
+
+  if (__XBRTIME_CONFIG->_NPES > __XBRTIME_MAX_PE) {
+    fprintf(stderr, "Error: Too many total PEs.\n");
+    free(__XBRTIME_CONFIG->_MMAP);
+    free(__XBRTIME_CONFIG);
+    return -1;
+  }
+
+  // Initialize PE mapping block
+  __XBRTIME_CONFIG->_MAP = malloc(sizeof(XBRTIME_PE_MAP) * __XBRTIME_CONFIG->_NPES);
+  if (!__XBRTIME_CONFIG->_MAP) {
+    fprintf(stderr, "Error: Failed to allocate memory for _MAP.\n");
+    free(__XBRTIME_CONFIG->_MMAP);
+    free(__XBRTIME_CONFIG);
+    return -1;
+  }
+
+#ifdef XBGAS_PRINT
+    printf("[R] init the pe mapping block\n");
+#endif
+
+  // Initialize memory allocation slots
+  for (int i = 0; i < _XBRTIME_MEM_SLOTS_; i++) {
+    __XBRTIME_CONFIG->_MMAP[i].start_addr = 0x00ull;
+    __XBRTIME_CONFIG->_MMAP[i].size = 0;
+  }
+
+#ifdef XBGAS_PRINT
+  printf("[R] init the memory allocation slots\n");
+#endif
+
+  // Initialize PE mapping structure
+  for (int i = 0; i < __XBRTIME_CONFIG->_NPES; i++) {
+    __XBRTIME_CONFIG->_MAP[i]._LOGICAL = i;
+    __XBRTIME_CONFIG->_MAP[i]._PHYSICAL = i + 1;
+  }
+
+#ifdef XBGAS_PRINT
+  printf("[R] init the PE mapping structure\n");
+#endif
+
+  return 0;
+}
+
+#else
 extern int xbrtime_init(){
 #ifdef XBGAS_PRINT
   printf("[R] Entered xbrtime_init()\n");
@@ -353,6 +415,7 @@ extern int xbrtime_init(){
   // *((uint64_t *)INIT_ADDR) = init; // MERT - COMMENTED OUT
   return 0;
 }
+#endif
 
 extern int xbrtime_mype(){
   if( __XBRTIME_CONFIG == NULL ){

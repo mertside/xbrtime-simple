@@ -39,7 +39,9 @@
 #include <stdio.h>
 // #include "RandomAccess.h"
 
-/* Define 64-bit types and corresponding format strings for printf() and constants */
+// #define EXPERIMENTAL 1
+
+// Define 64-bit types and corresponding format strings for printf() and constants
 #ifdef LONG_IS_64BITS
 typedef unsigned long u64Int;
 typedef long s64Int;
@@ -128,7 +130,8 @@ int main(int argc, char **argv)
   int PowerofTwo;
 
   double timeBound = -1;  /* OPTIONAL time bound for execution time */
-  u64Int NumUpdates_Default; /* Number of updates to table (suggested: 4x number of table entries) */
+  u64Int NumUpdates_Default; 
+  /* Number of updates to table (suggested: 4x number of table entries) */
   u64Int NumUpdates;  /* actual number of updates to table - may be smaller than
                        * NumUpdates_Default due to execution time bounds */
   s64Int ProcNumUpdates; /* number of updates per processor */
@@ -211,16 +214,23 @@ int main(int argc, char **argv)
   NumUpdates = NumUpdates_Default;
 
   if (MyProc == 0) {
-    fprintf( outFile, "Running on %d processors%s\n", NumProcs, PowerofTwo ? " (PowerofTwo)" : "");
-    fprintf( outFile, "Total Main table size = 2^" FSTR64 " = " FSTR64 " words\n",logTableSize, TableSize );
+    fprintf( outFile, 
+      "Running on %d processors%s\n", NumProcs, PowerofTwo ? " (PowerofTwo)" : "");
+    fprintf( outFile, 
+      "Total Main table size = 2^" FSTR64 " = " FSTR64 " words\n",
+      logTableSize, TableSize );
     if (PowerofTwo)
-        fprintf( outFile, "PE Main table size = 2^" FSTR64 " = " FSTR64 " words/PE\n",
-                 (logTableSize - logNumProcs), TableSize/NumProcs );
+        fprintf( outFile, 
+          "PE Main table size = 2^" FSTR64 " = " FSTR64 " words/PE\n",
+          (logTableSize - logNumProcs), TableSize/NumProcs );
       else
-        fprintf( outFile, "PE Main table size = (2^" FSTR64 ")/%d  = " FSTR64 " words/PE MAX\n",
-                 logTableSize, NumProcs, LocalTableSize);
+        fprintf( outFile, 
+          "PE Main table size = (2^" FSTR64 ")/%d  = " FSTR64 " words/PE MAX\n",
+          logTableSize, NumProcs, LocalTableSize);
 
-    fprintf( outFile, "Default number of updates (RECOMMENDED) = " FSTR64 "\tand actually done = %d\n", NumUpdates_Default,ProcNumUpdates*NumProcs);
+    fprintf( outFile, 
+      "Default number of updates (RECOMMENDED) = " FSTR64 "\tand actually done = %d\n", 
+      NumUpdates_Default,ProcNumUpdates*NumProcs);
   }
 
   /* Initialize main table */
@@ -237,7 +247,7 @@ int main(int argc, char **argv)
   u64Int datum,procmask;
   u64Int *data,*send;
   void * tstatus;
-  int *remote_proc, offset;
+  int *remote_proc, offset; // remote_proc is an array of remote processors
   u64Int *tb;
   s64Int remotecount;
   int thisPeId;
@@ -249,13 +259,16 @@ int main(int argc, char **argv)
   s64Int *all_updates;
   s64Int *ran;
 
-  thisPeId = xbrtime_mype();
-  numNodes = xbrtime_num_pes();
+  thisPeId = xbrtime_mype(); // the id of the current PE
+  numNodes = xbrtime_num_pes(); // the total number of PEs
 
-  count = (s64Int *) xbrtime_malloc(sizeof(s64Int));
-  ran = (s64Int *) xbrtime_malloc(NumProcs * sizeof(s64Int)); // Random number generator
-  updates = (s64Int *) xbrtime_malloc(NumProcs * sizeof(s64Int) * numNodes); /* An array of length npes to avoid overwrites*/
-  all_updates = (s64Int *) xbrtime_malloc(sizeof(s64Int) * numNodes); /*: An array to collect sum*/
+  count = (s64Int *) xbrtime_malloc(sizeof(s64Int)); 
+  ran = (s64Int *) xbrtime_malloc(NumProcs * sizeof(s64Int)); 
+    // Random number generator
+  updates     = (s64Int *) xbrtime_malloc(sizeof(s64Int) * numNodes); 
+    // An array of length npes to avoid overwrites
+  all_updates = (s64Int *) xbrtime_malloc(sizeof(s64Int) * numNodes);  
+    //  An array to collect sum*/
 
   *ran = starts(4*GlobalStartMyProc);
 
@@ -278,54 +291,62 @@ int main(int argc, char **argv)
   xbrtime_barrier();
 
   /* Begin timed section */
-  fprintf( outFile, "niterate: %d\n", niterate );
+  fprintf(outFile, "niterate: %d\n", niterate);
   RealTime = -RTSEC();
-  for(int currentPE = 0; currentPE < NumProcs; currentPE++){
-    for (iterate = 0; iterate < niterate; iterate++) {
-        ran[currentPE] = (ran[currentPE] << 1) ^ (
-                         (s64Int) ran[currentPE] < ZERO64B ? POLY : ZERO64B);
-        remote_proc[currentPE] = (ran[currentPE] >> logTableLocal) & (numNodes - 1);
 
-        /*Forces updates to remote PE only*/
-        if(remote_proc[currentPE] == MyProc)
-          remote_proc[currentPE] = (remote_proc[currentPE]+1)/numNodes;
+  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+    for (int iterate = 0; iterate < niterate; iterate++) {
+      ran[currentPE] = (ran[currentPE] << 1) ^ (
+                        (s64Int) ran[currentPE] < ZERO64B ? POLY : ZERO64B);
+      remote_proc[currentPE] = 
+                        (ran[currentPE] >> logTableLocal) & (numNodes - 1);
 
-        void* func_args_get = {(long long *)(&remote_val[currentPE]),
-                              (long long *)(
-                                &HPCC_Table[
-                                            currentPE * niterate + 
-                                            (ran[currentPE] & (LocalTableSize-1))
-                                           ]),
-                              1, 0, remote_proc[currentPE]};     
+      /* Forces updates to remote PE only */
+      if (remote_proc[currentPE] == MyProc) {
+        remote_proc[currentPE] = (remote_proc[currentPE] + 1) % numNodes;  
+        // Using modulo instead of division
+      }
 
-        bool checkGet = false;
-        // Get a long long integer value from a remote memory location
-        checkGet = tpool_add_work( threads[currentPE].thread_queue, 
-                                  xbrtime_longlong_get, 
-                                  func_args_get);
-        remote_val[currentPE] ^= ran[currentPE];
+      void func_args_get = {
+        (long long *)(&remote_val[currentPE]),
+        (long long *)(&HPCC_Table[currentPE * niterate + 
+                      (ran[currentPE] & (LocalTableSize-1))]),
+        1, 0, remote_proc[currentPE]
+      }; 
 
-        void* func_args_put = {(long long *)(
-                                &HPCC_Table[ 
-                                            currentPE * niterate + 
-                                            (ran[currentPE] & (LocalTableSize-1))
-                                           ]),
-                              (long long *)(&remote_val[currentPE]),
-                              1, 0, remote_proc[currentPE]};     
-        // Put a long long integer value to a remote memory location
-        bool checkPut = false;
-        checkPut = tpool_add_work( threads[currentPE].thread_queue, 
-                                  xbrtime_longlong_put, 
-                                  func_args_put);
+      // Get a long long integer value from a remote memory location
+      bool checkGet = tpool_add_work(threads[currentPE].thread_queue, 
+                                     xbrtime_longlong_get, &func_args_get);
+      if (!checkGet) {
+        fprintf(stderr, "Error: Unable to add get work to thread pool.\n");
+      }
+          
+      remote_val[currentPE] ^= ran[currentPE];
 
-        xbrtime_barrier();
+      void func_args_put = {
+        (long long *)(&HPCC_Table[currentPE * niterate + 
+                      (ran[currentPE] & (LocalTableSize-1))]),
+        (long long *)(&remote_val[currentPE]),
+        1, 0, remote_proc[currentPE]
+      };
+          
+      // Put a long long integer value to a remote memory location
+      bool checkPut = tpool_add_work(threads[currentPE].thread_queue, 
+                                     xbrtime_longlong_put, &func_args_put);
+      if (!checkPut) {
+        fprintf(stderr, "Error: Unable to add put work to thread pool.\n");
+      }
 
-        if(verify) {
-          // Atomic add of long long integer value to a remote memory location 
-          // xbrtime_longlong_atomic_add(&updates[thisPeId], 1, remote_proc); 
-          __atomic_add_fetch(&updates[thisPeId], 1, remote_proc); 
-          // __atomic_add_fetch() from https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
-        }    
+      xbrtime_barrier();
+
+      if (verify) {
+        // Atomic add of long long integer value to a remote mem location 
+        __atomic_add_fetch(&updates[thisPeId], 1, __ATOMIC_SEQ_CST);  
+        // Corrected the atomic memory order
+        // xbrtime_longlong_atomic_add(&updates[thisPeId], 1, remote_proc);
+        // __atomic_add_fetch(&updates[thisPeId], 1, remote_proc);
+        // https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
+      }    
     }
   }
 
@@ -342,11 +363,15 @@ int main(int argc, char **argv)
         remote_proc = (remote_proc+1)/numNodes;
 
       //  Get a long long integer value from a remote memory location
-      xbrtime_longlong_get(&remote_val, &HPCC_Table[*ran & (LocalTableSize-1)], 1, 0, remote_proc);
+      xbrtime_longlong_get(&remote_val, 
+                           &HPCC_Table[*ran & (LocalTableSize-1)], 
+                           1, 0, remote_proc);
       remote_val ^= *ran;
 
       // Put a long long integer value to a remote memory location
-      xbrtime_longlong_put(&HPCC_Table[*ran & (LocalTableSize-1)], &remote_val, 1, 0, remote_proc);
+      xbrtime_longlong_put(&HPCC_Table[*ran & (LocalTableSize-1)], 
+                           &remote_val, 
+                           1, 0, remote_proc);
 
       xbrtime_barrier();
 
@@ -354,7 +379,7 @@ int main(int argc, char **argv)
         // Atomic add of long long integer value to a remote memory location 
         // xbrtime_longlong_atomic_add(&updates[thisPeId], 1, remote_proc); 
         __atomic_add_fetch(&updates[thisPeId], 1, remote_proc); 
-        // __atomic_add_fetch() from https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
+        // https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
       }    
   }
 */
@@ -381,8 +406,42 @@ int main(int argc, char **argv)
       pe_updates += updates[j];
     printf("PE%d updates:%d\n",MyProc,updates[0]);
 
-    // xbrtime_longlong_reduce_sum(all_updates, updates, NumProcs, 1, 0);       // ERROR-CHECK: Collect all updates
-    // xbrtime_longlong_broadcast(all_updates, all_updates, NumProcs, 1, 0);    // ERROR-CHECK: Broadcast all updates
+    // ERROR-CHECK: Collect all updates
+    // xbrtime_longlong_reduce_sum(all_updates, updates, NumProcs, 1, 0);    
+    // ERROR-CHECK: Broadcast all updates   
+    // xbrtime_longlong_broadcast(all_updates, all_updates, NumProcs, 1, 0);    
+#ifdef EXPERIMENTAL 
+  pthread_mutex_t update_mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_cond_t  update_cond  = PTHREAD_COND_INITIALIZER;
+  int updates_received = 0; 
+  // to track number of threads that have sent their updates
+
+  for (int thread_id = 0; thread_id < NumProcs; thread_id++) {
+    pthread_mutex_lock(&update_mutex);
+
+    all_updates[0] += updates[thread_id];
+    updates_received++;
+
+    if (thread_id == 0) {
+      // If this is the master thread, wait until updates from all threads are received
+      while (updates_received < NumProcs) {
+        pthread_cond_wait(&update_cond, &update_mutex);
+      }
+        
+      // Now, broadcast all_updates to other threads
+      for (int i = 0; i < NumProcs; i++) {
+        all_updates[i] = all_updates[0];  
+        // Broadcast by simply copying to shared array (as an example)
+      }
+
+    } else {
+      // If this is not the master thread, notify the master thread about the update
+      pthread_cond_signal(&update_cond);
+    }
+
+    pthread_mutex_unlock(&update_mutex);
+  }
+#endif
 
     if(MyProc == 0){
       for (j = 1; j < numNodes; j++)

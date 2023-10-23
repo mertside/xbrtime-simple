@@ -657,25 +657,38 @@ void xbrtime_longlong_put(long long *dest,
 
 // Assuming there's a global mutex defined somewhere in your program
 pthread_mutex_t barrier_mutex = PTHREAD_MUTEX_INITIALIZER;
+int counter = 0; // To keep track of threads that have reached the barrier
 
 void xbrtime_barrier() {
-  // Static local variable to keep track of threads that have reached the barrier
-  static int counter = 0;
-
   if (!__XBRTIME_CONFIG) {
     fprintf(stderr, "Error: __XBRTIME_CONFIG is not initialized. Call xbrtime_init() first.\n");
     return;
   }
 
-  __xbrtime_asm_fence(); // Ensure memory operations are completed
+  __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
 
+  // Mutex is used to ensure that only one thread updates the counter at a time
   pthread_mutex_lock(&barrier_mutex);
+    
   counter++;  // Increment the counter when a thread reaches the barrier
-  
-  // If all threads have reached the barrier
-  if (counter == __XBRTIME_CONFIG->_NPES) {
-    // Flip the sense for all barrier slots, effectively releasing all waiting threads
-    uint64_t new_sense = ~(__XBRTIME_CONFIG->_SENSE);
+
+  // If not all threads have reached the barrier
+  if (counter < __XBRTIME_CONFIG->_NPES) {
+    // Flip the sense. If it was 0, make it 1, and vice versa
+    uint64_t current_sense = __XBRTIME_CONFIG->_SENSE;
+    uint64_t opposite_sense = (current_sense == 0x00ull) ? 0xfffffffffull : 0x00ull;
+    
+    __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
+
+    // Wait until the global sense is the opposite
+    while (__XBRTIME_CONFIG->_BARRIER[__XBRTIME_CONFIG->_ID] != opposite_sense) {
+      // Busy wait. Threads that arrive early will be stuck here until the last one arrives
+      __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
+    }
+  } else {
+    // The current thread is the last one to arrive
+    // So, flip the sense for all barrier slots, effectively releasing all waiting threads
+    uint64_t new_sense = (__XBRTIME_CONFIG->_SENSE == 0x00ull) ? 0xfffffffffull : 0x00ull;
     for (int i = 0; i < 10; i++) {
       __XBRTIME_CONFIG->_BARRIER[i] = new_sense;
     }
@@ -685,25 +698,15 @@ void xbrtime_barrier() {
 
     // Reset the counter for the next barrier call
     counter = 0;
-    pthread_mutex_unlock(&barrier_mutex);
-  } else {
-    pthread_mutex_unlock(&barrier_mutex);
-    
-    uint64_t opposite_sense = ~(__XBRTIME_CONFIG->_SENSE);
-
-    __xbrtime_asm_fence(); // Ensure memory operations are completed
-
-    // Busy wait. Threads that arrive early will be stuck here until the last one arrives
-    while (__XBRTIME_CONFIG->_BARRIER[__XBRTIME_CONFIG->_ID] != opposite_sense) {
-      __xbrtime_asm_fence(); // Ensure memory operations are completed
-    }
   }
 
-  __xbrtime_asm_fence(); // Ensure memory operations are completed after the barrier
+  __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
+  
+  pthread_mutex_unlock(&barrier_mutex);
 }
 
-#else
 
+#else
 extern void xbrtime_barrier(){
 #ifdef XBGAS_PRINT
   printf("[R] Entered xbrtime_barrier()\n");

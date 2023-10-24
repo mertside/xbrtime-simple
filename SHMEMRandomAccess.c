@@ -39,7 +39,7 @@
 #include <stdio.h>
 // #include "RandomAccess.h"
 
-// #define EXPERIMENTAL 1
+#define EXPERIMENTAL 1
 
 // Define 64-bit types and corresponding format strings for printf() and constants
 #ifdef LONG_IS_64BITS
@@ -198,11 +198,14 @@ int main(int argc, char **argv)
   HPCC_Table = (u64Int *)xbrtime_malloc( NumProcs * sizeof(u64Int)*LocalTableSize );
   if (! HPCC_Table) *sAbort = 1;
 
-  // xbrtime_int_reduce_sum(rAbort, sAbort, 1, 1, 0);    // ERROR-CHECK: Collect abort flags
-  // xbrtime_int_broadcast(rAbort, rAbort, 1, 1, 0);     // ERROR-CHECK: Broadcast abort flags
+  // xbrtime_int_reduce_sum(rAbort, sAbort, 1, 1, 0);    
+  //   // ERROR-CHECK: Collect abort flags
+  // xbrtime_int_broadcast(rAbort, rAbort, 1, 1, 0);     
+  //   // ERROR-CHECK: Broadcast abort flags
 
   if (*rAbort > 0) {
-    if (MyProc == 0) fprintf(outFile, "Failed to allocate memory for the main table.\n");
+    if (MyProc == 0) 
+      fprintf(outFile, "Failed to allocate memory for the main table.\n");
     /* check all allocations in case there are new added and their order changes */
     if (HPCC_Table) HPCC_free( HPCC_Table );
     goto failed_table;
@@ -294,7 +297,7 @@ int main(int argc, char **argv)
   fprintf(outFile, "niterate: %d\n", niterate);
   RealTime = -RTSEC();
 
-  niterate = 1;
+  // niterate = 1;
   for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
     for (int iterate = 0; iterate < niterate; iterate++) {
       ran[currentPE] = (ran[currentPE] << 1) ^ (
@@ -302,7 +305,7 @@ int main(int argc, char **argv)
       remote_proc[currentPE] = 
                         (ran[currentPE] >> logTableLocal) & (numNodes - 1);
 
-      /* Forces updates to remote PE only */
+      // Forces updates to remote PE only
       if (remote_proc[currentPE] == MyProc) {
         remote_proc[currentPE] = (remote_proc[currentPE] + 1) % numNodes;  
         // Using modulo instead of division
@@ -314,7 +317,6 @@ int main(int argc, char **argv)
                       (ran[currentPE] & (LocalTableSize-1))]),
         1, 0, remote_proc[currentPE]
       }; 
-
       // Get a long long integer value from a remote memory location
       bool checkGet = tpool_add_work(threads[currentPE].thread_queue, 
                                      xbrtime_longlong_get, &func_args_get);
@@ -329,8 +331,7 @@ int main(int argc, char **argv)
                       (ran[currentPE] & (LocalTableSize-1))]),
         (long long *)(&remote_val[currentPE]),
         1, 0, remote_proc[currentPE]
-      };
-          
+      };   
       // Put a long long integer value to a remote memory location
       bool checkPut = tpool_add_work(threads[currentPE].thread_queue, 
                                      xbrtime_longlong_put, &func_args_put);

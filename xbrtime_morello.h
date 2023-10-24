@@ -30,7 +30,7 @@ extern "C" {
 // #define XBGAS_DEBUG 1
 // #define XBGAS_PRINT 1
 #define EXPERIMENTAL_A 1
-#define EXPERIMENTAL_B 1
+// #define EXPERIMENTAL_B 1
 
 #include <math.h>
 #include <pthread.h> // From xbgas-runtime-thread
@@ -660,8 +660,7 @@ void xbrtime_barrier() {
                     "xbrtime_init() first.\n");
     return;
   }
-
-  __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
+  __xbrtime_asm_fence(); // wait for all the PEs to reach the barrier
 
   // Mutex is used to ensure that only one thread updates the counter at a time
   pthread_mutex_lock(&barrier_mutex);
@@ -675,19 +674,17 @@ void xbrtime_barrier() {
     uint64_t opposite_sense =
         (current_sense == 0x00ull) ? 0xfffffffffull : 0x00ull;
 
-    __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
+    __xbrtime_asm_fence(); // wait for all the PEs to reach the barrier
 
     // Wait until the global sense is the opposite
     while (__XBRTIME_CONFIG->_BARRIER[__XBRTIME_CONFIG->_ID] !=
            opposite_sense) {
-      // Busy wait. Threads that arrive early will be stuck here until the last
-      // one arrives
-      __xbrtime_asm_fence(); /* wait for all the PEs to reach the barrier */
+      // Busy wait. Threads that arrive early will here until last one arrives
+      __xbrtime_asm_fence(); // wait for all the PEs to reach the barrier 
     }
   } else {
-    // The current thread is the last one to arrive
-    // So, flip the sense for all barrier slots, effectively releasing all
-    // waiting threads
+    // The current thread is the last one to arrive. So, flip the sense for all 
+    // barrier slots, effectively releasing all waiting threads
     uint64_t new_sense =
         (__XBRTIME_CONFIG->_SENSE == 0x00ull) ? 0xfffffffffull : 0x00ull;
     for (int i = 0; i < 10; i++) {

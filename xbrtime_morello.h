@@ -687,7 +687,8 @@ void xbrtime_barrier() {
     // barrier slots, effectively releasing all waiting threads
     uint64_t new_sense =
         (__XBRTIME_CONFIG->_SENSE == 0x00ull) ? 0xfffffffffull : 0x00ull;
-    for (int i = 0; i < 10; i++) {
+    // for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < __XBRTIME_CONFIG->_NPES; i++) {
       __XBRTIME_CONFIG->_BARRIER[i] = new_sense;
     }
 

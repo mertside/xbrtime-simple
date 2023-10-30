@@ -58,6 +58,12 @@ extern "C" {
 volatile uint64_t *xb_barrier;
 volatile tpool_thread_t *threads;
 
+#ifdef EXPERIMENTAL_B
+pthread_mutex_t barrier_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t barrier_cond = PTHREAD_COND_INITIALIZER;
+int counter = 0; // To keep track of threads that have reached the barrier
+#endif
+
 /* ------------------------------------------------------------- CONSTRUCTOR */
 __attribute__((constructor)) void __xbrtime_ctor() {
 #ifdef XBGAS_PRINT
@@ -215,6 +221,7 @@ extern void xbrtime_close() {
 
   /* initiate a barrier */
   // xbrtime_barrier();
+  pthread_cond_destroy(&barrier_cond);
 
   if (__XBRTIME_CONFIG != NULL) {
     /* hard fence */
@@ -332,6 +339,8 @@ extern int xbrtime_init() {
 #ifdef XBGAS_PRINT
   printf("[R] init the PE mapping structure\n");
 #endif
+
+  pthread_cond_init(&barrier_cond, NULL);
 
   return 0; // Return 0 to indicate successful initialization
 }
@@ -620,9 +629,6 @@ void xbrtime_longlong_put(long long *dest, const long long *src, size_t nelems,
 }
 
 #ifdef EXPERIMENTAL_B
-pthread_mutex_t barrier_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t barrier_cond = PTHREAD_COND_INITIALIZER;
-int counter = 0; // To keep track of threads that have reached the barrier
 
 void xbrtime_barrier() {
   if (!__XBRTIME_CONFIG) {

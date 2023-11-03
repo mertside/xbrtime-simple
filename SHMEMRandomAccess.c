@@ -454,7 +454,7 @@ int main(int argc, char **argv)
  *      help fragmentation) */
 
   // if (HPCC_Table) HPCC_free( HPCC_Table );
-  // xbrtime_free( HPCC_Table );
+  xbrtime_free( HPCC_Table );
   // failed_table:
 
   // if (0 == MyProc) if (outFile != stderr) fclose( outFile );
@@ -476,7 +476,7 @@ int main(int argc, char **argv)
   // }
   // xbrtime_barrier_all();
 
-  xbrtime_close();
+  // xbrtime_close();
 
   return 0;
 }

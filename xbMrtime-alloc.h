@@ -148,9 +148,9 @@ void __xbrtime_asm_quiet_fence();
 // }
 
 extern void *xbrtime_malloc( size_t sz ){
-#ifdef XBGAS_PRINT
-  printf("[R] Entered xbrtime_malloc()\n");
-#endif
+// #ifdef XBGAS_PRINT
+//   printf("[R] Entered xbrtime_malloc()\n");
+// #endif
   void *ptr = NULL;
 
   /* sanity check */
@@ -168,9 +168,9 @@ extern void *xbrtime_malloc( size_t sz ){
 }
 
 extern void xbrtime_free( void *ptr ){
-#ifdef XBGAS_PRINT
-  printf("[R] Entered xbrtime_free()\n");
-#endif
+// #ifdef XBGAS_PRINT
+//   printf("[R] Entered xbrtime_free()\n");
+// #endif
     if( ptr == NULL ){
     return ;
   } else {

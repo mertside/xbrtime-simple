@@ -457,7 +457,7 @@ int main(int argc, char **argv)
   // failed_table:
 
   // if (0 == MyProc) if (outFile != stderr) fclose( outFile );
-  if (0 == MyProc) fclose( outFile );
+  fclose( outFile );
   printf("Closed output file.\n");
 
   //xbrtime_barrier();

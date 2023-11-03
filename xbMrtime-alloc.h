@@ -148,6 +148,9 @@ void __xbrtime_asm_quiet_fence();
 // }
 
 extern void *xbrtime_malloc( size_t sz ){
+#ifdef XBGAS_PRINT
+  printf("[R] Entered xbrtime_malloc()\n");
+#endif
   void *ptr = NULL;
 
   /* sanity check */
@@ -165,15 +168,26 @@ extern void *xbrtime_malloc( size_t sz ){
 }
 
 extern void xbrtime_free( void *ptr ){
-  if( ptr == NULL ){
+#ifdef XBGAS_PRINT
+  printf("[R] Entered xbrtime_free()\n");
+#endif
+    if( ptr == NULL ){
     return ;
-  }/*else if( __XBRTIME_CONFIG == NULL ){
+  } else {
+    free(ptr);
     return ;
-  }else if( __XBRTIME_CONFIG->_MMAP == NULL ){
-    return ;
-  }*/
-  // __xbrtime_shared_free(ptr);
+  }
   __xbrtime_asm_quiet_fence();
+  
+  // if( ptr == NULL ){
+  //   return ;
+  // }/*else if( __XBRTIME_CONFIG == NULL ){
+  //   return ;
+  // }else if( __XBRTIME_CONFIG->_MMAP == NULL ){
+  //   return ;
+  // }*/
+  // __xbrtime_shared_free(ptr);
+  // __xbrtime_asm_quiet_fence();
 }
 
 /* ------------------------------------------------------------------------- */

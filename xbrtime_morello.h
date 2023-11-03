@@ -217,6 +217,9 @@ uint64_t __xbrtime_asm_get_startaddr();
 void __xbrtime_asm_fence();
 
 extern void xbrtime_close() {
+#ifdef XBGAS_PRINT
+  printf("[R] Entered xbrtime_close()\n");
+#endif
   int i = 0;
 
   /* initiate a barrier */
@@ -434,6 +437,25 @@ extern int xbrtime_init() {
   return 0;
 }
 #endif
+
+// extern void xbrtime_free( void *ptr ){
+//   if( ptr == NULL ){
+//     return ;
+//   } else {
+//     free(ptr);
+//     return ;
+//   }
+
+//   // if( ptr == NULL ){
+//   //   return ;
+//   // }else if( __XBRTIME_CONFIG == NULL ){
+//   //   return ;
+//   // }else if( __XBRTIME_CONFIG->_MMAP == NULL ){
+//   //   return ;
+//   // }
+//   // __xbrtime_shared_free(ptr);
+//   // __xbrtime_asm_quiet_fence();
+// }
 
 extern int xbrtime_mype() {
   if (__XBRTIME_CONFIG == NULL) {

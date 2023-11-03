@@ -39,7 +39,7 @@
 #include <stdio.h>
 // #include "RandomAccess.h"
 
-#define EXPERIMENTAL 1
+// #define EXPERIMENTAL 1
 
 // Define 64-bit types and corresponding format strings for printf() and constants
 #ifdef LONG_IS_64BITS
@@ -242,9 +242,10 @@ int main(int argc, char **argv)
       HPCC_Table[currentPE * LocalTableSize + i] = MyProc;
   }
   //xbrtime_barrier();
-  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
-    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
-  }
+  // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+  //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  // }
+  xbrtime_barrier_all();
 
   int j,k;
   int logTableLocal,ipartner,iterate,niterate;
@@ -295,10 +296,11 @@ int main(int argc, char **argv)
 
 
   //xbrtime_barrier();
-  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
-    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
-  }
-  
+  // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+  //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  // }
+  xbrtime_barrier_all();
+
   niterate = 1000;
   fprintf(outFile, "niterate: %d\n", niterate);
   /* Begin timed section */
@@ -359,9 +361,10 @@ int main(int argc, char **argv)
   } 
 
   //xbrtime_barrier();
-  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
-    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
-  }
+  // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+  //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  // }
+  xbrtime_barrier_all();
 
   /* End timed section */
   RealTime += RTSEC();
@@ -430,9 +433,10 @@ int main(int argc, char **argv)
     }
   }
   //xbrtime_barrier();
-  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
-    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
-  }
+  // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+  //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  // }
+  xbrtime_barrier_all();
 
   /* End verification phase */
 
@@ -441,9 +445,10 @@ int main(int argc, char **argv)
   xbrtime_free(updates);
   xbrtime_free(ran);
   //xbrtime_barrier();
-  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
-    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
-  }
+  // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+  //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  // }
+  xbrtime_barrier_all();
 
   /* Deallocate memory (in reverse order of allocation which should
  *      help fragmentation) */
@@ -454,17 +459,19 @@ int main(int argc, char **argv)
   if (0 == MyProc) if (outFile != stderr) fclose( outFile );
 
   //xbrtime_barrier();
-  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
-    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
-  }
+  // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+  //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  // }
+  xbrtime_barrier_all();
 
   xbrtime_free(sAbort);
   xbrtime_free(rAbort);
 
   //xbrtime_barrier();
-  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
-    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
-  }
+  // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+  //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  // }
+  xbrtime_barrier_all();
 
   xbrtime_close();
 

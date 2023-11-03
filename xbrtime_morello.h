@@ -628,6 +628,12 @@ void xbrtime_longlong_put(long long *dest, const long long *src, size_t nelems,
   __xbrtime_asm_fence();
 }
 
+void xbrtime_barrier_all() {
+  for (int currentPE = 0; currentPE < __XBRTIME_CONFIG->_NPES; currentPE++) {
+    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  }
+}
+
 #ifdef EXPERIMENTAL_B
 void xbrtime_barrier() {
   if (!__XBRTIME_CONFIG) {

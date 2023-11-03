@@ -453,7 +453,8 @@ int main(int argc, char **argv)
   /* Deallocate memory (in reverse order of allocation which should
  *      help fragmentation) */
 
-  xbrtime_free( HPCC_Table );
+  // if (HPCC_Table) HPCC_free( HPCC_Table );
+  // xbrtime_free( HPCC_Table );
   // failed_table:
 
   // if (0 == MyProc) if (outFile != stderr) fclose( outFile );

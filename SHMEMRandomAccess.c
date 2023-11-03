@@ -39,7 +39,7 @@
 #include <stdio.h>
 // #include "RandomAccess.h"
 
-// #define EXPERIMENTAL 1
+#define EXPERIMENTAL 1
 
 // Define 64-bit types and corresponding format strings for printf() and constants
 #ifdef LONG_IS_64BITS
@@ -299,7 +299,7 @@ int main(int argc, char **argv)
     tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
   }
   
-  //niterate = 1;
+  niterate = 1000;
   fprintf(outFile, "niterate: %d\n", niterate);
   /* Begin timed section */
   RealTime = -RTSEC();
@@ -356,41 +356,7 @@ int main(int argc, char **argv)
         // https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
       }    
     }
-  }
-
-/*
-  // Begin timed section
-  fprintf( outFile, "niterate: %d\n", niterate );
-  RealTime = -RTSEC();
-  for (iterate = 0; iterate < niterate; iterate++) {
-      *ran = (*ran << 1) ^ ((s64Int) *ran < ZERO64B ? POLY : ZERO64B);
-      remote_proc = (*ran >> logTableLocal) & (numNodes - 1);
-
-      // Forces updates to remote PE only
-      if(remote_proc == MyProc)
-        remote_proc = (remote_proc+1)/numNodes;
-
-      //  Get a long long integer value from a remote memory location
-      xbrtime_longlong_get(&remote_val, 
-                           &HPCC_Table[*ran & (LocalTableSize-1)], 
-                           1, 0, remote_proc);
-      remote_val ^= *ran;
-
-      // Put a long long integer value to a remote memory location
-      xbrtime_longlong_put(&HPCC_Table[*ran & (LocalTableSize-1)], 
-                           &remote_val, 
-                           1, 0, remote_proc);
-
-      xbrtime_barrier();
-
-      if(verify) {
-        // Atomic add of long long integer value to a remote memory location 
-        // xbrtime_longlong_atomic_add(&updates[thisPeId], 1, remote_proc); 
-        __atomic_add_fetch(&updates[thisPeId], 1, remote_proc); 
-        // https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
-      }    
-  }
-*/
+  } 
 
   //xbrtime_barrier();
   for (int currentPE = 0; currentPE < NumProcs; currentPE++) {

@@ -27,8 +27,8 @@
 extern "C" {
 #endif
 
-#define XBGAS_DEBUG 1
-#define XBGAS_PRINT 1
+// #define XBGAS_DEBUG 1
+// #define XBGAS_PRINT 1
 #define EXPERIMENTAL_A 1
 #define EXPERIMENTAL_B 1
 

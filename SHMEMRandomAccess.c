@@ -457,7 +457,7 @@ int main(int argc, char **argv)
   xbrtime_free( HPCC_Table );
   // failed_table:
 
-  // if (0 == MyProc) if (outFile != stderr) fclose( outFile );
+  if (0 == MyProc) if (outFile != stderr) fclose( outFile );
   // fclose( outFile );
   // printf("Closed output file.\n");
 

@@ -242,6 +242,9 @@ int main(int argc, char **argv)
       HPCC_Table[currentPE * LocalTableSize + i] = MyProc;
   }
   //xbrtime_barrier();
+  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  }
 
   int j,k;
   int logTableLocal,ipartner,iterate,niterate;
@@ -292,6 +295,9 @@ int main(int argc, char **argv)
 
 
   //xbrtime_barrier();
+  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  }
   
   //niterate = 1;
   fprintf(outFile, "niterate: %d\n", niterate);
@@ -387,6 +393,9 @@ int main(int argc, char **argv)
 */
 
   //xbrtime_barrier();
+  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  }
 
   /* End timed section */
   RealTime += RTSEC();
@@ -455,6 +464,9 @@ int main(int argc, char **argv)
     }
   }
   //xbrtime_barrier();
+  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  }
 
   /* End verification phase */
 
@@ -463,6 +475,9 @@ int main(int argc, char **argv)
   xbrtime_free(updates);
   xbrtime_free(ran);
   //xbrtime_barrier();
+  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  }
 
   /* Deallocate memory (in reverse order of allocation which should
  *      help fragmentation) */
@@ -473,11 +488,17 @@ int main(int argc, char **argv)
   if (0 == MyProc) if (outFile != stderr) fclose( outFile );
 
   //xbrtime_barrier();
+  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  }
 
   xbrtime_free(sAbort);
   xbrtime_free(rAbort);
 
   //xbrtime_barrier();
+  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  }
 
   xbrtime_close();
 

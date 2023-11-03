@@ -440,6 +440,7 @@ int main(int argc, char **argv)
 
   /* End verification phase */
 
+  printf("Starting closure...\n");
 
   xbrtime_free(count);
   xbrtime_free(updates);

@@ -297,7 +297,7 @@ int main(int argc, char **argv)
   fprintf(outFile, "niterate: %d\n", niterate);
   RealTime = -RTSEC();
 
-  // niterate = 1;
+  niterate = 100;
   for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
     for (int iterate = 0; iterate < niterate; iterate++) {
       ran[currentPE] = (ran[currentPE] << 1) ^ (

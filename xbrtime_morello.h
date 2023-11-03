@@ -629,7 +629,6 @@ void xbrtime_longlong_put(long long *dest, const long long *src, size_t nelems,
 }
 
 #ifdef EXPERIMENTAL_B
-
 void xbrtime_barrier() {
   if (!__XBRTIME_CONFIG) {
     fprintf(stderr, "Error: __XBRTIME_CONFIG is not initialized. Call "

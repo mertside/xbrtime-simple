@@ -329,7 +329,7 @@ int main(int argc, char **argv)
       bool checkGet = tpool_add_work(threads[currentPE].thread_queue, 
                                      xbrtime_longlong_get, &func_args_get);
       if (!checkGet) {
-        fprintf(stderr, "Error: Unable to add get work to thread pool.\n");
+        printf("Error: Unable to add get work to thread pool.\n");
       }
           
       remote_val[currentPE] ^= ran[currentPE];
@@ -344,7 +344,7 @@ int main(int argc, char **argv)
       bool checkPut = tpool_add_work(threads[currentPE].thread_queue, 
                                      xbrtime_longlong_put, &func_args_put);
       if (!checkPut) {
-        fprintf(stderr, "Error: Unable to add put work to thread pool.\n");
+        printf("Error: Unable to add put work to thread pool.\n");
       }
 
       tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);

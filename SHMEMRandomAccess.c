@@ -461,22 +461,22 @@ int main(int argc, char **argv)
   // fclose( outFile );
   // printf("Closed output file.\n");
 
+  // xbrtime_barrier();
+  // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+  //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  // }
+  xbrtime_barrier_all();
+
+  xbrtime_free(sAbort);
+  xbrtime_free(rAbort);
+
   //xbrtime_barrier();
   // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
   //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
   // }
-  // xbrtime_barrier_all();
+  xbrtime_barrier_all();
 
-  // xbrtime_free(sAbort);
-  // xbrtime_free(rAbort);
-
-  //xbrtime_barrier();
-  // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
-  //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
-  // }
-  // xbrtime_barrier_all();
-
-  // xbrtime_close();
+  xbrtime_close();
 
   return 0;
 }

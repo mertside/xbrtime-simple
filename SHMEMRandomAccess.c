@@ -459,7 +459,7 @@ int main(int argc, char **argv)
 
   if (0 == MyProc) if (outFile != stderr) fclose( outFile );
   // fclose( outFile );
-  // printf("Closed output file.\n");
+  printf("Closed output file.\n");
 
   // xbrtime_barrier();
   // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {

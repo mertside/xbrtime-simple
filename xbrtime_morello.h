@@ -223,7 +223,7 @@ extern void xbrtime_close() {
   int i = 0;
 
   /* initiate a barrier */
-  // xbrtime_barrier();
+  xbrtime_barrier();
   pthread_cond_destroy(&barrier_cond);
 
   if (__XBRTIME_CONFIG != NULL) {

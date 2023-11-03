@@ -292,12 +292,12 @@ int main(int argc, char **argv)
 
 
   xbrtime_barrier();
-
-  /* Begin timed section */
-  fprintf(outFile, "niterate: %d\n", niterate);
-  RealTime = -RTSEC();
-
+  
   niterate = 100;
+  fprintf(outFile, "niterate: %d\n", niterate);
+  /* Begin timed section */
+  RealTime = -RTSEC();
+  
   for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
     for (int iterate = 0; iterate < niterate; iterate++) {
       ran[currentPE] = (ran[currentPE] << 1) ^ (

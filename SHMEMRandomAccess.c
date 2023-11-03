@@ -241,7 +241,7 @@ int main(int argc, char **argv)
     for (i=0; i<LocalTableSize; i++)
       HPCC_Table[currentPE * LocalTableSize + i] = MyProc;
   }
-  xbrtime_barrier();
+  //xbrtime_barrier();
 
   int j,k;
   int logTableLocal,ipartner,iterate,niterate;
@@ -291,9 +291,9 @@ int main(int argc, char **argv)
   remote_proc = (int *) xbrtime_malloc(NumProcs * sizeof(int));
 
 
-  xbrtime_barrier();
+  //xbrtime_barrier();
   
-  niterate = 100;
+  //niterate = 1;
   fprintf(outFile, "niterate: %d\n", niterate);
   /* Begin timed section */
   RealTime = -RTSEC();
@@ -339,7 +339,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Error: Unable to add put work to thread pool.\n");
       }
 
-      xbrtime_barrier();
+      tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
 
       if (verify) {
         // Atomic add of long long integer value to a remote mem location 
@@ -386,7 +386,7 @@ int main(int argc, char **argv)
   }
 */
 
-  xbrtime_barrier();
+  //xbrtime_barrier();
 
   /* End timed section */
   RealTime += RTSEC();
@@ -454,7 +454,7 @@ int main(int argc, char **argv)
         printf("Verification failed!\n");
     }
   }
-  xbrtime_barrier();
+  //xbrtime_barrier();
 
   /* End verification phase */
 
@@ -462,7 +462,7 @@ int main(int argc, char **argv)
   xbrtime_free(count);
   xbrtime_free(updates);
   xbrtime_free(ran);
-  xbrtime_barrier();
+  //xbrtime_barrier();
 
   /* Deallocate memory (in reverse order of allocation which should
  *      help fragmentation) */
@@ -472,12 +472,12 @@ int main(int argc, char **argv)
 
   if (0 == MyProc) if (outFile != stderr) fclose( outFile );
 
-  xbrtime_barrier();
+  //xbrtime_barrier();
 
   xbrtime_free(sAbort);
   xbrtime_free(rAbort);
 
-  xbrtime_barrier();
+  //xbrtime_barrier();
 
   xbrtime_close();
 

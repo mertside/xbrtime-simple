@@ -39,7 +39,7 @@
 #include <stdio.h>
 // #include "RandomAccess.h"
 
-// #define EXPERIMENTAL 1
+#define EXPERIMENTAL 1
 
 // Define 64-bit types and corresponding format strings for printf() and constants
 #ifdef LONG_IS_64BITS
@@ -301,7 +301,7 @@ int main(int argc, char **argv)
   // }
   xbrtime_barrier_all();
 
-  niterate = 1000;
+  // niterate = 1000;
   fprintf(outFile, "niterate: %d\n", niterate);
   /* Begin timed section */
   RealTime = -RTSEC();

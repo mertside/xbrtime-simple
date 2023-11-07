@@ -389,8 +389,8 @@ int main(int argc, char **argv)
     // ERROR-CHECK: Broadcast all updates   
     // xbrtime_longlong_broadcast(all_updates, all_updates, NumProcs, 1, 0);   
     
-    xbrtime_reduce_sum_broadcast_all(all_updates, updates, NumProcs, 1, 0)
-    
+    xbrtime_reduce_sum_broadcast_all(all_updates, updates, NumProcs, 1, 0);
+
 // #ifdef EXPERIMENTAL 
 //     pthread_mutex_t update_mutex = PTHREAD_MUTEX_INITIALIZER;
 //     pthread_cond_t  update_cond  = PTHREAD_COND_INITIALIZER;

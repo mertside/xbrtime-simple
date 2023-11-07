@@ -653,8 +653,8 @@ void xbrtime_longlong_put(long long *dest, const long long *src, size_t nelems,
   __xbrtime_asm_fence();
 }
 
-void xbrtime_reduce_sum_broadcast(long long *dest, long long *src, size_t nelems, 
-                                  int stride, int root) {
+void xbrtime_reduce_sum_broadcast(long long *dest, long long *src, 
+                                  size_t nelems, int stride, int root) {
   int updates_received = 0; 
   // to track number of threads that have sent their updates
   for (int thread_id = 0; thread_id < __XBRTIME_CONFIG->_NPES; thread_id++) {

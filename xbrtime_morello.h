@@ -64,6 +64,9 @@ pthread_cond_t barrier_cond = PTHREAD_COND_INITIALIZER;
 int counter = 0; // To keep track of threads that have reached the barrier
 #endif
 
+pthread_mutex_t update_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t  update_cond  = PTHREAD_COND_INITIALIZER;
+
 /* ------------------------------------------------------------- CONSTRUCTOR */
 __attribute__((constructor)) void __xbrtime_ctor() {
 #ifdef XBGAS_PRINT
@@ -650,9 +653,38 @@ void xbrtime_longlong_put(long long *dest, const long long *src, size_t nelems,
   __xbrtime_asm_fence();
 }
 
-void xbrtime_barrier_all() {
+void xbrtime_reduce_sum_broadcast(void *dest, const void *src, size_t nelems, 
+                                  int stride, int root) {
+  int updates_received = 0; 
+  // to track number of threads that have sent their updates
+  for (int thread_id = 0; thread_id < __XBRTIME_CONFIG->_NPES; thread_id++) {
+    pthread_mutex_lock(&update_mutex);
+    dest[0] += src[thread_id];
+    updates_received++;
+    if (thread_id == 0) {
+      // If master thread, wait until updates from all threads are received
+      while (updates_received < __XBRTIME_CONFIG->_NPES) {
+        pthread_cond_wait(&update_cond, &update_mutex);
+      }   
+      // Now, broadcast dest to other threads
+      for (int i = 0; i < NumProcs; i++) {
+        dest[i] = dest[0];  
+        // Broadcast by simply copying to shared array (as an example)
+      }
+    } else {
+      // If not the master thread, notify the master thread about the update
+      pthread_cond_signal(&update_cond);
+    }
+    pthread_mutex_unlock(&update_mutex);
+  }
+}
+
+void xbrtime_reduce_sum_broadcast_all(void *dest, const void *src, 
+                                      size_t nelems, int stride, int root) {
   for (int currentPE = 0; currentPE < __XBRTIME_CONFIG->_NPES; currentPE++) {
-    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+    tpool_add_work(threads[currentPE].thread_queue, 
+                   xbrtime_reduce_sum_broadcast, 
+                   dest, src, nelems, stride, root);
   }
 }
 
@@ -719,6 +751,12 @@ extern void xbrtime_barrier() {
 #endif
 }
 #endif
+
+void xbrtime_barrier_all() {
+  for (int currentPE = 0; currentPE < __XBRTIME_CONFIG->_NPES; currentPE++) {
+    tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
+  }
+}
 
 #ifdef __cplusplus
 }

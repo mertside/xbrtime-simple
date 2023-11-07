@@ -653,7 +653,7 @@ void xbrtime_longlong_put(long long *dest, const long long *src, size_t nelems,
   __xbrtime_asm_fence();
 }
 
-void xbrtime_reduce_sum_broadcast(void *dest, const void *src, size_t nelems, 
+void xbrtime_reduce_sum_broadcast(void *dest, void *src, size_t nelems, 
                                   int stride, int root) {
   int updates_received = 0; 
   // to track number of threads that have sent their updates
@@ -667,7 +667,7 @@ void xbrtime_reduce_sum_broadcast(void *dest, const void *src, size_t nelems,
         pthread_cond_wait(&update_cond, &update_mutex);
       }   
       // Now, broadcast dest to other threads
-      for (int i = 0; i < NumProcs; i++) {
+      for (int i = 0; i < __XBRTIME_CONFIG->_NPES; i++) {
         dest[i] = dest[0];  
         // Broadcast by simply copying to shared array (as an example)
       }
@@ -681,10 +681,11 @@ void xbrtime_reduce_sum_broadcast(void *dest, const void *src, size_t nelems,
 
 void xbrtime_reduce_sum_broadcast_all(void *dest, const void *src, 
                                       size_t nelems, int stride, int root) {
+  void *func_args = { dest, src, nelems, stride, root };
   for (int currentPE = 0; currentPE < __XBRTIME_CONFIG->_NPES; currentPE++) {
     tpool_add_work(threads[currentPE].thread_queue, 
                    xbrtime_reduce_sum_broadcast, 
-                   dest, src, nelems, stride, root);
+                   func_args);
   }
 }
 

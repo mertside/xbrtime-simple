@@ -459,7 +459,7 @@ int main(int argc, char **argv)
 
   /* End verification phase */
 
-  printf("Starting closure...\n");
+  printf("Closing...\n");
 
   xbrtime_free(count);
   xbrtime_free(updates);
@@ -468,24 +468,24 @@ int main(int argc, char **argv)
   // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
   //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
   // }
-  xbrtime_barrier_all();
+  // xbrtime_barrier_all();
 
   /* Deallocate memory (in reverse order of allocation which should
  *      help fragmentation) */
 
-  // if (HPCC_Table) HPCC_free( HPCC_Table );
+  if (HPCC_Table) HPCC_free( HPCC_Table );
   xbrtime_free( HPCC_Table );
   // failed_table:
 
-  if (0 == MyProc) if (outFile != stderr) fclose( outFile );
+  // if (0 == MyProc) if (outFile != stderr) fclose( outFile );
   // fclose( outFile );
-  printf("Closed output file.\n");
+  // printf("Closed output file.\n");
 
   // xbrtime_barrier();
   // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
   //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);
   // }
-  xbrtime_barrier_all();
+  // xbrtime_barrier_all();
 
   xbrtime_free(sAbort);
   xbrtime_free(rAbort);

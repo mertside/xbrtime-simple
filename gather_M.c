@@ -52,6 +52,8 @@ int main( int argc, char **argv ){
 	double 		t_start  	= 0;
 	double 		t_end  		= 0;
 
+  double RealTime;  // Real time recording
+
 	t_start = mysecond();
 	/* init */
   rtn 	= xbrtime_init();

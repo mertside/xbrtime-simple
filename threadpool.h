@@ -432,8 +432,8 @@ void tpool_unit_free(tpool_work_unit_t *unit)
     return;
   }
 
-  free(unit->func);
-  free(unit->arg);
+  // free(unit->func);
+  // free(unit->arg);
   if (unit->next != NULL) {
     tpool_unit_free(unit->next);
   }
@@ -453,12 +453,12 @@ void tpool_queue_free(tpool_work_queue_t *queue)
   tpool_unit_free(queue->work_head);
   tpool_unit_free(queue->work_tail);
 
-  free(queue->work_mutex);
-  free(queue->work_cond);
-  free(queue->working_cond);
-  free(queue->working_cnt);
-  free(queue->num_threads);
-  free(queue->stop);
+  // free(queue->work_mutex);
+  // free(queue->work_cond);
+  // free(queue->working_cond);
+  // free(queue->working_cnt);
+  // free(queue->num_threads);
+  // free(queue->stop);
 
   free(queue);
 }
@@ -474,8 +474,8 @@ void tpool_thread_free(tpool_thread_t *pool)
     return;
   }
 
-  free(pool->thread_id);
-  free(pool->thread_handle);
+  // free(pool->thread_id);
+  // free(pool->thread_handle);
 
   tpool_queue_free(pool->thread_queue);
 

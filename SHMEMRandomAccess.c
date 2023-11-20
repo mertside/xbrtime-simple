@@ -204,13 +204,13 @@ int main(int argc, char **argv)
   //   // ERROR-CHECK: Broadcast abort flags
   xbrtime_reduce_sum_broadcast_all(rAbort, sAbort, NumProcs, 1, 0);
 
-  if (*rAbort > 0) {
-    if (MyProc == 0) 
-      fprintf(outFile, "Failed to allocate memory for the main table.\n");
-    /* check all allocations in case there are new added and their order changes */
-    if (HPCC_Table) HPCC_free( HPCC_Table );
-    goto failed_table;
-  }
+  // if (*rAbort > 0) {
+  //   if (MyProc == 0) 
+  //     fprintf(outFile, "Failed to allocate memory for the main table.\n");
+  //   /* check all allocations in case there are new added and their order changes */
+  //   if (HPCC_Table) HPCC_free( HPCC_Table );
+  //   goto failed_table;
+  // }
 
   /* Default number of global updates to table: 4x number of table entries */
   NumUpdates_Default = 4 * TableSize;
@@ -476,7 +476,7 @@ int main(int argc, char **argv)
 
   if (HPCC_Table) HPCC_free( HPCC_Table );
   xbrtime_free( HPCC_Table );
-  failed_table:
+  // failed_table:
 
   if (0 == MyProc) if (outFile != stderr) fclose( outFile );
   fclose( outFile );

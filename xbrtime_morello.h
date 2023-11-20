@@ -553,6 +553,11 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
 #endif
 }
 
+// ------------------------------------------------------- FUNCTION PROTOTYPES
+void __xbrtime_get_s8_seq(int64_t *base_src,
+                          int64_t *base_dest, // uint32_t pe,
+                          int32_t nelems, int32_t stride);
+
 // ----------------------------------------------------------- S8 GET FUNCTION
 void xbrtime_longlong_get(long long *dest, const long long *src, size_t nelems,
                           int stride, int pe) {
@@ -603,6 +608,11 @@ void xbrtime_longlong_get(long long *dest, const long long *src, size_t nelems,
   __xbrtime_asm_fence();
 }
 
+// ------------------------------------------------------- FUNCTION PROTOTYPES
+void __xbrtime_put_s8_seq(int64_t *base_src,
+                          int64_t *base_dest, // uint32_t pe,
+                          int32_t nelems, int32_t stride);
+
 // ----------------------------------------------------------- S8 PUT FUNCTION
 void xbrtime_longlong_put(long long *dest, const long long *src, size_t nelems,
                           int stride, int pe) {
@@ -645,10 +655,10 @@ void xbrtime_longlong_put(long long *dest, const long long *src, size_t nelems,
   } else /* if( (stride != 1) || (nelems == 1))*/ {
     /* sequential execution */
     __xbrtime_put_s8_seq(
-        (uint64_t *)(src),
-        (uint64_t *)(dest), //__xbrtime_ltor((uint64_t)(dest),pe),
+        (int64_t *)(src),
+        (int64_t *)(dest), //__xbrtime_ltor((uint64_t)(dest),pe),
         // xbrtime_decode_pe(pe),
-        (uint32_t)(nelems), (uint32_t)(stride * sizeof(long long)));
+        (int32_t)(nelems), (int32_t)(stride * sizeof(long long)));
   }
   __xbrtime_asm_fence();
 }

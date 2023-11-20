@@ -202,7 +202,7 @@ int main(int argc, char **argv)
   //   // ERROR-CHECK: Collect abort flags
   // xbrtime_int_broadcast(rAbort, rAbort, 1, 1, 0);     
   //   // ERROR-CHECK: Broadcast abort flags
-  xbrtime_reduce_sum_broadcast_all((long long) rAbort, (long long) sAbort, NumProcs, 1, 0);
+  // xbrtime_reduce_sum_broadcast_all((long long) rAbort, (long long) sAbort, NumProcs, 1, 0);
 
   // if (*rAbort > 0) {
   //   if (MyProc == 0) 

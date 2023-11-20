@@ -128,7 +128,7 @@ __attribute__((destructor)) void __xbrtime_dtor() {
     // tpool_destroy(threads[i].thread_queue);
   }
   // Free the memory associated with the threads
-  free((void *)threads);
+  free((void)threads);
 
   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
   /* free_barrier */

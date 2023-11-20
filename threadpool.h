@@ -410,7 +410,7 @@ bool tpool_add_work(tpool_work_queue_t *wq, thread_func_t func, void *arg)
 }
 
 
-// ---------------------------------------- Waiting for processing to complete  
+// ----------------------------------------- Waiting for processing to complete  
 void tpool_wait(tpool_work_queue_t *wq)
 {
   if (wq == NULL)
@@ -425,5 +425,55 @@ void tpool_wait(tpool_work_queue_t *wq)
   pthread_mutex_unlock(&(wq->work_mutex));
 }
 
+// --------------------------------------------------------- POOL FREE FUNCTION
+void tpool_unit_free(tpool_work_unit_t *unit) 
+{
+  if (unit == NULL) {
+    return;
+  }
+
+  free(unit->func);
+  free(unit->arg);
+  if (unit->next != NULL) {
+    tpool_unit_free(unit->next);
+  }
+
+  free(unit);
+}
+
+// -------------------------------------------------------- QUEUE FREE FUNCTION
+void tpool_queue_free(tpool_work_queue_t *queue) 
+{
+  if (queue == NULL) {
+    return;
+  }
+  
+  tpool_unit_free(queue->work_head);
+  tpool_unit_free(queue->work_tail);
+
+  free(queue->work_mutex);
+  free(queue->work_cond);
+  free(queue->working_cond);
+  free(queue->working_cnt);
+  free(queue->num_threads);
+  free(queue->stop);
+
+  free(queue);
+}
+
+// ------------------------------------------------------- THREAD FREE FUNCTION
+void tpool_thread_free(tpool_thread_t *pool) 
+{
+  if (pool == NULL) {
+    return;
+  }
+
+  free(pool->thread_id);
+  free(pool->thread_handle);
+
+  tpool_queue_free(pool->thread_queue);
+
+  free(pool);
+}
 
 #endif /* __THREADPOOL_H__ */

@@ -17,6 +17,13 @@
 
 #define DEBUG 1
 
+// For timing
+static double RTSEC() {
+  struct timeval tp;
+  gettimeofday (&tp, NULL);
+  return tp.tv_sec + tp.tv_usec/(double)1.0e6;
+}
+
 int main( int argc, char **argv ){
 	printf("[M]"GRN " Entered Main matmul...\n"RESET);
 	/* vars */
@@ -134,7 +141,9 @@ int main( int argc, char **argv ){
 #ifdef DEBUG
   printf( "PE=%d; EXECUTING BARRIER\n", xbrtime_mype() );
 #endif
+  RealTime = -RTSEC(); // Begin timed section
   xbrtime_barrier();
+  RealTime += RTSEC(); // End timed section
 
   if(xbrtime_mype() == 0){
     t_end = mysecond();
@@ -149,6 +158,8 @@ int main( int argc, char **argv ){
 
 	if(xbrtime_mype() == 0)
 		PRINT(local, remote, t_init, t_mem);
+
+  printf("\tReal time used for last barrier = %.6f seconds\n", RealTime );
 
 	free(private);
 	free(idx);

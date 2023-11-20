@@ -18,6 +18,13 @@
 #define _XBGAS_ALLOC_SIZE_ 8
 //#define _XBGAS_ALLOC_NELEMS_ 4
 
+// For timing
+static double RTSEC() {
+  struct timeval tp;
+  gettimeofday (&tp, NULL);
+  return tp.tv_sec + tp.tv_usec/(double)1.0e6;
+}
+
 int main( int argc, char **argv ){
 	printf("[M]"GRN " Entered Main matmul...\n"RESET);
 
@@ -38,6 +45,8 @@ int main( int argc, char **argv ){
 	double 		t_mem	  	= 0;
 	double 		t_start  	= 0;
 	double 		t_end  		= 0;
+
+  double RealTime;  // Real time recording
 
   /*
   unsigned long long x = 11;
@@ -76,8 +85,11 @@ int main( int argc, char **argv ){
 	printf("[M]"GRN " Passed vars\n"RESET);
 
 	/* init */
+  RealTime = -RTSEC(); // Begin timed section
   rtn = xbrtime_init();
+  RealTime += RTSEC(); // End timed section
   printf("[M]"GRN " Passed xbrtime_init()\n"RESET);
+  printf("\tReal time used = %.6f seconds\n", RealTime );
 
   int num_pes = xbrtime_num_pes();
   row         = num_pes;

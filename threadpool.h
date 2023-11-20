@@ -439,7 +439,9 @@ void tpool_unit_free(tpool_work_unit_t *unit)
   }
 
   free(unit);
-}
+}     
+// struct tpool_work_unit { thread_func_t func; void *arg; 
+//    struct tpool_work_unit *next; };
 
 // -------------------------------------------------------- QUEUE FREE FUNCTION
 void tpool_queue_free(tpool_work_queue_t *queue) 
@@ -460,6 +462,10 @@ void tpool_queue_free(tpool_work_queue_t *queue)
 
   free(queue);
 }
+// struct tpool_work_queue { tpool_work_unit_t *work_head; 
+//    tpool_work_unit_t *work_tail; pthread_mutex_t work_mutex;
+//    pthread_cond_t work_cond; pthread_cond_t working_cond;
+//    size_t working_cnt; size_t num_threads; bool stop; };
 
 // ------------------------------------------------------- THREAD FREE FUNCTION
 void tpool_thread_free(tpool_thread_t *pool) 
@@ -475,5 +481,7 @@ void tpool_thread_free(tpool_thread_t *pool)
 
   free(pool);
 }
+// struct tpool_thread{ uint64_t thread_id; pthread_t thread_handle; 
+//    tpool_work_queue_t *thread_queue; };
 
 #endif /* __THREADPOOL_H__ */

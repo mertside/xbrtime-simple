@@ -128,7 +128,7 @@ __attribute__((destructor)) void __xbrtime_dtor() {
     // tpool_destroy(threads[i].thread_queue);
   }
   // Free the memory associated with the threads
-  free((void)threads);
+  tpool_thread_free(threads);
 
   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
   /* free_barrier */
@@ -137,7 +137,7 @@ __attribute__((destructor)) void __xbrtime_dtor() {
   // printf("DTOR: Free\n");
 
   // Cleanup the allocated memory for `xb_barrier`
-  free(xb_barrier);
+  free((void *)xb_barrier);
 
 #if XBGAS_DEBUG
   fprintf(stdout, "[R] Destructor completed.\n");

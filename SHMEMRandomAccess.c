@@ -455,7 +455,12 @@ int main(int argc, char **argv)
         printf("Verification failed!\n");
     }
   }
+
+  RealTime = -RTSEC(); // Begin timed section
   xbrtime_barrier_all();
+  RealTime += RTSEC(); // End timed section
+  printf("\tBARRIER: Real time used = %.6f seconds\n", RealTime );
+
   //xbrtime_barrier();
   // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
   //   tpool_add_work(threads[currentPE].thread_queue, xbrtime_barrier, NULL);

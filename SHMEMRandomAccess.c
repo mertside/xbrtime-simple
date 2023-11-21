@@ -154,7 +154,10 @@ int main(int argc, char **argv)
   int numthreads;
   int *sAbort, *rAbort;
 
+  RealTime = -RTSEC(); // Begin timed section
   xbrtime_init();
+  RealTime += RTSEC(); // End timed section
+  printf("\tINIT: Real time used = %.6f seconds\n", RealTime );
 
   /*Allocate symmetric memory*/
   sAbort = (int *)xbrtime_malloc(sizeof(int));

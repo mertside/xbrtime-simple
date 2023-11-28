@@ -705,21 +705,24 @@ void xbrtime_reduce_sum_broadcast_all(long long *dest, long long *src,
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
 
+#ifndef _XBRTIME_COLLECTIVES_H_
+#define _XBRTIME_COLLECTIVES_H_
+
 /* Large message size thresholds (bytes) */
 #define LARGE_BROADCAST             12288
 #define LARGE_REDUCE                2048
 #define LARGE_REDUCE_ALL            2048
 #define LARGE_GATHER_ALL            81920
 
- /*!   \fn void xbrtime_TYPENAME_broadcast( TYPE *dest, const TYPE *src, size_t nelems, int stride, int root )
-       \brief Broadcasts one or more values of type TYPE from the root to all PEs
-       \param dest is a pointer to the base shared address where broadcasted values are placed on each PE
-       \param src is a pointer to the base shared address on root where values to be broadcast are located
-       \param nelems is the number of elements to be broadcast to each PE
-       \param stride is the stride size between broadcast elements at src and dest
-       \param root is the PE id of the root PE
-       \return void
- */
+/*!   \fn void xbrtime_TYPENAME_broadcast( TYPE *dest, const TYPE *src, size_t nelems, int stride, int root )
+      \brief Broadcasts one or more values of type TYPE from the root to all PEs
+      \param dest is a pointer to the base shared address where broadcasted values are placed on each PE
+      \param src is a pointer to the base shared address on root where values to be broadcast are located
+      \param nelems is the number of elements to be broadcast to each PE
+      \param stride is the stride size between broadcast elements at src and dest
+      \param root is the PE id of the root PE
+      \return void
+*/
 #define XBGAS_DECL_BROADCAST(_type, _typename)                                                                         \
 void xbrtime_##_typename##_broadcast_tree(_type *dest, const _type *src, size_t nelems, int stride, int root);         \
 void xbrtime_##_typename##_broadcast(_type *dest, const _type *src, size_t nelems, int stride, int root);
@@ -750,6 +753,8 @@ void xbrtime_##_typename##_broadcast(_type *dest, const _type *src, size_t nelem
     //  XBGAS_DECL_BROADCAST(long double, longdouble)
 
 #undef XBGAS_DECL_BROADCAST
+
+#endif /* _XBRTIME_COLLECTIVES_H_ */
 
 #define XBGAS_BROADCAST(_type, _typename)                                                                              \
 void xbrtime_##_typename##_broadcast_tree(_type *dest, const _type *src, size_t nelems, int stride, int root)          \

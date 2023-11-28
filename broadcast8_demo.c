@@ -11,7 +11,7 @@
  *
  */
 
- #include "xbrtime.h"
+ #include "xbrtime_morello.h"
 
 int main()
 {

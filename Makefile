@@ -14,5 +14,11 @@ gather:
 gupsM:
 	$(MY_CC) -O0 -lpthread -o gups.exe SHMEMRandomAccess.c xbMrtime_api_asm.s -lm
 
+broadcast:
+	$(MY_CC) -O0 -lpthread -o broadcast8_demo.exe broadcast8_demo.c xbMrtime_api_asm.s -lm
+
+reduction:
+	$(MY_CC) -O0 -lpthread -o reduction8_demo.exe reduction8_demo.c xbMrtime_api_asm.s -lm
+
 clean:
 	rm -f ./*.o ./*.exe

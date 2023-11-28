@@ -6,13 +6,13 @@ MY_CC?=$(CCOM) $(ARCH)
 all: matMul gather gupsM
 
 matMul:
-	$(MY_CC) -O0 -lpthread -o matmul.exe matmul_M.c xbMrtime_api_asm.s
+	$(MY_CC) -O0 -lpthread -o matmul.exe matmul_M.c xbMrtime_api_asm.s -lm
 
 gather:
-	$(MY_CC) -O0 -lpthread -o gather.exe gather_M.c xbMrtime_api_asm.s
+	$(MY_CC) -O0 -lpthread -o gather.exe gather_M.c xbMrtime_api_asm.s -lm
 
 gupsM:
-	$(MY_CC) -O0 -lpthread -o gups.exe SHMEMRandomAccess.c xbMrtime_api_asm.s
+	$(MY_CC) -O0 -lpthread -o gups.exe SHMEMRandomAccess.c xbMrtime_api_asm.s -lm
 
 clean:
 	rm -f ./*.o ./*.exe

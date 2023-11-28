@@ -722,7 +722,6 @@ void xbrtime_reduce_sum_broadcast_all(long long *dest, long long *src,
  */
 #define XBGAS_DECL_BROADCAST(_type, _typename)                                                                              \
 void xbrtime_##_typename##_broadcast_tree(_type *dest, const _type *src, size_t nelems, int stride, int root);              \
-// void xbrtime_##_typename##_broadcast_van_de_geijn(_type *dest, const _type *src, size_t nelems, int stride, int root);      
 void xbrtime_##_typename##_broadcast(_type *dest, const _type *src, size_t nelems, int stride, int root);
 
     XBGAS_DECL_BROADCAST(float, float)

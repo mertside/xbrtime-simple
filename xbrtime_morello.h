@@ -700,6 +700,147 @@ void xbrtime_reduce_sum_broadcast_all(long long *dest, long long *src,
   }
 }
 
+/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
+/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
+
+/* Large message size thresholds (bytes) */
+#define LARGE_BROADCAST             12288
+#define LARGE_REDUCE                2048
+#define LARGE_REDUCE_ALL            2048
+#define LARGE_GATHER_ALL            81920
+
+ /*!   \fn void xbrtime_TYPENAME_broadcast( TYPE *dest, const TYPE *src, size_t nelems, int stride, int root )
+       \brief Broadcasts one or more values of type TYPE from the root to all PEs
+       \param dest is a pointer to the base shared address where broadcasted values are placed on each PE
+       \param src is a pointer to the base shared address on root where values to be broadcast are located
+       \param nelems is the number of elements to be broadcast to each PE
+       \param stride is the stride size between broadcast elements at src and dest
+       \param root is the PE id of the root PE
+       \return void
+ */
+#define XBGAS_DECL_BROADCAST(_type, _typename)                                                                              \
+void xbrtime_##_typename##_broadcast_tree(_type *dest, const _type *src, size_t nelems, int stride, int root);              \
+// void xbrtime_##_typename##_broadcast_van_de_geijn(_type *dest, const _type *src, size_t nelems, int stride, int root);      
+void xbrtime_##_typename##_broadcast(_type *dest, const _type *src, size_t nelems, int stride, int root);
+
+    XBGAS_DECL_BROADCAST(float, float)
+    XBGAS_DECL_BROADCAST(double, double)
+    XBGAS_DECL_BROADCAST(char, char)
+    XBGAS_DECL_BROADCAST(unsigned char, uchar)
+    XBGAS_DECL_BROADCAST(signed char, schar)
+    XBGAS_DECL_BROADCAST(unsigned short, ushort)
+    XBGAS_DECL_BROADCAST(short, short)
+    XBGAS_DECL_BROADCAST(unsigned int, uint)
+    XBGAS_DECL_BROADCAST(int, int)
+    XBGAS_DECL_BROADCAST(unsigned long, ulong)
+    XBGAS_DECL_BROADCAST(long, long)
+    XBGAS_DECL_BROADCAST(unsigned long long, ulonglong)
+    XBGAS_DECL_BROADCAST(long long, longlong)
+    XBGAS_DECL_BROADCAST(uint8_t, uint8)
+    XBGAS_DECL_BROADCAST(int8_t, int8)
+    XBGAS_DECL_BROADCAST(uint16_t, uint16)
+    XBGAS_DECL_BROADCAST(int16_t, int16)
+    XBGAS_DECL_BROADCAST(uint32_t, uint32)
+    XBGAS_DECL_BROADCAST(int32_t, int32)
+    XBGAS_DECL_BROADCAST(uint64_t, uint64)
+    XBGAS_DECL_BROADCAST(int64_t, int64)
+    XBGAS_DECL_BROADCAST(size_t, size)
+    XBGAS_DECL_BROADCAST(ptrdiff_t, ptrdiff)
+    //  XBGAS_DECL_BROADCAST(long double, longdouble)
+
+#undef XBGAS_DECL_BROADCAST
+
+#define XBGAS_BROADCAST(_type, _typename)  
+void xbrtime_##_typename##_broadcast_tree(_type *dest, const _type *src, size_t nelems, int stride, int root)              \
+ {                                                                                                                          \
+     int i, numpes, my_rpe, my_vpe, numpes_log, mask, two_i, r_partner, v_partner;                                          \
+     numpes = xbrtime_num_pes();                                                                                            \
+     my_rpe = xbrtime_mype();                                                                                               \
+     my_vpe = ((my_rpe >= root) ? (my_rpe - root) : (my_rpe + numpes - root));                                              \
+     _type *temp = (_type*) xbrtime_malloc(sizeof(_type) * nelems);							    \
+     numpes_log = (int) ceil((log(numpes)/log(2)));  /* Number of commmuication stages */                                   \
+     mask = (int) (pow(2,numpes_log) - 1);                                                                                  \
+															    \
+     /* Root load values into buffer without stride */									    \
+     if(my_rpe == root)													    \
+     {															    \
+	 for(i = 0; i < nelems; i++)											    \
+	 {														    \
+	     temp[i] = src[i*stride];											    \
+	 }														    \
+     }															    \
+                                                                                                                            \
+     /* Perform communication if PE active at stage i and has valid partner */                                              \
+     for(i = numpes_log-1; i >= 0; i--)                                                                                     \
+     {                                                                                                                      \
+         two_i = (int) pow(2,i);                                                                                            \
+         mask = mask ^ two_i;                                                                                               \
+         if(((my_vpe & mask) == 0) && ((my_vpe & two_i) == 0))                                                              \
+         {                                                                                                                  \
+             v_partner = (my_vpe ^ two_i) % numpes;                                                                         \
+             r_partner = (v_partner + root) % numpes;                                                                       \
+             if(my_vpe < v_partner)                                                                                         \
+             {                                                                                                              \
+                 xbrtime_##_typename##_put(temp, temp, nelems, 1, r_partner);                                               \
+             }                                                                                                              \
+         }                                                                                                                  \
+         xbrtime_barrier();                                                                                                 \
+     }                                                                                                                      \
+															    \
+     /* Migrate from buffer to dest with stride */                                                                          \
+     for(i = 0; i < nelems; i++)                                                                                            \
+     {                                                                                                                      \
+         dest[i*stride] = temp[i];                                                                                          \
+     }                                                                                                                      \
+     xbrtime_free(temp);                                                                                                    \
+}                        
+
+/* Wrapper function - binomial tree for small messages, van de geijn for large messages */                                 \
+void xbrtime_##_typename##_broadcast(_type *dest, const _type *src, size_t nelems, int stride, int root)                   \
+{                                                                                                                          \
+    if((sizeof(_type)*nelems) < LARGE_BROADCAST)                                                                           \
+    {                                                                                                                      \
+        xbrtime_##_typename##_broadcast_tree(dest, src, nelems, stride, root);                                             \
+    }                                                                                                                      \
+    else                                                                                                                   \
+    {                                                                                                                      \
+        xbrtime_##_typename##_broadcast_van_de_geijn(dest, src, nelems, stride, root);                                     \
+    }                                                                                                                      \
+}
+
+    XBGAS_BROADCAST(float, float)
+    XBGAS_BROADCAST(double, double)
+    XBGAS_BROADCAST(char, char)
+    XBGAS_BROADCAST(unsigned char, uchar)
+    XBGAS_BROADCAST(signed char, schar)
+    XBGAS_BROADCAST(unsigned short, ushort)
+    XBGAS_BROADCAST(short, short)
+    XBGAS_BROADCAST(unsigned int, uint)
+    XBGAS_BROADCAST(int, int)
+    XBGAS_BROADCAST(unsigned long, ulong)
+    XBGAS_BROADCAST(long, long)
+    XBGAS_BROADCAST(unsigned long long, ulonglong)
+    XBGAS_BROADCAST(long long, longlong)
+    XBGAS_BROADCAST(uint8_t, uint8)
+    XBGAS_BROADCAST(int8_t, int8)
+    XBGAS_BROADCAST(uint16_t, uint16)
+    XBGAS_BROADCAST(int16_t, int16)
+    XBGAS_BROADCAST(uint32_t, uint32)
+    XBGAS_BROADCAST(int32_t, int32)
+    XBGAS_BROADCAST(uint64_t, uint64)
+    XBGAS_BROADCAST(int64_t, int64)
+    XBGAS_BROADCAST(size_t, size)
+    XBGAS_BROADCAST(ptrdiff_t, ptrdiff)
+
+#undef XBGAS_BROADCAST
+
+/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
+/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
+
 #ifdef EXPERIMENTAL_B
 void xbrtime_barrier() {
   if (!__XBRTIME_CONFIG) {

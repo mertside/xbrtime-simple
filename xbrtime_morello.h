@@ -833,14 +833,21 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
         printf("[B] temp[%d] = %d\n", i, temp[i]); 
       }
     }
-    
 
     for (int i = numpes_log - 1; i >= 0; i--) {
       int two_i = (int) pow(2, i);
+      printf("[B] two_i = %d\n", two_i);
+
       mask ^= two_i;
+      printf("[B] mask = %d\n", mask);
+
       if (((my_vpe & mask) == 0) && ((my_vpe & two_i) == 0)) {
         int v_partner = (my_vpe ^ two_i) % numpes;
+        printf("[B] v_partner = %d\n", v_partner);
+
         int r_partner = (v_partner + root) % numpes;
+        printf("[B] r_partner = %d\n", r_partner);
+
         if (my_vpe < v_partner) {
           // BroadcastTask task;
           // task.temp = temp;
@@ -855,7 +862,7 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
 
           // Put a long long integer value to a remote memory location
           bool checkPut = tpool_add_work(threads[currentPE].thread_queue, 
-                                  xbrtime_longlong_put, &func_args_put);
+                                         xbrtime_longlong_put, &func_args_put);
           if (!checkPut) {
             printf("Error: Unable to add put work to thread pool.\n");
           }
@@ -867,7 +874,8 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
   
     // Migrate from buffer to destination
     for (int i = 0; i < nelems; i++) {
-        dest[i * stride] = temp[i];
+      dest[i * stride] = temp[i];
+      printf("[B] dest[%d] = %d\n", i, dest[i]);
     }
   }
 

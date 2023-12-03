@@ -861,7 +861,7 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
           }
         }
       // Synchronize threads at the barrier
-      tpool_barrier(pool);
+      tpool_barrier(threads[currentPE].thread_queue);
       }
     }
   

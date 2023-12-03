@@ -815,19 +815,26 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
   // Virtual PE number adjusted for the root
   int my_vpe = ((my_rpe >= root) ? (my_rpe - root) : (my_rpe + numpes - root));
   
-  int *temp = (int*) xbrtime_malloc(sizeof(int) * nelems);
-  int numpes_log = (int) ceil(log(numpes) / log(2));
-  int mask = (int) (pow(2, numpes_log) - 1);
-  
-  // Root loads values into the buffer
-  if (my_rpe == root) {
-      for (int i = 0; i < nelems; i++) {
-          temp[i] = src[i * stride];
-      }
-  }
+  int *temp = (int*) xbrtime_malloc(sizeof(int) * nelems); 
+
+  // Number of communication stages
+  int numpes_log = (int) ceil(log(numpes) / log(2)); 
+  printf("[B] numpes_log = %d\n", numpes_log);
+
+  // Mask for the current PE
+  int mask = (int) (pow(2, numpes_log) - 1); 
+  printf("[B] mask = %d\n", mask);
   
   for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
-    // Create and use a thread pool
+    // Root loads values into the buffer
+    if (my_rpe == root) {
+      for (int i = 0; i < nelems; i++) {
+        temp[i] = src[i * stride];
+        printf("[B] temp[%d] = %d\n", i, temp[i]);); 
+      }
+    }
+    
+    // use a thread pool
     tpool_t *pool = threads[currentPE].thread_queue
 
     for (int i = numpes_log - 1; i >= 0; i--) {

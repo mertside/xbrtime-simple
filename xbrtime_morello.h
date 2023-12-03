@@ -830,12 +830,10 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
     if (my_rpe == root) {
       for (int i = 0; i < nelems; i++) {
         temp[i] = src[i * stride];
-        printf("[B] temp[%d] = %d\n", i, temp[i]);); 
+        printf("[B] temp[%d] = %d\n", i, temp[i]); 
       }
     }
     
-    // use a thread pool
-    tpool_t *pool = threads[currentPE].thread_queue
 
     for (int i = numpes_log - 1; i >= 0; i--) {
       int two_i = (int) pow(2, i);

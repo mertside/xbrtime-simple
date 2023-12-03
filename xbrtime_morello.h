@@ -825,7 +825,7 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
   int mask = (int) (pow(2, numpes_log) - 1); 
   printf("[B] mask = %d\n", mask);
   
-  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+  for (int currentPE = 0; currentPE < numpes; currentPE++) {
     // Root loads values into the buffer
     if (my_rpe == root) {
       for (int i = 0; i < nelems; i++) {

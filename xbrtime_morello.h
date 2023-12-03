@@ -758,7 +758,7 @@ void xbrtime_reduce_sum_broadcast_all(long long *dest, long long *src,
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
 
-void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride, int root)
+void xbrtime_int_broadcast_deprecated(int *dest, const int *src, size_t nelems, int stride, int root)
 {
     int i, numpes, my_rpe, my_vpe, numpes_log, mask, two_i, r_partner, v_partner;
     numpes = xbrtime_num_pes();                        // Get the total number of processing elements
@@ -803,6 +803,73 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
     
     xbrtime_free(temp);
 }
+
+/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
+
+// Function to perform an integer broadcast using a thread pool
+void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride, int root) {
+  int numpes = xbrtime_num_pes(); // Get total number of processing elements
+  int my_rpe = xbrtime_mype();    // Get rank of current processing element
+
+  // Virtual PE number adjusted for the root
+  int my_vpe = ((my_rpe >= root) ? (my_rpe - root) : (my_rpe + numpes - root));
+  
+  int *temp = (int*) xbrtime_malloc(sizeof(int) * nelems);
+  int numpes_log = (int) ceil(log(numpes) / log(2));
+  int mask = (int) (pow(2, numpes_log) - 1);
+  
+  // Root loads values into the buffer
+  if (my_rpe == root) {
+      for (int i = 0; i < nelems; i++) {
+          temp[i] = src[i * stride];
+      }
+  }
+  
+  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+    // Create and use a thread pool
+    tpool_t *pool = threads[currentPE].thread_queue
+
+    for (int i = numpes_log - 1; i >= 0; i--) {
+      int two_i = (int) pow(2, i);
+      mask ^= two_i;
+      if (((my_vpe & mask) == 0) && ((my_vpe & two_i) == 0)) {
+        int v_partner = (my_vpe ^ two_i) % numpes;
+        int r_partner = (v_partner + root) % numpes;
+        if (my_vpe < v_partner) {
+          // BroadcastTask task;
+          // task.temp = temp;
+          // task.nelems = nelems;
+          // task.r_partner = r_partner;
+
+          // Add the task to the thread pool
+          // tpool_add_work(pool, broadcast_task_function, &task);
+          // xbrtime_int_put(temp, temp, nelems, 1, r_partner);
+
+          void *func_args_put = {temp, temp, nelems, 1, r_partner};
+
+          // Put a long long integer value to a remote memory location
+          bool checkPut = tpool_add_work(threads[currentPE].thread_queue, 
+                                  xbrtime_longlong_put, &func_args_put);
+          if (!checkPut) {
+            printf("Error: Unable to add put work to thread pool.\n");
+          }
+        }
+      // Synchronize threads at the barrier
+      tpool_barrier(pool);
+      }
+    }
+  
+    // Migrate from buffer to destination
+    for (int i = 0; i < nelems; i++) {
+        dest[i * stride] = temp[i];
+    }
+  }
+
+  xbrtime_free(temp); // Free the temporary buffer
+  // tpool_destroy(pool); // Destroy the thread pool
+}
+
 
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */

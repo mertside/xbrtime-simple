@@ -148,7 +148,7 @@ __attribute__((constructor)) void __xbrtime_ctor() {
 #endif
 
     // Create a thread pool with the determined number of threads
-    tpool_t *threads = tpool_create(numOfThreads);
+    threads = tpool_create(numOfThreads);
     if (threads == NULL) {
         fprintf(stderr, "\n[E][R] Failed to create thread pool\n");
         free(xb_barrier);  // Clean up allocated memory

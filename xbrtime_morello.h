@@ -886,6 +886,7 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
 
+// -------------------------------------------------------- FUNCTION PROTOTYPES
 typedef struct {
   int *dest;
   const int *src;
@@ -896,6 +897,7 @@ typedef struct {
   int num_pes;
 } ReductionTask;
 
+// --------------------------------------------------------- REDUCTION FUNCTION
 void reduction_task_function(void *arg) {
   ReductionTask *task = (ReductionTask *)arg;
   int two_i, mask, r_partner, v_partner;
@@ -943,6 +945,7 @@ void reduction_task_function(void *arg) {
   free(task); // Free the task
 }
 
+// ------------------------------------------------------------- INT REDUCE SUM
 void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, int stride, int root) {
   int num_pes = xbrtime_num_pes(); // Get total number of processing elements
   for (int currentPE = 0; currentPE < num_pes; currentPE++) {
@@ -967,6 +970,9 @@ void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, int stride
       tpool_wait(threads[currentPE].thread_queue);
   }
 }
+
+/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
 
 // Define the reduction operation for summing integers
 // void xbrtime_int_reduce_sum_tree(int *dest, const int *src, size_t nelems, int stride, int root) {
@@ -1014,10 +1020,10 @@ void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, int stride
 // }
 
 // Define the general reduction function for integer sum
-void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, int stride, int root) {
-    // Use tree-based reduction for integer sum
-    xbrtime_int_reduce_sum_tree(dest, src, nelems, stride, root);
-}
+// void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, int stride, int root) {
+//     // Use tree-based reduction for integer sum
+//     xbrtime_int_reduce_sum_tree(dest, src, nelems, stride, root);
+// }
 
 
 /* ------------------------------------------------------------------------- */

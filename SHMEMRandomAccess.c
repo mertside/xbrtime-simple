@@ -389,63 +389,12 @@ int main(int argc, char **argv)
       pe_updates += updates[j];
     printf("PE%d updates:%d\n",MyProc,updates[0]);
     // ERROR-CHECK: Collect all updates
-    // xbrtime_longlong_reduce_sum(all_updates, updates, NumProcs, 1, 0);    
+    xbrtime_longlong_reduce_sum(all_updates, updates, NumProcs, 1, 0);    
     // ERROR-CHECK: Broadcast all updates   
-    // xbrtime_longlong_broadcast(all_updates, all_updates, NumProcs, 1, 0);   
+    xbrtime_longlong_broadcast(all_updates, all_updates, NumProcs, 1, 0);   
     
-    xbrtime_reduce_sum_broadcast_all(all_updates, updates, NumProcs, 1, 0);
+    // xbrtime_reduce_sum_broadcast_all(all_updates, updates, NumProcs, 1, 0);
 
-#ifdef EXPERIMENTAL 
-    // pthread_mutex_t update_mutex = PTHREAD_MUTEX_INITIALIZER;
-    // pthread_cond_t  update_cond  = PTHREAD_COND_INITIALIZER;
-    // int updates_received = 0; 
-    // // to track number of threads that have sent their updates
-    // for (int thread_id = 0; thread_id < NumProcs; thread_id++) {
-    //   pthread_mutex_lock(&update_mutex);
-    //   all_updates[0] += updates[thread_id];
-    //   updates_received++;
-    //   if (thread_id == 0) {
-    //     // If master thread, wait until updates from all threads are received
-    //     while (updates_received < NumProcs) {
-    //       pthread_cond_wait(&update_cond, &update_mutex);
-    //     }   
-    //     // Now, broadcast all_updates to other threads
-    //     for (int i = 0; i < NumProcs; i++) {
-    //       all_updates[i] = all_updates[0];  
-    //       // Broadcast by simply copying to shared array (as an example)
-    //     }
-    //   } else {
-    //     // If not the master thread, notify the master thread about the update
-    //     pthread_cond_signal(&update_cond);
-    //   }
-    //   pthread_mutex_unlock(&update_mutex);
-    // }
-
-    // ------------------------------------------------------------------------
-
-    // Each thread computes its contribution to the updates array beforehand.
-    // pthread_mutex_lock(&update_mutex);
-    // all_updates += updates[thread_id];
-    // updates_received++;
-
-    // if (thread_id == 0) { // If master thread.
-    //     while (updates_received < NumProcs) {
-    //         pthread_cond_wait(&update_cond, &update_mutex); // Wait for updates.
-    //     }
-    //     for (int i = 0; i < NumProcs; i++) {
-    //         updates[i] = all_updates; // Broadcast the summed value.
-    //     }
-    //     updates_received = 0; // Reset for next barrier.
-    //     pthread_cond_broadcast(&update_cond); // Wake up all waiting threads.
-    // } else {
-    //     pthread_cond_signal(&update_cond); // Signal one waiting master thread.
-    //     while (updates_received < NumProcs) {
-    //         pthread_cond_wait(&update_cond, &update_mutex); // Wait for broadcast.
-    //     }
-    // }
-    // pthread_mutex_unlock(&update_mutex);
-
-#endif
     if(MyProc == 0){
       for (j = 1; j < numNodes; j++)
         all_updates[0] += all_updates[j];

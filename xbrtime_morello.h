@@ -150,7 +150,7 @@ __attribute__((constructor)) void __xbrtime_ctor() {
     }
 
     // Create a thread pool and check for creation success
-    *threads = tpool_create(numOfThreads);
+    threads = tpool_create(numOfThreads);
     if (threads == NULL) {
         fprintf(stderr, "\n[E][R] Failed to create thread pool\n");
         free(xb_barrier);

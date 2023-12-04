@@ -114,22 +114,17 @@ pthread_cond_t  update_cond  = PTHREAD_COND_INITIALIZER;
 // }
 
 __attribute__((constructor)) void __xbrtime_ctor() {
-    // Print entry message if debug print is enabled
 #ifdef XBGAS_PRINT
     printf("[R] Entered __xbrtime_ctor()\n");
 #endif
 
-    // Allocate memory for synchronization barrier
-    uint64_t *xb_barrier = malloc(sizeof(uint64_t) * 2 * 10);
-    if (xb_barrier == NULL) {
-        fprintf(stderr, "\n[E][R] Failed to allocate memory for xb_barrier\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Determine the number of threads from the environment variable
+    // Initialize variables
+    uint64_t *xb_barrier = NULL;
+    int numOfThreads = MAX_NUM_OF_THREADS;
     const char *envName = "NUM_OF_THREADS";
     char *str = getenv(envName);
-    int numOfThreads = MAX_NUM_OF_THREADS;
+
+    // Parse NUM_OF_THREADS environment variable
     if (str != NULL) {
         int envNumOfThreads = atoi(str);
         if (envNumOfThreads > 0 && envNumOfThreads <= MAX_NUM_OF_THREADS) {
@@ -138,27 +133,31 @@ __attribute__((constructor)) void __xbrtime_ctor() {
             fprintf(stderr, "\n[E][R] NUM_OF_THREADS should be between 1 and %d\n", MAX_NUM_OF_THREADS);
         }
     } else {
-        fprintf(stderr, "\n[E][R] NUM_OF_THREADS not set; setting to default: %d\n", numOfThreads);
+        fprintf(stderr, "\n[E][R] NUM_OF_THREADS not set; set environment!!!\n");
+        fprintf(stderr, "\ne.g.:\texport NUM_OF_THREADS=4\n");
     }
 
-    // Print the number of threads if debug mode is enabled
 #if XBGAS_DEBUG
     fprintf(stdout, "[R] Number of threads: %d\n", numOfThreads);
     fflush(stdout);
 #endif
 
-    // Create a thread pool with the determined number of threads
-    threads = tpool_create(numOfThreads);
-    if (threads == NULL) {
-        fprintf(stderr, "\n[E][R] Failed to create thread pool\n");
-        free(xb_barrier);  // Clean up allocated memory
+    // Allocate memory for xb_barrier and check for allocation success
+    xb_barrier = malloc(sizeof(uint64_t) * 2 * 10);
+    if (xb_barrier == NULL) {
+        fprintf(stderr, "\n[E][R] Failed to allocate memory for xb_barrier\n");
         exit(EXIT_FAILURE);
     }
 
-    // TODO: Perform any additional initialization tasks here
-    // This may include setting up data structures, initializing other libraries,
-    // or any other setup tasks required by xBGAS runtime.
+    // Create a thread pool and check for creation success
+    tpool_t *threads = tpool_create(numOfThreads);
+    if (threads == NULL) {
+        fprintf(stderr, "\n[E][R] Failed to create thread pool\n");
+        free(xb_barrier);
+        exit(EXIT_FAILURE);
+    }
 }
+
 
 /* -------------------------------------------------------------- DESTRUCTOR */
 __attribute__((destructor)) void __xbrtime_dtor() {

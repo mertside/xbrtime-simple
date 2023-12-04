@@ -476,25 +476,6 @@ extern int xbrtime_init() {
 }
 #endif
 
-// extern void xbrtime_free( void *ptr ){
-//   if( ptr == NULL ){
-//     return ;
-//   } else {
-//     free(ptr);
-//     return ;
-//   }
-
-//   // if( ptr == NULL ){
-//   //   return ;
-//   // }else if( __XBRTIME_CONFIG == NULL ){
-//   //   return ;
-//   // }else if( __XBRTIME_CONFIG->_MMAP == NULL ){
-//   //   return ;
-//   // }
-//   // __xbrtime_shared_free(ptr);
-//   // __xbrtime_asm_quiet_fence();
-// }
-
 extern int xbrtime_mype() {
   if (__XBRTIME_CONFIG == NULL) {
     return -1;
@@ -923,6 +904,7 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
 
+/*
 // Define the reduction operation for summing integers
 // ----------------------------------------------------------- INT REDUCE SUM
 void xbrtime_int_reduce_sum_tree(int *dest, const int *src, size_t nelems, int stride, int root) {
@@ -1007,6 +989,60 @@ void xbrtime_int_reduce_sum_tree(int *dest, const int *src, size_t nelems, int s
 void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, int stride, int root) {
     // Use tree-based reduction for integer sum
     xbrtime_int_reduce_sum_tree(dest, src, nelems, stride, root);
+}
+*/
+
+// -------------------------------------------------------- REDUCTION TASK ARGS
+typedef struct {
+  int *src;    // Source array
+  int *dest;   // Destination array
+  int start;   // Starting index for this task
+  int end;     // Ending index (exclusive) for this task
+} ReduceTaskArgs;
+
+// ------------------------------------------------------------- REDUCTION TASK 
+void reduction_task(void *arg) {
+  ReduceTaskArgs *args = (ReduceTaskArgs *)arg;
+  int sum = 0;
+
+  for (int i = args->start; i < args->end; i++) {
+    sum += args->src[i];
+  }
+
+  args->dest[args->start] = sum;  // Store the partial sum
+}
+
+// ------------------------------------------------------------- INT REDUCE SUM
+void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, 
+                            int stride, int pe) {
+  int num_pes = xbrtime_num_pes(); 
+  // threadpool_t *pool = tpool_create(NUM_THREADS);
+
+  // Calculate the number of elements each task should handle
+  int elems_per_task = nelems / num_pes;
+
+  ReduceTaskArgs args[num_pes];
+  for (int i = 0; i < num_pes; i++) {
+    args[i].src = src;
+    args[i].dest = dest;
+    args[i].start = i * elems_per_task;
+    args[i].end = (i == num_pes - 1) ? nelems : args[i].start + elems_per_task;
+
+    tpool_add_work(threads[i].thread_queue, reduction_task, &args[i]);
+  }
+
+  tpool_wait(pool);
+  tpool_destroy(pool);
+
+  // Final reduction to aggregate results from all tasks
+  int final_sum = 0;
+  for (int i = 0; i < num_pes; i++) {
+    final_sum += dest[args[i].start];
+  }
+  // Store the final result in the destination array
+  for (int i = 0; i < nelems; i++) {
+    dest[i] = final_sum;
+  }
 }
 
 

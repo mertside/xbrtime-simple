@@ -151,6 +151,8 @@ __attribute__((destructor)) void __xbrtime_dtor() {
     printf("[R] Entered __xbrtime_dtor()\n");
 #endif
 
+    int numOfThreads = atoi(getenv("NUM_OF_THREADS"));
+    
     // Assuming numOfThreads is stored globally or passed appropriately
     for (int i = 0; i < numOfThreads; i++) {
         // Wait for each thread to finish its work

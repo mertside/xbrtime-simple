@@ -22,7 +22,7 @@ int main()
 
     for(i = 0; i < 10; i++)
     {
-        r_val[i] = my_pe + i;
+        r_val[i] = 1;
     }
 
 	printf("Pre-Reduction - PE:%d R_Val: %d %d %d %d %d %d %d %d %d %d\n", \

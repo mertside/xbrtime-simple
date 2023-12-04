@@ -819,34 +819,34 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
 
   // Number of communication stages
   int numpes_log = (int) ceil(log(numpes) / log(2)); 
-  printf("[B] numpes_log = %d\n", numpes_log);
+  printf("[Bro] numpes_log = %d\n", numpes_log);
 
   // Mask for the current PE
   int mask = (int) (pow(2, numpes_log) - 1); 
-  printf("[B] mask = %d\n", mask);
+  printf("[Bro] mask = %d\n", mask);
   
   for (int currentPE = 0; currentPE < numpes; currentPE++) {
     // Root loads values into the buffer
     if (my_rpe == root) {
       for (int i = 0; i < nelems; i++) {
         temp[i] = src[i * stride];
-        printf("[B] temp[%d] = %d\n", i, temp[i]); 
+        printf("[Bro] temp[%d] = %d\n", i, temp[i]); 
       }
     }
 
     for (int i = numpes_log - 1; i >= 0; i--) {
       int two_i = (int) pow(2, i);
-      printf("[B] two_i = %d\n", two_i);
+      printf("[Bro] two_i = %d\n", two_i);
 
       mask ^= two_i;
-      printf("[B] mask = %d\n", mask);
+      printf("[Bro] mask = %d\n", mask);
 
       if (((my_vpe & mask) == 0) && ((my_vpe & two_i) == 0)) {
         int v_partner = (my_vpe ^ two_i) % numpes;
-        printf("[B] v_partner = %d\n", v_partner);
+        printf("[Bro] v_partner = %d\n", v_partner);
 
         int r_partner = (v_partner + root) % numpes;
-        printf("[B] r_partner = %d\n", r_partner);
+        printf("[Bro] r_partner = %d\n", r_partner);
 
         if (my_vpe < v_partner) {
           // BroadcastTask task;
@@ -886,83 +886,81 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
 
-// -------------------------------------------------------- FUNCTION PROTOTYPES
-typedef struct {
-  int *dest;
-  const int *src;
-  size_t nelems;
-  int stride;
-  int root;
-  int my_pe;
-  int num_pes;
-} ReductionTask;
+/* ------------------------------------------------------------------------- */
+/* ========================================================================= */
 
-// --------------------------------------------------------- REDUCTION FUNCTION
-void reduction_task_function(void *arg) {
-  ReductionTask *task = (ReductionTask *)arg;
-  int two_i, mask, r_partner, v_partner;
-  int numpes_log = (int) ceil(log(task->num_pes) / log(2));
-  mask = (int) (pow(2, numpes_log) - 1);
+// Define the reduction operation for summing integers
+// ----------------------------------------------------------- INT REDUCE SUM
+void xbrtime_int_reduce_sum_tree(int *dest, const int *src, size_t nelems, int stride, int root) {
+  numpes = xbrtime_num_pes(); 
+  
+  for (int currentPE = 0; currentPE < num_pes; currentPE++) {
+    
+    int i, j, numpes, my_rpe, my_vpe, numpes_log, mask, two_i, r_partner, v_partner;
+    stride = ((stride == 0) ? 1 : stride);
+    int *temp = (int*) malloc(nelems * sizeof(int) * stride);
+    int *accumulate = (int*) xbrtime_malloc(nelems * sizeof(int) * stride);
+    
+    // numpes = xbrtime_num_pes();
+    my_rpe = xbrtime_mype();
+    my_vpe = ((my_rpe >= root) ? (my_rpe - root) : (my_rpe + numpes - root));
+    printf("[Red] my_vpe = %d\n", my_vpe);
 
-  int *temp = (int*) malloc(task->nelems * sizeof(int) * task->stride);
+    numpes_log = (int) ceil((log(numpes) / log(2)));
+    printf("[Red] numpes_log = %d\n", numpes_log);
 
-  // Load initial values into temp buffer
-  for (int i = 0; i < task->nelems; i++) {
-    temp[i * task->stride] = task->src[i * task->stride];
-  }
+    mask = (int) (pow(2, numpes_log) - 1);
+    printf("[Red] mask = %d\n", mask);  
 
-  for (int i = 0; i < numpes_log; i++) {
-    two_i = (int) pow(2, i);
-    mask ^= two_i;
-    v_partner = (task->my_pe ^ two_i) % task->num_pes;
+    for (i = 0; i < nelems; i++) {
+      accumulate[i * stride] = src[i * stride];
+      printf("[Red] accumulate[%d] = %d\n", i, accumulate[i * stride]);
+    }
 
-    // Calculate the partner's virtual PE number
-    r_partner = (v_partner >= task->root) ? (v_partner - task->root) : (v_partner + task->num_pes - task->root);
+    xbrtime_barrier();
 
-    if (((task->my_pe & mask) == 0) && ((task->my_pe & two_i) == 0)) {
-      if (task->my_pe < v_partner) {
-        // Perform the reduction operation with the partner's data
-        // Assuming xbrtime_int_get fetches data from the partner PE
-        xbrtime_int_get(temp, task->dest, task->nelems, task->stride, r_partner);
-        for (int j = 0; j < task->nelems; j++) {
-          task->dest[j * task->stride] += temp[j * task->stride];
+    for (i = 0; i < numpes_log; i++) {
+      two_i = (int) pow(2, i);
+      printf("[Red] two_i = %d\n", two_i);  
+
+      mask ^= two_i;
+      printf("[Red] mask = %d\n", mask);  
+
+      if (((my_vpe | mask) == mask) && ((my_vpe & two_i) == 0)) {
+        v_partner = (my_vpe ^ two_i) % numpes;
+        printf("[Red] v_partner = %d\n", v_partner);
+
+        r_partner = (v_partner + root) % numpes;
+        printf("[Red] r_partner = %d\n", r_partner);
+
+        if (my_vpe < v_partner) {
+          // xbrtime_int_get(temp, accumulate, nelems, stride, r_partner);
+          void *func_args_put = {temp, accumulate, nelems, stride, r_partner};
+          bool checkGet = tpool_add_work(threads[currentPE].thread_queue, xbrtime_int_get, task);
+          if (!checkGet) {
+            printf("Error: Unable to add reduce work to thread pool.\n");
+          }
+
+          for (j = 0; j < nelems; j++) {
+            accumulate[j * stride] += temp[j * stride];
+            printf("[Red] accumulate[%d] = %d\n", j, accumulate[j * stride]);
+          }
         }
       }
+      xbrtime_barrier();
     }
 
-    // Synchronize threads at the barrier
     tpool_wait(threads[task->my_pe].thread_queue); // Assuming each PE has its thread queue
-  }
 
-  // Copy data to destination on root
-  if (task->my_pe == task->root) {
-    for (int i = 0; i < task->nelems; i++) {
-      task->dest[i * task->stride] = task->dest[i * task->stride];
+    if (my_vpe == 0) {
+      for (i = 0; i < nelems; i++) {
+        dest[i * stride] = accumulate[i * stride];
+        printf("[Red] dest[%d] = %d\n", i, dest[i * stride]);
+      }
     }
-  }
-
-  free(temp); // Free the temporary buffer
-  free(task); // Free the task
-}
-
-// ------------------------------------------------------------- INT REDUCE SUM
-void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, int stride, int root) {
-  int num_pes = xbrtime_num_pes(); // Get total number of processing elements
-  for (int currentPE = 0; currentPE < num_pes; currentPE++) {
-    ReductionTask *task = malloc(sizeof(ReductionTask));
-    task->dest = dest;
-    task->src = src;
-    task->nelems = nelems;
-    task->stride = stride;
-    task->root = root;
-    task->my_pe = currentPE; // Assign each task a unique PE number
-    task->num_pes = num_pes;
-    
-    // Add the task to the thread pool
-    bool checkReduce = tpool_add_work(threads[currentPE].thread_queue, reduction_task_function, task);
-    if (!checkReduce) {
-      printf("Error: Unable to add reduce work to thread pool.\n");
-    }
+  
+    xbrtime_free(accumulate);
+    free(temp);
   }
 
   // Synchronize threads after submitting all tasks
@@ -971,59 +969,11 @@ void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, int stride
   }
 }
 
-/* ------------------------------------------------------------------------- */
-/* ========================================================================= */
-
-// Define the reduction operation for summing integers
-// void xbrtime_int_reduce_sum_tree(int *dest, const int *src, size_t nelems, int stride, int root) {
-//     int i, j, numpes, my_rpe, my_vpe, numpes_log, mask, two_i, r_partner, v_partner;
-//     stride = ((stride == 0) ? 1 : stride);
-//     int *temp = (int*) malloc(nelems * sizeof(int) * stride);
-//     int *accumulate = (int*) xbrtime_malloc(nelems * sizeof(int) * stride);
-    
-//     numpes = xbrtime_num_pes();
-//     my_rpe = xbrtime_mype();
-//     my_vpe = ((my_rpe >= root) ? (my_rpe - root) : (my_rpe + numpes - root));
-//     numpes_log = (int) ceil((log(numpes) / log(2)));
-//     mask = (int) (pow(2, numpes_log) - 1);
-
-//     for (i = 0; i < nelems; i++) {
-//         accumulate[i * stride] = src[i * stride];
-//     }
-
-//     xbrtime_barrier();
-
-//     for (i = 0; i < numpes_log; i++) {
-//         two_i = (int) pow(2, i);
-//         mask ^= two_i;
-//         if (((my_vpe | mask) == mask) && ((my_vpe & two_i) == 0)) {
-//             v_partner = (my_vpe ^ two_i) % numpes;
-//             r_partner = (v_partner + root) % numpes;
-//             if (my_vpe < v_partner) {
-//                 xbrtime_int_get(temp, accumulate, nelems, stride, r_partner);
-//                 for (j = 0; j < nelems; j++) {
-//                     accumulate[j * stride] += temp[j * stride];
-//                 }
-//             }
-//         }
-//         xbrtime_barrier();
-//     }
-
-//     if (my_vpe == 0) {
-//         for (i = 0; i < nelems; i++) {
-//             dest[i * stride] = accumulate[i * stride];
-//         }
-//     }
-
-//     xbrtime_free(accumulate);
-//     free(temp);
-// }
-
 // Define the general reduction function for integer sum
-// void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, int stride, int root) {
-//     // Use tree-based reduction for integer sum
-//     xbrtime_int_reduce_sum_tree(dest, src, nelems, stride, root);
-// }
+void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, int stride, int root) {
+    // Use tree-based reduction for integer sum
+    xbrtime_int_reduce_sum_tree(dest, src, nelems, stride, root);
+}
 
 
 /* ------------------------------------------------------------------------- */

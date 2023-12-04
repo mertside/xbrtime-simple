@@ -1007,26 +1007,38 @@ void reduction_task(void *arg) {
 
   for (int i = args->start; i < args->end; i++) {
     sum += args->src[i];
+    printf("[RedTask] sum = %d\n", sum);
   }
 
   args->dest[args->start] = sum;  // Store the partial sum
+  printf("[RedTask] args->dest[%d] = %d\n", args->start, args->dest[args->start]);
 }
 
 // ------------------------------------------------------------- INT REDUCE SUM
 void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, 
                             int stride, int pe) {
   int num_pes = xbrtime_num_pes(); 
+  printf("[Red] num_pes = %d\n", num_pes);
+
   // threadpool_t *pool = tpool_create(NUM_THREADS);
 
   // Calculate the number of elements each task should handle
   int elems_per_task = nelems / num_pes;
+  printf("[Red] elems_per_task = %d\n", elems_per_task);
 
   ReduceTaskArgs args[num_pes];
   for (int i = 0; i < num_pes; i++) {
     args[i].src = src;
+    printf("[Red] args[%d].src = %d\n", i, args[i].src);
+
     args[i].dest = dest;
+    printf("[Red] args[%d].dest = %d\n", i, args[i].dest);
+
     args[i].start = i * elems_per_task;
+    printf("[Red] args[%d].start = %d\n", i, args[i].start);
+
     args[i].end = (i == num_pes - 1) ? nelems : args[i].start + elems_per_task;
+    printf("[Red] args[%d].end = %d\n", i, args[i].end);  
 
     tpool_add_work(threads[i].thread_queue, reduction_task, &args[i]);
   }
@@ -1040,10 +1052,12 @@ void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems,
   int final_sum = 0;
   for (int i = 0; i < num_pes; i++) {
     final_sum += dest[args[i].start];
+    printf("[Red] final_sum = %d\n", final_sum);
   }
   // Store the final result in the destination array
   for (int i = 0; i < nelems; i++) {
     dest[i] = final_sum;
+    printf("[Red] dest[%d] = %d\n", i, dest[i]);
   }
 }
 

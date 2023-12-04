@@ -398,6 +398,10 @@ int main(int argc, char **argv)
     if(MyProc == 0){
       for (j = 1; j < numNodes; j++)
         all_updates[0] += all_updates[j];
+      
+      printf("Total updates:%d\n",all_updates[0]);
+      printf("%d * %d = %d\n", ProcNumUpdates, NumProcs, ProcNumUpdates*NumProcs);
+      
       if(ProcNumUpdates*NumProcs == all_updates[0])
         printf("Verification passed!\n");
       else

@@ -162,10 +162,10 @@ __attribute__((destructor)) void __xbrtime_dtor() {
         // tpool_destroy(threads[i].thread_queue);
     }
 
-    for (int i = 0; i < numOfThreads; i++) {
-      tpool_destroy(threads[i].thread_queue);
-      fprintf(stdout, "[R] Thread %d destroyed.\n", i);
-    }
+    // for (int i = 0; i < numOfThreads; i++) {
+    //   tpool_destroy(threads[i].thread_queue);
+    //   fprintf(stdout, "[R] Thread %d destroyed.\n", i);
+    // }
 
     // Free the memory associated with the threads
     tpool_thread_free(threads);

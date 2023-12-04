@@ -823,80 +823,138 @@ void xbrtime_int_broadcast_deprecated(int *dest, const int *src, size_t nelems, 
 /* ========================================================================= */
 
 // Function to perform an integer broadcast using a thread pool
-void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride, int root) {
-  int numpes = xbrtime_num_pes(); // Get total number of processing elements
-  int my_rpe = xbrtime_mype();    // Get rank of current processing element
+// void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride, int root) {
+//   int numpes = xbrtime_num_pes(); // Get total number of processing elements
+//   int my_rpe = xbrtime_mype();    // Get rank of current processing element
 
-  // Virtual PE number adjusted for the root
-  int my_vpe = ((my_rpe >= root) ? (my_rpe - root) : (my_rpe + numpes - root));
+//   // Virtual PE number adjusted for the root
+//   int my_vpe = ((my_rpe >= root) ? (my_rpe - root) : (my_rpe + numpes - root));
   
-  int *temp = (int*) xbrtime_malloc(sizeof(int) * nelems); 
+//   int *temp = (int*) xbrtime_malloc(sizeof(int) * nelems); 
 
-  // Number of communication stages
-  int numpes_log = (int) ceil(log(numpes) / log(2)); 
-  printf("[Bro] numpes_log = %d\n", numpes_log);
+//   // Number of communication stages
+//   int numpes_log = (int) ceil(log(numpes) / log(2)); 
+//   printf("\t[Bro] numpes_log = %d\n", numpes_log);
 
-  // Mask for the current PE
-  int mask = (int) (pow(2, numpes_log) - 1); 
-  printf("[Bro] mask = %d\n", mask);
+//   // Mask for the current PE
+//   int mask = (int) (pow(2, numpes_log) - 1); 
+//   printf("\t[Bro] mask = %d\n", mask);
   
-  for (int currentPE = 0; currentPE < numpes; currentPE++) {
-    // Root loads values into the buffer
-    if (my_rpe == root) {
-      for (int i = 0; i < nelems; i++) {
-        temp[i] = src[i * stride];
-        printf("[Bro] temp[%d] = %d\n", i, temp[i]); 
-      }
-    }
+//   for (int currentPE = 0; currentPE < numpes; currentPE++) {
+//     // Root loads values into the buffer
+//     if (my_rpe == root) {
+//       for (int i = 0; i < nelems; i++) {
+//         temp[i] = src[i * stride];
+//         printf("\t[Bro] temp[%d] = %d\n", i, temp[i]); 
+//       }
+//     }
 
-    for (int i = numpes_log - 1; i >= 0; i--) {
-      int two_i = (int) pow(2, i);
-      printf("[Bro] two_i = %d\n", two_i);
+//     for (int i = numpes_log - 1; i >= 0; i--) {
+//       int two_i = (int) pow(2, i);
+//       printf("\t[Bro] two_i = %d\n", two_i);
 
-      mask ^= two_i;
-      printf("[Bro] mask = %d\n", mask);
+//       mask ^= two_i;
+//       printf("\t[Bro] mask = %d\n", mask);
 
-      if (((my_vpe & mask) == 0) && ((my_vpe & two_i) == 0)) {
-        int v_partner = (my_vpe ^ two_i) % numpes;
-        printf("[Bro] v_partner = %d\n", v_partner);
+//       if (((my_vpe & mask) == 0) && ((my_vpe & two_i) == 0)) {
+//         int v_partner = (my_vpe ^ two_i) % numpes;
+//         printf("\t[Bro] v_partner = %d\n", v_partner);
 
-        int r_partner = (v_partner + root) % numpes;
-        printf("[Bro] r_partner = %d\n", r_partner);
+//         int r_partner = (v_partner + root) % numpes;
+//         printf("\t[Bro] r_partner = %d\n", r_partner);
 
-        if (my_vpe < v_partner) {
-          // BroadcastTask task;
-          // task.temp = temp;
-          // task.nelems = nelems;
-          // task.r_partner = r_partner;
+//         if (my_vpe < v_partner) {
+//           // BroadcastTask task;
+//           // task.temp = temp;
+//           // task.nelems = nelems;
+//           // task.r_partner = r_partner;
 
-          // Add the task to the thread pool
-          // tpool_add_work(pool, broadcast_task_function, &task);
-          // xbrtime_int_put(temp, temp, nelems, 1, r_partner);
+//           // Add the task to the thread pool
+//           // tpool_add_work(pool, broadcast_task_function, &task);
+//           // xbrtime_int_put(temp, temp, nelems, 1, r_partner);
 
-          void *func_args_put = {temp, temp, nelems, 1, r_partner};
+//           void *func_args_put = {temp, temp, nelems, 1, r_partner};
 
-          // Put a long long integer value to a remote memory location
-          bool checkPut = tpool_add_work(threads[currentPE].thread_queue, 
-                                         xbrtime_longlong_put, &func_args_put);
-          if (!checkPut) {
-            printf("Error: Unable to add put work to thread pool.\n");
-          }
-        }
-      // Synchronize threads at the barrier
-      tpool_wait(threads[currentPE].thread_queue);
-      }
-    }
+//           // Put a long long integer value to a remote memory location
+//           bool checkPut = tpool_add_work(threads[currentPE].thread_queue, 
+//                                          xbrtime_longlong_put, &func_args_put);
+//           if (!checkPut) {
+//             printf("Error: Unable to add put work to thread pool.\n");
+//           }
+//         }
+//       // Synchronize threads at the barrier
+//       tpool_wait(threads[currentPE].thread_queue);
+//       }
+//     }
   
-    // Migrate from buffer to destination
-    for (int i = 0; i < nelems; i++) {
-      dest[i * stride] = temp[i];
-      printf("[B] dest[%d] = %d\n", i, dest[i]);
-    }
+//     // Migrate from buffer to destination
+//     for (int i = 0; i < nelems; i++) {
+//       dest[i * stride] = temp[i];
+//       printf("\t[Bro] dest[%d] = %d\n", i, dest[i]);
+//     }
+//   }
+
+//   xbrtime_free(temp); // Free the temporary buffer
+//   // tpool_destroy(pool); // Destroy the thread pool
+// }
+
+// -------------------------------------------------------- BROADCAST TASK ARGS
+typedef struct {
+  int *src;      // Pointer to the source integer
+  int *dest;     // Pointer to the destination integer
+  int root_pe;   // Root processing element identifier
+} BroadcastTaskArgs;
+
+// -------------------------------------------------------- BROADCAST TASK FUNC
+void broadcast_task(void *arg) {
+  BroadcastTaskArgs *taskArgs = (BroadcastTaskArgs *)arg;
+
+  // Perform the broadcast operation
+  // In this case, simply copy the value from src to dest
+  if(taskArgs->root_pe == xbrtime_mype()) {
+    *(taskArgs->dest) = *(taskArgs->src);
+    printf("\t\t[BroTask] *(taskArgs->dest) = %d\n", *(taskArgs->dest));
   }
 
-  xbrtime_free(temp); // Free the temporary buffer
-  // tpool_destroy(pool); // Destroy the thread pool
+  // Free the allocated task arguments
+  free(taskArgs);
 }
+
+// -------------------------------------------------------------- INT BROADCAST
+void xbrtime_int_broadcast(int *src, int *dest, size_t nelems, int stride, int root_pe) {
+  int num_pes = xbrtime_num_pes(); 
+  printf("\t[Bro] num_pes = %d\n", num_pes);
+
+  // Assuming NUM_THREADS is a predefined macro or a global constant
+  // threadpool_t *pool = tpool_create(NUM_THREADS);
+
+  // Since we are broadcasting a single integer, the task is simple
+  // Each thread will simply copy the value from src to dest
+  for (int i = 0; i < num_pes; ++i) {
+    // Create and initialize task arguments, if needed
+    BroadcastTaskArgs *taskArgs = (BroadcastTaskArgs *)malloc(sizeof(BroadcastTaskArgs));
+    taskArgs->src = src;
+    printf("\t[Bro] taskArgs->src = %d\n", *(taskArgs->src));
+
+    taskArgs->dest = dest;
+    printf("\t[Bro] taskArgs->dest = %d\n", *(taskArgs->dest));
+
+    taskArgs->root_pe = root_pe; // Additional info, if needed
+    printf("\t[Bro] taskArgs->root_pe = %d\n", taskArgs->root_pe);
+
+    // Add task to the thread pool
+    tpool_add_work(threads[i].thread_queue, broadcast_task, taskArgs);
+  }
+
+  // Wait for all tasks in the pool to complete
+  for (int i = 0; i < num_pes; i++) {
+    tpool_wait(threads[i].thread_queue);
+  }
+
+  // Clean up the thread pool
+  // tpool_destroy(threads[i].thread_queue);
+}
+
 
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
@@ -1007,38 +1065,38 @@ void reduction_task(void *arg) {
 
   for (int i = args->start; i < args->end; i++) {
     sum += args->src[i];
-    printf("[RedTask] sum = %d\n", sum);
+    printf("\t\t[RedTask] sum = %d\n", sum);
   }
 
   args->dest[args->start] = sum;  // Store the partial sum
-  printf("[RedTask] args->dest[%d] = %d\n", args->start, args->dest[args->start]);
+  printf("\t\t[RedTask] args->dest[%d] = %d\n", args->start, args->dest[args->start]);
 }
 
 // ------------------------------------------------------------- INT REDUCE SUM
 void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems, 
                             int stride, int pe) {
   int num_pes = xbrtime_num_pes(); 
-  printf("[Red] num_pes = %d\n", num_pes);
+  printf("\t[Red] num_pes = %d\n", num_pes);
 
   // threadpool_t *pool = tpool_create(NUM_THREADS);
 
   // Calculate the number of elements each task should handle
   int elems_per_task = nelems / num_pes;
-  printf("[Red] elems_per_task = %d\n", elems_per_task);
+  printf("\t[Red] elems_per_task = %d\n", elems_per_task);
 
   ReduceTaskArgs args[num_pes];
   for (int i = 0; i < num_pes; i++) {
     args[i].src = src;
-    printf("[Red] args[%d].src = %d\n", i, args[i].src);
+    printf("\t[Red] args[%d].src = %d\n", i, args[i].src);
 
     args[i].dest = dest;
-    printf("[Red] args[%d].dest = %d\n", i, args[i].dest);
+    printf("\t[Red] args[%d].dest = %d\n", i, args[i].dest);
 
     args[i].start = i * elems_per_task;
-    printf("[Red] args[%d].start = %d\n", i, args[i].start);
+    printf("\t[Red] args[%d].start = %d\n", i, args[i].start);
 
     args[i].end = (i == num_pes - 1) ? nelems : args[i].start + elems_per_task;
-    printf("[Red] args[%d].end = %d\n", i, args[i].end);  
+    printf("\t[Red] args[%d].end = %d\n", i, args[i].end);  
 
     tpool_add_work(threads[i].thread_queue, reduction_task, &args[i]);
   }
@@ -1052,12 +1110,12 @@ void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems,
   int final_sum = 0;
   for (int i = 0; i < num_pes; i++) {
     final_sum += dest[args[i].start];
-    printf("[Red] final_sum = %d\n", final_sum);
+    printf("\t[Red] final_sum = %d\n", final_sum);
   }
   // Store the final result in the destination array
   for (int i = 0; i < nelems; i++) {
     dest[i] = final_sum;
-    printf("[Red] dest[%d] = %d\n", i, dest[i]);
+    printf("\t[Red] dest[%d] = %d\n", i, dest[i]);
   }
 }
 

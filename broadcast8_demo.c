@@ -21,12 +21,6 @@ int main()
 	b_val = (int*) xbrtime_malloc(sizeof(int));
 	*b_val = my_pe;
 
-  // int row = 0;
-  // int col = 0;
-  // int num_pes = xbrtime_num_pes();
-  // row         = num_pes;
-  // col         = ne;
-
 	printf("Pre-Broadcast - PE:%d B_Val: %d\n", my_pe, *b_val);
 
 	xbrtime_barrier();

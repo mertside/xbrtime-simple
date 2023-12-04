@@ -950,7 +950,7 @@ void xbrtime_int_reduce_sum_tree(int *dest, const int *src, size_t nelems, int s
       xbrtime_barrier();
     }
 
-    tpool_wait(threads[task->my_pe].thread_queue); // Assuming each PE has its thread queue
+    tpool_wait(threads[currentPE].thread_queue); // Assuming each PE has its thread queue
 
     if (my_vpe == 0) {
       for (i = 0; i < nelems; i++) {

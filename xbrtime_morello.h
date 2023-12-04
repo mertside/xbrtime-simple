@@ -879,9 +879,62 @@ void xbrtime_int_broadcast(int *src, int *dest, size_t nelems, int stride, int r
   // tpool_destroy(threads[i].thread_queue);
 }
 
+// ----------------------------------------------------------------------------
+// ============================================================================
+
+// ---------------------------------------------- LONG LONG BROADCAST TASK ARGS
+typedef struct {
+  long long *src;    // Pointer to the source long long integer
+  long long *dest;   // Pointer to the destination long long integer
+  int root_pe;       // Root processing element identifier
+} LongLongBroadcastTaskArgs;
+
+// ---------------------------------------------- LONG LONG BROADCAST TASK FUNC
+void longlong_broadcast_task(void *arg) {
+  LongLongBroadcastTaskArgs *taskArgs = (LongLongBroadcastTaskArgs *)arg;
+
+  // Perform the broadcast operation
+  // Copy the value from src to dest for the root PE
+  if (taskArgs->root_pe == xbrtime_mype()) {
+    *(taskArgs->dest) = *(taskArgs->src);
+  }
+  printf("\t\t[LongBroTask] *(taskArgs->dest) = %lld\n", *(taskArgs->dest));
+
+  // Free the allocated task arguments
+  free(taskArgs);
+}
+
+// ---------------------------------------------------- LONG LONG BROADCAST FUNC
+void xbrtime_longlong_broadcast(long long *src, long long *dest, size_t nelems, int stride, int root_pe) {
+  int num_pes = xbrtime_num_pes();
+  printf("\t[LongBro] num_pes = %d\n", num_pes);
+
+  // Each thread will copy the value from src to dest for the root PE
+  for (int i = 0; i < num_pes; ++i) {
+    // Create and initialize task arguments
+    LongLongBroadcastTaskArgs *taskArgs = (LongLongBroadcastTaskArgs *)malloc(sizeof(LongLongBroadcastTaskArgs));
+    taskArgs->src = src;
+    taskArgs->dest = dest;
+    taskArgs->root_pe = root_pe;
+
+    // Add task to the thread pool
+    tpool_add_work(threads[i].thread_queue, longlong_broadcast_task, taskArgs);
+  }
+
+  // Wait for all tasks in the pool to complete
+  for (int i = 0; i < num_pes; i++) {
+    tpool_wait(threads[i].thread_queue);
+  }
+
+  // Optionally, clean up the thread pool if needed
+  // tpool_destroy(threads[i].thread_queue);
+}
 
 /* ------------------------------------------------------------------------- */
 /* ========================================================================= */
+// ----------------------------------------------------------------------------
+// ============================================================================
+
 
 // -------------------------------------------------------- REDUCTION TASK ARGS
 typedef struct {
@@ -949,6 +1002,67 @@ void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems,
   for (int i = 0; i < nelems; i++) {
     dest[i] = final_sum;
     printf("\t[Red] dest[%d] = %d\n", i, dest[i]);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// ============================================================================
+
+// ------------------------------------------ REDUCTION TASK ARGS FOR LONG LONG
+typedef struct {
+  long long *src;    // Source array
+  long long *dest;   // Destination array
+  int start;         // Starting index for this task
+  int end;           // Ending index (exclusive) for this task
+} LongLongReduceTaskArgs;
+
+// --------------------------------------------------- LONG LONG REDUCTION TASK
+void longlong_reduction_task(void *arg) {
+  LongLongReduceTaskArgs *args = (LongLongReduceTaskArgs *)arg;
+  long long sum = 0;
+
+  for (int i = args->start; i < args->end; i++) {
+    sum += args->src[i];
+    printf("\t\t[LongRedTask] sum = %lld\n", sum);
+  }
+
+  args->dest[args->start] = sum;  // Store the partial sum
+  printf("\t\t[LongRedTask] args->dest[%d] = %lld\n", args->start, args->dest[args->start]);
+}
+
+// ------------------------------------------------------- LONG LONG REDUCE SUM
+void xbrtime_longlong_reduce_sum(long long *dest, const long long *src, size_t nelems, 
+                                 int stride, int pe) {
+  int num_pes = xbrtime_num_pes(); 
+  printf("\t[LongRed] num_pes = %d\n", num_pes);
+
+  int elems_per_task = nelems / num_pes;
+  printf("\t[LongRed] elems_per_task = %d\n", elems_per_task);
+
+  LongLongReduceTaskArgs args[num_pes];
+  for (int i = 0; i < num_pes; i++) {
+    args[i].src = (long long *)src;  // Cast to long long pointer
+    args[i].dest = dest;
+
+    args[i].start = i * elems_per_task;
+    args[i].end = (i == num_pes - 1) ? nelems : args[i].start + elems_per_task;
+
+    tpool_add_work(threads[i].thread_queue, longlong_reduction_task, &args[i]);
+  }
+
+  for (int i = 0; i < num_pes; i++) {
+    tpool_wait(threads[i].thread_queue);
+  }
+
+  // Final reduction
+  long long final_sum = 0;
+  for (int i = 0; i < num_pes; i++) {
+    final_sum += dest[args[i].start];
+  }
+
+  // Store the final result
+  for (int i = 0; i < nelems; i++) {
+    dest[i] = final_sum;
   }
 }
 

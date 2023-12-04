@@ -892,9 +892,9 @@ void xbrtime_int_broadcast(int *dest, const int *src, size_t nelems, int stride,
 // Define the reduction operation for summing integers
 // ----------------------------------------------------------- INT REDUCE SUM
 void xbrtime_int_reduce_sum_tree(int *dest, const int *src, size_t nelems, int stride, int root) {
-  numpes = xbrtime_num_pes(); 
+  int numpes = xbrtime_num_pes(); 
   
-  for (int currentPE = 0; currentPE < num_pes; currentPE++) {
+  for (int currentPE = 0; currentPE < numpes; currentPE++) {
     
     int i, j, numpes, my_rpe, my_vpe, numpes_log, mask, two_i, r_partner, v_partner;
     stride = ((stride == 0) ? 1 : stride);
@@ -935,8 +935,8 @@ void xbrtime_int_reduce_sum_tree(int *dest, const int *src, size_t nelems, int s
 
         if (my_vpe < v_partner) {
           // xbrtime_int_get(temp, accumulate, nelems, stride, r_partner);
-          void *func_args_put = {temp, accumulate, nelems, stride, r_partner};
-          bool checkGet = tpool_add_work(threads[currentPE].thread_queue, xbrtime_int_get, task);
+          void *func_args_get = {temp, accumulate, nelems, stride, r_partner};
+          bool checkGet = tpool_add_work(threads[currentPE].thread_queue, xbrtime_int_get, func_args_get);
           if (!checkGet) {
             printf("Error: Unable to add reduce work to thread pool.\n");
           }
@@ -964,7 +964,7 @@ void xbrtime_int_reduce_sum_tree(int *dest, const int *src, size_t nelems, int s
   }
 
   // Synchronize threads after submitting all tasks
-  for (int currentPE = 0; currentPE < num_pes; currentPE++) {
+  for (int currentPE = 0; currentPE < numpes; currentPE++) {
       tpool_wait(threads[currentPE].thread_queue);
   }
 }

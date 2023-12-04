@@ -152,13 +152,19 @@ __attribute__((destructor)) void __xbrtime_dtor() {
 #endif
 
     int numOfThreads = atoi(getenv("NUM_OF_THREADS"));
-    
+
     // Assuming numOfThreads is stored globally or passed appropriately
     for (int i = 0; i < numOfThreads; i++) {
         // Wait for each thread to finish its work
         tpool_wait(threads[i].thread_queue);
+        fprintf(stdout, "[R] Thread %d finished.\n", i);
         // Destroy the thread pool
-        tpool_destroy(threads[i].thread_queue);
+        // tpool_destroy(threads[i].thread_queue);
+    }
+
+    for (int i = 0; i < numOfThreads; i++) {
+      tpool_destroy(threads[i].thread_queue);
+      fprintf(stdout, "[R] Thread %d destroyed.\n", i);
     }
 
     // Free the memory associated with the threads

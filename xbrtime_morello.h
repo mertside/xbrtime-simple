@@ -114,37 +114,63 @@ __attribute__((constructor)) void __xbrtime_ctor() {
 }
 
 /* -------------------------------------------------------------- DESTRUCTOR */
+// __attribute__((destructor)) void __xbrtime_dtor() {
+// #ifdef XBGAS_PRINT
+//   printf("[R] Entered __xbrtime_dtor()\n");
+// #endif
+
+//   // First, ensure that the thread pool finishes its work and is then destroyed.
+//   int numOfThreads = atoi(getenv("NUM_OF_THREADS"));
+//   for (int i = 0; i < numOfThreads; i++) {
+//     // Wait for each thread to finish its work
+//     tpool_wait(threads[i].thread_queue);
+//     // Destroy the thread pool
+//     // tpool_destroy(threads[i].thread_queue);
+//   }
+//   // Free the memory associated with the threads
+//   // free(threads);  
+//   tpool_thread_free(threads);
+
+//   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
+//   /* free_barrier */
+//   uint64_t end = 0;
+//   // *((uint64_t *)END_ADDR) = end;
+//   // printf("DTOR: Free\n");
+
+//   // Cleanup the allocated memory for `xb_barrier`
+//   free((void *)xb_barrier);
+
+// #if XBGAS_DEBUG
+//   fprintf(stdout, "[R] Destructor completed.\n");
+//   fflush(stdout);
+// #endif
+// }
+
 __attribute__((destructor)) void __xbrtime_dtor() {
 #ifdef XBGAS_PRINT
-  printf("[R] Entered __xbrtime_dtor()\n");
+    printf("[R] Entered __xbrtime_dtor()\n");
 #endif
 
-  // First, ensure that the thread pool finishes its work and is then destroyed.
-  int numOfThreads = atoi(getenv("NUM_OF_THREADS"));
-  for (int i = 0; i < numOfThreads; i++) {
-    // Wait for each thread to finish its work
-    tpool_wait(threads[i].thread_queue);
-    // Destroy the thread pool
-    // tpool_destroy(threads[i].thread_queue);
-  }
-  // Free the memory associated with the threads
-  // free(threads);  
-  tpool_thread_free(threads);
+    // Assuming numOfThreads is stored globally or passed appropriately
+    for (int i = 0; i < numOfThreads; i++) {
+        // Wait for each thread to finish its work
+        tpool_wait(threads[i].thread_queue);
+        // Destroy the thread pool
+        tpool_destroy(threads[i].thread_queue);
+    }
 
-  // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
-  /* free_barrier */
-  uint64_t end = 0;
-  // *((uint64_t *)END_ADDR) = end;
-  // printf("DTOR: Free\n");
+    // Free the memory associated with the threads
+    tpool_thread_free(threads);
 
-  // Cleanup the allocated memory for `xb_barrier`
-  free((void *)xb_barrier);
+    // Cleanup the allocated memory for `xb_barrier`
+    free((void *)xb_barrier);
 
 #if XBGAS_DEBUG
-  fprintf(stdout, "[R] Destructor completed.\n");
-  fflush(stdout);
+    fprintf(stdout, "[R] Destructor completed.\n");
+    fflush(stdout);
 #endif
 }
+
 
 /* ---------------------------------------- FUNCTION PROTOTYPES */
 

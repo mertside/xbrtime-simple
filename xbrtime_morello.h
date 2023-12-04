@@ -1031,8 +1031,10 @@ void xbrtime_int_reduce_sum(int *dest, const int *src, size_t nelems,
     tpool_add_work(threads[i].thread_queue, reduction_task, &args[i]);
   }
 
-  tpool_wait(pool);
-  tpool_destroy(pool);
+  for (int i = 0; i < num_pes; i++) {
+    tpool_wait(threads[i].thread_queue);
+  }
+  // tpool_destroy(threads);
 
   // Final reduction to aggregate results from all tasks
   int final_sum = 0;

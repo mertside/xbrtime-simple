@@ -68,96 +68,50 @@ pthread_mutex_t update_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  update_cond  = PTHREAD_COND_INITIALIZER;
 
 /* ------------------------------------------------------------- CONSTRUCTOR */
-// __attribute__((constructor)) void __xbrtime_ctor() {
-// #ifdef XBGAS_PRINT
-//   printf("[R] Entered __xbrtime_ctor()\n");
-// #endif
-
-//   xb_barrier = malloc(sizeof(uint64_t) * 2 * 10);
-
-//   //  ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   numOfThreads
-//   int i = 0;
-//   int numOfThreads = MAX_NUM_OF_THREADS;
-
-//   // Get number of threads from the environment
-//   char *str = getenv("NUM_OF_THREADS");
-//   // Is the environment variable set appropriately?
-//   if (str == NULL || atoi(str) <= 0 || atoi(str) > MAX_NUM_OF_THREADS) {
-//     if (str == NULL) {
-//       // NOT found!
-//       fprintf(stderr, "\n[E][R] NUM_OF_THREADS not set; set environment!!!\n");
-//       fprintf(stderr, "\ne.g.:\texport NUM_OF_THREADS=4\n");
-//     } else {
-//       // NOT a reasonable number!
-//       fprintf(stderr, "\n[E][R] NUM_OF_THREADS should be between %d and %d\n",
-//               1, MAX_NUM_OF_THREADS);
-//     }
-//     // Set MAX number of threads as an environment variable
-//     const char *envName = "NUM_OF_THREADS";
-//     char envValue[10] = "";
-//     sprintf(envValue, "%d", numOfThreads);
-//     setenv(envName, envValue, 1);
-//   }
-//   numOfThreads = atoi(getenv("NUM_OF_THREADS"));
-
-// #if XBGAS_DEBUG
-//   fprintf(stdout, "[R] Number of threads: %d\n", numOfThreads);
-//   fflush(stdout);
-// #endif
-
-//   // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
-
-//   // Create a thread pool
-//   threads = tpool_create(numOfThreads);
-
-//   // printf("CTOR: Init\n");
-// }
-
 __attribute__((constructor)) void __xbrtime_ctor() {
 #ifdef XBGAS_PRINT
-    printf("[R] Entered __xbrtime_ctor()\n");
+  printf("[R] Entered __xbrtime_ctor()\n");
 #endif
 
-    // Initialize variables
-    uint64_t *xb_barrier = NULL;
-    int numOfThreads = MAX_NUM_OF_THREADS;
-    const char *envName = "NUM_OF_THREADS";
-    char *str = getenv(envName);
+  xb_barrier = malloc(sizeof(uint64_t) * 2 * 10);
 
-    // Parse NUM_OF_THREADS environment variable
-    if (str != NULL) {
-        int envNumOfThreads = atoi(str);
-        if (envNumOfThreads > 0 && envNumOfThreads <= MAX_NUM_OF_THREADS) {
-            numOfThreads = envNumOfThreads;
-        } else {
-            fprintf(stderr, "\n[E][R] NUM_OF_THREADS should be between 1 and %d\n", MAX_NUM_OF_THREADS);
-        }
+  //  ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   numOfThreads
+  int i = 0;
+  int numOfThreads = MAX_NUM_OF_THREADS;
+
+  // Get number of threads from the environment
+  char *str = getenv("NUM_OF_THREADS");
+  // Is the environment variable set appropriately?
+  if (str == NULL || atoi(str) <= 0 || atoi(str) > MAX_NUM_OF_THREADS) {
+    if (str == NULL) {
+      // NOT found!
+      fprintf(stderr, "\n[E][R] NUM_OF_THREADS not set; set environment!!!\n");
+      fprintf(stderr, "\ne.g.:\texport NUM_OF_THREADS=4\n");
     } else {
-        fprintf(stderr, "\n[E][R] NUM_OF_THREADS not set; set environment!!!\n");
-        fprintf(stderr, "\ne.g.:\texport NUM_OF_THREADS=4\n");
+      // NOT a reasonable number!
+      fprintf(stderr, "\n[E][R] NUM_OF_THREADS should be between %d and %d\n",
+              1, MAX_NUM_OF_THREADS);
     }
+    // Set MAX number of threads as an environment variable
+    const char *envName = "NUM_OF_THREADS";
+    char envValue[10] = "";
+    sprintf(envValue, "%d", numOfThreads);
+    setenv(envName, envValue, 1);
+  }
+  numOfThreads = atoi(getenv("NUM_OF_THREADS"));
 
 #if XBGAS_DEBUG
-    fprintf(stdout, "[R] Number of threads: %d\n", numOfThreads);
-    fflush(stdout);
+  fprintf(stdout, "[R] Number of threads: %d\n", numOfThreads);
+  fflush(stdout);
 #endif
 
-    // Allocate memory for xb_barrier and check for allocation success
-    xb_barrier = malloc(sizeof(uint64_t) * 2 * 10);
-    if (xb_barrier == NULL) {
-        fprintf(stderr, "\n[E][R] Failed to allocate memory for xb_barrier\n");
-        exit(EXIT_FAILURE);
-    }
+  // ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
 
-    // Create a thread pool and check for creation success
-    threads = tpool_create(numOfThreads);
-    if (threads == NULL) {
-        fprintf(stderr, "\n[E][R] Failed to create thread pool\n");
-        free(xb_barrier);
-        exit(EXIT_FAILURE);
-    }
+  // Create a thread pool
+  threads = tpool_create(numOfThreads);
+
+  // printf("CTOR: Init\n");
 }
-
 
 /* -------------------------------------------------------------- DESTRUCTOR */
 __attribute__((destructor)) void __xbrtime_dtor() {

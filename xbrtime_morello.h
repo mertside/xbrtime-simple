@@ -911,10 +911,10 @@ void broadcast_task(void *arg) {
 
   // Perform the broadcast operation
   // In this case, simply copy the value from src to dest
-  if(taskArgs->root_pe == xbrtime_mype()) {
-    *(taskArgs->dest) = *(taskArgs->src);
-    printf("\t\t[BroTask] *(taskArgs->dest) = %d\n", *(taskArgs->dest));
-  }
+  // if(taskArgs->root_pe == xbrtime_mype()) {
+  *(taskArgs->dest) = *(taskArgs->src);
+  printf("\t\t[BroTask] *(taskArgs->dest) = %d\n", *(taskArgs->dest));
+  // }
 
   // Free the allocated task arguments
   free(taskArgs);

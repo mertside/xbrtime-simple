@@ -15,7 +15,13 @@
 
 int main()
 {
+  // Real time recording
+  double RealTimeInit, RealTimeBar1, RealTimeBar2, RealTimeBro, RealTimeClose;
+
+  RealTimeBro = -RTSEC(); // Begin timed section
   xbrtime_init();
+  RealTimeBro += RTSEC(); // End timed section
+
 	int my_pe, *b_val;
 	my_pe = xbrtime_mype();
 	b_val = (int*) xbrtime_malloc(sizeof(int));
@@ -23,15 +29,29 @@ int main()
 
 	printf("Pre-Broadcast - PE:%d B_Val: %d\n", my_pe, *b_val);
 
+  RealTimeBar1 = -RTSEC(); // Begin timed section
 	xbrtime_barrier();
+  RealTimeBar1 += RTSEC(); // End timed section
 
+  RealTimeBro = -RTSEC(); // Begin timed section
 	xbrtime_int_broadcast(b_val, b_val, 1, 1, 4);
+  RealTimeBro += RTSEC(); // End timed section
 
+  RealTimeBar2 = -RTSEC(); // Begin timed section
 	xbrtime_barrier();
+  RealTimeBar2 += RTSEC(); // End timed section
 
 	printf("Post-Broadcast - PE:%d B_Val: %d\n", my_pe, *b_val);
 
+  RealTimeClose = -RTSEC(); // Begin timed section
 	xbrtime_close();
+  RealTimeClose += RTSEC(); // End timed section
 
-    return 0;
+  printf("Init Time: %f\n", RealTimeInit);
+  printf("Barrier 1 Time: %f\n", RealTimeBar1);
+  printf("Broadcast Time: %f\n", RealTimeBro);
+  printf("Barrier 2 Time: %f\n", RealTimeBar2);
+  printf("Close Time: %f\n", RealTimeClose);
+
+  return 0;
 }

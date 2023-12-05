@@ -13,6 +13,13 @@
 
  #include "xbrtime_morello.h"
 
+// For timing
+static double RTSEC() {
+  struct timeval tp;
+  gettimeofday (&tp, NULL);
+  return tp.tv_sec + tp.tv_usec/(double)1.0e6;
+}
+
 int main()
 {
   // Real time recording

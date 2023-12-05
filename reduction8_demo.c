@@ -61,11 +61,11 @@ int main()
 	xbrtime_close();
   RealTimeClose += RTSEC(); // End timed section
 
-  printf("Init Time: %f\n", RealTimeInit);
-  printf("Barrier 1 Time: %f\n", RealTimeBar1);
-  printf("Reduction Time: %f\n", RealTimeRed);
-  printf("Barrier 2 Time: %f\n", RealTimeBar2);
-  printf("Close Time: %f\n", RealTimeClose);
+  printf("\tInit Time: %f\n", RealTimeInit);
+  printf("\tBarrier 1 Time: %f\n", RealTimeBar1);
+  printf("\tReduction Time: %f\n", RealTimeRed);
+  printf("\tBarrier 2 Time: %f\n", RealTimeBar2);
+  printf("\tClose Time: %f\n", RealTimeClose);
 
   return 0;
 }

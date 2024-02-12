@@ -44,8 +44,9 @@ struct buf b = {.callback = count_screams};
 int
 main(void)
 {
+  int num_pes = xbrtime_num_pes();
 
-  for( i = 0; i < row; i++ ){
+  for( int i = 0; i < num_pes; i++ ){
     bool check = false;
     check = tpool_add_work( threads[i].thread_queue, 
                             fill_buf, 

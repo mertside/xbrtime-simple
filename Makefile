@@ -20,6 +20,9 @@ broadcast:
 reduction:
 	$(MY_CC) -O0 -lpthread -o reduction8_demo.exe reduction8_demo.c xbMrtime_api_asm.s -lm
 
+control:
+	$(MY_CC) -O0 -lpthread -o control_flow.exe control_flow.c xbMrtime_api_asm.s -lm
+
 test:
 	./matmul.exe
 	./gather.exe

@@ -45,13 +45,15 @@ int
 main(void)
 {
 
-  bool check = false;
-  check = tpool_add_work( threads[i].thread_queue, 
-                          fill_buf, 
-                          &b);
-	// fill_buf(&b);
+  for( i = 0; i < row; i++ ){
+    bool check = false;
+    check = tpool_add_work( threads[i].thread_queue, 
+                            fill_buf, 
+                            &b);
+    // fill_buf(&b);
 
-	printf("Words of screaming in b.buffer %zu\n", b.callback(&b));
+    printf("Words of screaming in b.buffer %zu\n", b.callback(&b));
+  }
 
 	return 0;
 }

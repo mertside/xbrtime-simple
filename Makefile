@@ -6,7 +6,7 @@ MY_CC?=$(CCOM) $(ARCH)
 all: matMul gather gupsM broadcast reduction
 
 matMul:
-	$(MY_CC) -O0 -lpthread -o matmul.exe bench/matmul_M.c runtime/xbMrtime_api_asm.s -lm -Irruntime
+	$(MY_CC) -O0 -lpthread -o matmul.exe bench/matmul_M.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 gather:
 	$(MY_CC) -O0 -lpthread -o gather.exe bench/gather_M.c runtime/xbMrtime_api_asm.s -lm -Iruntime

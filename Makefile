@@ -23,6 +23,9 @@ reduction:
 control:
 	$(MY_CC) -O0 -lpthread -o control_flow.exe security/control_flow.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+oobR:
+	$(MY_CC) -O0 -lpthread -o oob_read.exe security/oob_read.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 test:
 	./matmul.exe
 	./gather.exe

@@ -44,17 +44,36 @@ struct buf b = {.callback = count_screams};
 int
 main(void)
 {
+  printf("[M]"GRN " Entered Main matmul...\n"RESET);
+  /* vars */  
+  int 			rtn 			= 0;
+  size_t 		sz 				= _XBGAS_ALLOC_SIZE_;
+  size_t 		ne 				= _XBGAS_ALLOC_NELEMS_;
+
+  rtn 	= xbrtime_init();  
+  printf("[M]"GRN " Passed xbrtime_init()\n"RESET); 
+
   int num_pes = xbrtime_num_pes();
 
   for( int i = 0; i < num_pes; i++ ){
     bool check = false;
+    // fill_buf(&b);
     check = tpool_add_work( threads[i].thread_queue, 
                             fill_buf, 
                             &b);
-    // fill_buf(&b);
-
-    printf("Words of screaming in b.buffer %zu\n", b.callback(&b));
   }
+
+  printf("Words of screaming in b.buffer %zu\n", b.callback(&b));
+
+  // for( int i = 0; i < num_pes; i++ ){
+    // bool check = false;
+    // check = tpool_add_work( threads[i].thread_queue, 
+    //                         b.callback, 
+    //                         &b);
+    // printf("Words of screaming in b.buffer %zu\n", b.callback(&b));
+  // }
+
+	xbrtime_close();
 
 	return 0;
 }

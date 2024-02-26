@@ -48,7 +48,7 @@ int main() {
   char *private    = (char *)xbrtime_malloc(priv_len * sizeof(char) * num_pes);
   strcpy(private, "secretpassword");
 
-  for( j = 0; j < num_pes; j++ ){
+  for( int j = 0; j < num_pes; j++ ){
 
       int offset = private-public;
       //  printf("Offset of private array w.r.t public array: %d\n", offset);

@@ -6,22 +6,22 @@ MY_CC?=$(CCOM) $(ARCH)
 all: matMul gather gupsM broadcast reduction
 
 matMul:
-	$(MY_CC) -O0 -lpthread -o matmul.exe matmul_M.c xbMrtime_api_asm.s -lm
+	$(MY_CC) -O0 -lpthread -o matmul.exe bench/matmul_M.c runtime/xbMrtime_api_asm.s -lm -Irruntime
 
 gather:
-	$(MY_CC) -O0 -lpthread -o gather.exe gather_M.c xbMrtime_api_asm.s -lm
+	$(MY_CC) -O0 -lpthread -o gather.exe bench/gather_M.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 gupsM:
-	$(MY_CC) -O0 -lpthread -o gups.exe SHMEMRandomAccess.c xbMrtime_api_asm.s -lm
+	$(MY_CC) -O0 -lpthread -o gups.exe bench/SHMEMRandomAccess.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 broadcast:
-	$(MY_CC) -O0 -lpthread -o broadcast8_demo.exe broadcast8_demo.c xbMrtime_api_asm.s -lm
+	$(MY_CC) -O0 -lpthread -o broadcast8_demo.exe bench/broadcast8_demo.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 reduction:
-	$(MY_CC) -O0 -lpthread -o reduction8_demo.exe reduction8_demo.c xbMrtime_api_asm.s -lm
+	$(MY_CC) -O0 -lpthread -o reduction8_demo.exe bench/reduction8_demo.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 control:
-	$(MY_CC) -O0 -lpthread -o control_flow.exe control_flow.c xbMrtime_api_asm.s -lm
+	$(MY_CC) -O0 -lpthread -o control_flow.exe security/control_flow.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 test:
 	./matmul.exe

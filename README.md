@@ -8,4 +8,4 @@ Second, we modify the low-level runtime by translating the xBGAS API assembly fu
 Third, we leverage thread pooling on the high-level runtime to model the behavior of multiple processes. 
 Finally, we propose minimal changes to the existing xBGAS benchmarks by only requiring the developer to add an entry point and an exit point in their programs to define the code segment that multiple threads can execute in parallel.
 
-<img width="742" alt="xbrtime-simple-overview-uml" src="https://github.com/mertside/xbrtime-simple/blob/main/documentation/xbrtime-simple-overview-uml.png">
+<img width="742" alt="xbrtime-simple-overview-uml" src="https://github.com/mertside/xbrtime-simple/blob/main/docs/xbrtime-simple-overview-uml.png">

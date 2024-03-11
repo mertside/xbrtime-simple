@@ -29,6 +29,9 @@ oobR:
 pointer:
 	$(MY_CC) -O0 -lpthread -o ptr_over_pipe.exe security/ptr_over_pipe.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+injection:
+	$(MY_CC) -O0 -lpthread -o ptr_injection.exe security/ptr_injection.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 test:
 	./matmul.exe
 	./gather.exe

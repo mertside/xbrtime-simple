@@ -26,6 +26,9 @@ control:
 oobR:
 	$(MY_CC) -O0 -lpthread -o oob_read.exe security/oob_read.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+pointer:
+	$(MY_CC) -O0 -lpthread -o ptr_over_pipe.exe security/ptr_over_pipe.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 test:
 	./matmul.exe
 	./gather.exe

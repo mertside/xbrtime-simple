@@ -32,11 +32,25 @@ pointer:
 injection:
 	$(MY_CC) -O0 -lpthread -o ptr_injection.exe security/ptr_injection.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+temporal:
+	$(MY_CC) -O0 -lpthread -o temporal_control.exe security/temporal_control.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
+uaf:
+	$(MY_CC) -O0 -lpthread -o uaf.exe security/uaf.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 test:
 	./matmul.exe
 	./gather.exe
 	./broadcast8_demo.exe
 	./reduction8_demo.exe
+
+test:
+	./control_flow.exe
+	./oob_read.exe
+	./uaf.exe
+	./temporal_control.exe
+	./ptr_over_pipe.exe
+	./ptr_injection.exe
 
 clean:
 	rm -f ./*.o ./*.exe

@@ -44,7 +44,7 @@ test:
 	./broadcast8_demo.exe
 	./reduction8_demo.exe
 
-test:
+security:
 	./control_flow.exe
 	./oob_read.exe
 	./uaf.exe

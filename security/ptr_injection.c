@@ -26,12 +26,14 @@ int main(void) {
     pthread_t thread; // Define thread variable.
     int num_pes = xbrtime_num_pes();
 
+    printf("starting pthread_create...\n");
     // Creating a thread. Pass 'hello' as argument to the thread function.
     if (pthread_create(&thread, NULL, thread_func, (void *)hello) != 0) {
         perror("pthread_create");
         exit(1);
     }
 
+    printf("starting pthread_join...\n");
     // Wait for the thread to finish.
     if (pthread_join(thread, NULL) != 0) {
         perror("pthread_join");

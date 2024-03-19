@@ -22,16 +22,20 @@ main(void)
 	const char *ptr;
 
 	if (pipe(fds) == -1)
+    printf("pipe...\n");
 		err(1, "pipe");
 	if ((pid = fork()) == -1)
+    printf("fork...\n");
 		err(1, "fork");
 	if (pid == 0) {
 		ptr = hello;
 		if (write(fds[0], &ptr, sizeof(ptr)) != sizeof(ptr))
-			err(1, "write");
+			printf("write...\n");
+      err(1, "write");
 	} else {
 		if (read(fds[1], &ptr, sizeof(ptr)) != sizeof(ptr))
-			err(1, "read");
+			printf("read...\n");
+      err(1, "read");
 		printf("received %s\n", ptr);
 	}
 

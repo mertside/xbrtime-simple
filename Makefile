@@ -38,6 +38,9 @@ temporal:
 uaf:
 	$(MY_CC) -O0 -lpthread -o uaf.exe security/uaf.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+ptrRvk:
+	$(MY_CC) -O0 -lpthread -o ptr_rvk_tmprl_cntrl.exe security/ptr_rvk_tmprl_cntrl.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 test:
 	./matmul.exe
 	./gather.exe

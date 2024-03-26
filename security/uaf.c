@@ -12,7 +12,7 @@
 void *use_after_free(void *arg) {
     printf("Starting Test: Use-After-Free\n");
 
-    char *complete = malloc(sizeof(char) * 83);   
+    char *complete = malloc(sizeof(char) * 84);   
     strcpy(complete, "Hello World! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
 
     printf("Printing characters of string before free:\n");

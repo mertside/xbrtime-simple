@@ -3,7 +3,7 @@ ARCH=morello-purecap
 MY_CC?=$(CCOM) $(ARCH)
 #DIR=~/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
 
-all: matMul gather gupsM broadcast reduction pointer control oobR injection temporal uaf
+all: matMul gather gupsM broadcast reduction pointer control oobR injection temporal uaf ptrRvk
 
 matMul:
 	$(MY_CC) -O0 -lpthread -o matmul.exe bench/matmul_M.c runtime/xbMrtime_api_asm.s -lm -Iruntime
@@ -52,6 +52,7 @@ test:
 	./temporal_control.exe
 	./ptr_over_pipe.exe
 	./ptr_injection.exe
+	./ptr_rvk_tmprl_cntrl.exe
 
 clean:
 	rm -f ./*.o ./*.exe

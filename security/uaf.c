@@ -1,54 +1,53 @@
 /*  Benchmark: Use-After-Free
  *  @author  : Secure, Trusted, and Assured Microelectronics (STAM) Center
-
- *  Copyright (c) 2023 Trireme (STAM/SCAI/ASU)
- *  Permission is hereby granted, free of charge, to any person obtaining a copy
- *  of this software and associated documentation files (the "Software"), to deal
- *  in the Software without restriction, including without limitation the rights
- *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  copies of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
- *  The above copyright notice and this permission notice shall be included in
- *  all copies or substantial portions of the Software.
-
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- *  THE SOFTWARE.
+ *
  */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <pthread.h>
+
+// Thread function to demonstrate use-after-free
+void *use_after_free(void *arg) {
+    printf("Starting Test: Use-After-Free\n");
+
+    char *complete = malloc(sizeof(char) * 83);   
+    strcpy(complete, "Hello World! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
+
+    printf("Printing characters of string before free:\n");
+    for(int i = 0; i < 83; i++) {
+            printf("%c", complete[i]);
+    }
+    printf("%c", '\n');
+
+    free(complete);
+
+    // Dangerous operation: using after free
+    printf("Printing characters of string after free:\n");
+    for(int i = 0; i < 83; i++) {
+           printf("%c", complete[i]); 
+    }
+
+    printf("%c", '\n');
+    printf("Test Failed: Use-After-Free\n\n");
+
+    return NULL;
+}
 
 int main() {
+    const int num_threads = 4; // Example for 4 PEs
+    pthread_t threads[num_threads];
 
-  printf("Starting Test: Use-After-Free\n");
+    // Create threads to simulate the use-after-free vulnerability across PEs
+    for(int i = 0; i < num_threads; i++) {
+        pthread_create(&threads[i], NULL, use_after_free, NULL);
+    }
 
-  char *complete  = malloc(sizeof(char) * 83);	
-  strcpy(complete, "Hello World! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
+    // Wait for all threads to complete
+    for(int i = 0; i < num_threads; i++) {
+        pthread_join(threads[i], NULL);
+    }
 
-
-  printf("Printing characters of string before free:\n");
-  for(int i=0;i<83;i++) {
-          printf("%c", complete[i]);
-  }
-  printf("%c", '\n');
-
-  free(complete);
-
-  printf("Printing characters of string after free:\n");
-  for(int i=0;i<83;i++) {
-         printf("%c", complete[i]); 
-  }
-
-  printf("%c", '\n');
-
-  printf("Test Failed: Use-After-Free\n\n");
-
-
-  return 0;
+    return 0;
 }

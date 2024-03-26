@@ -65,14 +65,6 @@ main(void)
 
   printf("Words of screaming in b.buffer %zu\n", b.callback(&b));
 
-  // for( int i = 0; i < num_pes; i++ ){
-    // bool check = false;
-    // check = tpool_add_work( threads[i].thread_queue, 
-    //                         b.callback, 
-    //                         &b);
-    // printf("Words of screaming in b.buffer %zu\n", b.callback(&b));
-  // }
-
 	xbrtime_close();
 
 	return 0;

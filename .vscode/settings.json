@@ -23,6 +23,7 @@
     "test.h": "c",
     "threadpool.h": "c",
     "stdio.h": "c",
-    "pthread.h": "c"
+    "pthread.h": "c",
+    "string.h": "c"
   }
 }

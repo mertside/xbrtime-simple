@@ -27,10 +27,10 @@ a2:
 	$(MY_CC) -O0 -lpthread -o a2_free_not_at_start.exe security/a2_free_not_at_start.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 a3:
-	$(MY_CC) -O0 -lpthread -o a3_double_free_after.exe security/a3_double_free_after_exe.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+	$(MY_CC) -O0 -lpthread -o a3_free_not_on_heap.exe security/a3_free_not_on_heap.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 a4:
-	$(MY_CC) -O0 -lpthread -o a4_double_free_after_free.exe security/a4_double_free_after_free.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+	$(MY_CC) -O0 -lpthread -o a4_null_ptr_dereference.exe security/a4_null_ptr_dereference.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 a5:
 	$(MY_CC) -O0 -lpthread -o a5_out_of_bounds_read.exe security/a5_out_of_bounds_read.c runtime/xbMrtime_api_asm.s -lm -Iruntime
@@ -63,8 +63,8 @@ test:
 	./reduction8_demo.exe
 	./a1_double_free.exe
 	./a2_free_not_at_start.exe
-	./a3_double_free_after_exe.exe
-	./a4_double_free_after_free.exe
+	./a3_free_not_on_heap.exe
+	./a4_null_ptr_dereference.exe
 	./a5_out_of_bounds_read.exe
 	./a6_out_of_bounds_write.exe
 	./a7_use_after_free.exe

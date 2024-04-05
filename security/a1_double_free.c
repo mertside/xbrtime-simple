@@ -31,11 +31,11 @@ void *thread_func(void *arg) {
   // Locking the shared resource
   pthread_mutex_lock(&resource->lock);
   if (resource->data != NULL) {
-    printf("PE %d: Freeing memory\n", xbrtime_my_pe());
+    printf("PE %d: Freeing memory\n", xbrtime_mype());
     free(resource->data);
     resource->data = NULL;  // To prevent double-free by the second thread
   } else {
-    printf("PE %d: Memory already freed\n", xbrtime_my_pe());
+    printf("PE %d: Memory already freed\n", xbrtime_mype());
   }
   // Unlocking the shared resource
   pthread_mutex_unlock(&resource->lock);

@@ -25,7 +25,7 @@ typedef struct {
 void *update_strings(void *arg) {
   shared_data_t *data = (shared_data_t *)arg;
   
-  if (xbrtime_my_pe() == 0) {
+  if (xbrtime_mype() == 0) {
     // First PE: Update 'public' string
     printf("PE 0: Updating value of first string with ?. \n");
     printf("PE 0: Original value: %s\n", data->public);
@@ -78,7 +78,7 @@ int main() {
   // Cleanup
   free(data.public);
   free(data.private);
-  xbrtime_finalize();
+  xbrtime_close();
 
   return 0;
 }

@@ -8,15 +8,17 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+#define BUFFER_SIZE 85
+
 // Thread function to demonstrate use-after-free
 void *use_after_free(void *arg) {
     printf("Starting Test: Use-After-Free\n");
 
-    char *complete = malloc(sizeof(char) * 85);   
+    char *complete = malloc(sizeof(char) * BUFFER_SIZE);   
     strcpy(complete, "Hello World! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
 
     printf("Printing characters of string before free:\n");
-    for(int i = 0; i < 85; i++) {
+    for(int i = 0; i < BUFFER_SIZE; i++) {
             printf("%c", complete[i]);
     }
     printf("%c", '\n');
@@ -25,7 +27,7 @@ void *use_after_free(void *arg) {
 
     // Dangerous operation: using after free
     printf("Printing characters of string after free:\n");
-    for(int i = 0; i < 85; i++) {
+    for(int i = 0; i < BUFFER_SIZE; i++) {
            printf("%c", complete[i]); 
     }
 

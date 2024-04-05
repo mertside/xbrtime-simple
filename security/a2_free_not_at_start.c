@@ -20,7 +20,7 @@
 #include "xbrtime_morello.h"
 
 #define NUM_THREADS 2
-#define BUFFER_SIZE 83
+#define BUFFER_SIZE 85
 
 // Thread function to manipulate the buffer
 void *thread_function(void *arg) {

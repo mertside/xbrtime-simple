@@ -64,7 +64,7 @@ int main() {
   // Parallel execution
   pthread_t threads[NUM_THREADS];
   for (int i = 0; i < NUM_THREADS; i++) {
-    pthread_create(&threads[i], update_strings, &data);
+    pthread_create(&threads[i], NULL, update_strings, &data);
   }
 
   // Join threads

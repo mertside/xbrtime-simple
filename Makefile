@@ -27,7 +27,7 @@ a2:
 	$(MY_CC) -O0 -lpthread -o a2_free_not_at_start.exe security/a2_free_not_at_start.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 a3:
-	$(MY_CC) -O0 -lpthread -o a3_double_free_after_exe.exe security/a3_double_free_after_exe.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+	$(MY_CC) -O0 -lpthread -o a3_double_free_after.exe security/a3_double_free_after_exe.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 a4:
 	$(MY_CC) -O0 -lpthread -o a4_double_free_after_free.exe security/a4_double_free_after_free.c runtime/xbMrtime_api_asm.s -lm -Iruntime

@@ -20,6 +20,9 @@ broadcast:
 reduction:
 	$(MY_CC) -O0 -lpthread -o reduction8_demo.exe bench/reduction8_demo.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+a1:
+	$(MY_CC) -O0 -lpthread -o a1_double_free.exe security/a1_double_free.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 a2:
 	$(MY_CC) -O0 -lpthread -o a2_free_not_at_start.exe security/a2_free_not_at_start.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 

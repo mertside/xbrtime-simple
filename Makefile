@@ -3,7 +3,7 @@ ARCH=morello-purecap
 MY_CC?=$(CCOM) $(ARCH)
 #DIR=~/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
 
-all: matMul gather gupsM broadcast reduction a1 a2 a3 a5 a6 a7 c4a c4b c5a c5b c6
+all: matMul gather gupsM broadcast reduction a1 a2 a3 a4 a5 a6 a7 c4a c4b c5a c5b c6
 
 matMul:
 	$(MY_CC) -O0 -lpthread -o matmul.exe bench/matmul_M.c runtime/xbMrtime_api_asm.s -lm -Iruntime
@@ -61,7 +61,10 @@ test:
 	./gather.exe
 	./broadcast8_demo.exe
 	./reduction8_demo.exe
+	./a1_double_free.exe
 	./a2_free_not_at_start.exe
+	./a3_double_free_after_exe.exe
+	./a4_double_free_after_free.exe
 	./a5_out_of_bounds_read.exe
 	./a6_out_of_bounds_write.exe
 	./a7_use_after_free.exe

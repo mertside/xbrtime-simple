@@ -68,6 +68,6 @@ int main() {
 
   printf("Test Ended: Free not at start\n\n");
 
-  xbrtime_finalize();
+  xbrtime_close();
   return 0;
 }

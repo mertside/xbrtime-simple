@@ -54,7 +54,7 @@ int main() {
 
   // Create threads to perform the operation in parallel
   for(int i = 0; i < NUM_THREADS; i++) {
-    xbrtime_create_thread(&threads[i], NULL, thread_function, &complete);
+    pthread_create(&threads[i], NULL, thread_function, &complete);
   }
 
   // Join threads

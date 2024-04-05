@@ -3,7 +3,7 @@ ARCH=morello-purecap
 MY_CC?=$(CCOM) $(ARCH)
 #DIR=~/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
 
-all: matMul gather gupsM broadcast reduction pointer control oobR injection temporal uaf ptrRvk
+all: matMul gather gupsM broadcast reduction a2 a5 a6 a7 c4a c4b c5a c5b c6
 
 matMul:
 	$(MY_CC) -O0 -lpthread -o matmul.exe bench/matmul_M.c runtime/xbMrtime_api_asm.s -lm -Iruntime
@@ -20,39 +20,47 @@ broadcast:
 reduction:
 	$(MY_CC) -O0 -lpthread -o reduction8_demo.exe bench/reduction8_demo.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
-control:
-	$(MY_CC) -O0 -lpthread -o control_flow.exe security/control_flow.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+a2:
+	$(MY_CC) -O0 -lpthread -o a2_free_not_at_start.exe security/a2_free_not_at_start.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
-oobR:
-	$(MY_CC) -O0 -lpthread -o oob_read.exe security/oob_read.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+a5:
+	$(MY_CC) -O0 -lpthread -o a5_out_of_bounds_read.exe security/a5_out_of_bounds_read.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
-pointer:
-	$(MY_CC) -O0 -lpthread -o ptr_over_pipe.exe security/ptr_over_pipe.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+a6:
+	$(MY_CC) -O0 -lpthread -o a6_out_of_bounds_write.exe security/a6_out_of_bounds_write.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
-injection:
-	$(MY_CC) -O0 -lpthread -o ptr_injection.exe security/ptr_injection.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+a7:
+	$(MY_CC) -O0 -lpthread -o a7_use_after_free.exe security/a7_use_after_free.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
-temporal:
-	$(MY_CC) -O0 -lpthread -o temporal_control.exe security/temporal_control.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+c4a:
+	$(MY_CC) -O0 -lpthread -o c4_control_flow.exe security/c4_control_flow.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
-uaf:
-	$(MY_CC) -O0 -lpthread -o uaf.exe security/uaf.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+c4b:
+	$(MY_CC) -O0 -lpthread -o c4_temporal_control.exe security/c4_temporal_control.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
-ptrRvk:
-	$(MY_CC) -O0 -lpthread -o ptr_rvk_tmprl_cntrl.exe security/ptr_rvk_tmprl_cntrl.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+c5a:
+	$(MY_CC) -O0 -lpthread -o c5_ptr_injection.exe security/c5_ptr_injection.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+	
+c5b:
+	$(MY_CC) -O0 -lpthread -o c5_ptr_over_pipe.exe security/c5_ptr_over_pipe.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
+c6:
+	$(MY_CC) -O0 -lpthread -o c6_ptr_rvk_tmprl_cntrl.exe security/c6_ptr_rvk_tmprl_cntrl.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 test:
 	./matmul.exe
 	./gather.exe
 	./broadcast8_demo.exe
 	./reduction8_demo.exe
-	./control_flow.exe
-	./oob_read.exe
-	./uaf.exe
-	./temporal_control.exe
-	./ptr_over_pipe.exe
-	./ptr_injection.exe
-	./ptr_rvk_tmprl_cntrl.exe
+	./a2_free_not_at_start.exe
+	./a5_out_of_bounds_read.exe
+	./a6_out_of_bounds_write.exe
+	./a7_use_after_free.exe
+	./c4_control_flow.exe
+	./c4_temporal_control.exe
+	./c5_ptr_injection.exe
+	./c5_ptr_over_pipe.exe
+	./c6_ptr_rvk_tmprl_cntrl.exe
 
 clean:
 	rm -f ./*.o ./*.exe

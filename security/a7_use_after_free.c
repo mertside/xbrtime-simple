@@ -16,7 +16,7 @@ void *use_after_free(void *arg) {
     strcpy(complete, "Hello World! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
 
     printf("Printing characters of string before free:\n");
-    for(int i = 0; i < 83; i++) {
+    for(int i = 0; i < 85; i++) {
             printf("%c", complete[i]);
     }
     printf("%c", '\n');
@@ -25,7 +25,7 @@ void *use_after_free(void *arg) {
 
     // Dangerous operation: using after free
     printf("Printing characters of string after free:\n");
-    for(int i = 0; i < 83; i++) {
+    for(int i = 0; i < 85; i++) {
            printf("%c", complete[i]); 
     }
 

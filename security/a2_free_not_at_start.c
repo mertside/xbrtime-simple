@@ -26,7 +26,7 @@
 void *thread_function(void *arg) {
   char **complete_ptr = (char **)arg;
   if(xbrtime_mype() == 0) { // First PE: manipulate the string
-    strcpy(*complete_ptr, "Hello World!Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
+    strcpy(*complete_ptr, "Hello World! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
     printf("PE %d: Printing characters of string before free:\n", xbrtime_mype());
     for(int i=0; i<BUFFER_SIZE; i++) {
       printf("%c", (*complete_ptr)[i]);

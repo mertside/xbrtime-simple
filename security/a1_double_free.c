@@ -50,8 +50,8 @@ int main() {
 
   shared_resource_t resource;
   pthread_mutex_init(&resource.lock, NULL);
-  resource.data = malloc(sizeof(char) * 84);	
-  strcpy(resource.data, "Hello World!Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
+  resource.data = malloc(sizeof(char) * 85);	
+  strcpy(resource.data, "Hello World! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
 
   // Creating two threads to simulate potential double-free vulnerability
   pthread_t threads[2];

@@ -25,9 +25,9 @@
 // Thread function to manipulate the buffer
 void *thread_function(void *arg) {
   char **complete_ptr = (char **)arg;
-  if(xbrtime_my_pe() == 0) { // First PE: manipulate the string
+  if(xbrtime_mype() == 0) { // First PE: manipulate the string
     strcpy(*complete_ptr, "Hello World!Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
-    printf("PE %d: Printing characters of string before free:\n", xbrtime_my_pe());
+    printf("PE %d: Printing characters of string before free:\n", xbrtime_mype());
     for(int i=0; i<BUFFER_SIZE; i++) {
       printf("%c", (*complete_ptr)[i]);
     }
@@ -35,7 +35,7 @@ void *thread_function(void *arg) {
     // Attempt to free an offset into the allocated memory (unsafe operation)
     free(*complete_ptr + 8); // This is the operation that simulates the vulnerability
   } else { // Second PE: attempt to access after the problematic free
-    printf("PE %d: Printing characters of string after free attempt:\n", xbrtime_my_pe());
+    printf("PE %d: Printing characters of string after free attempt:\n", xbrtime_mype());
     for(int i=0; i<BUFFER_SIZE; i++) {
       printf("%c", (*complete_ptr)[i]);
     }

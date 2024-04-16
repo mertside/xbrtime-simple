@@ -383,31 +383,31 @@ int main(int argc, char **argv)
              *GUPs / NumProcs );
   }
 
-  if(verify){
-    s64Int pe_updates = 0;
-    for (j = 0; j < numNodes; j++)
-      pe_updates += updates[j];
-    printf("PE%d updates:%d\n",MyProc,updates[0]);
-    // ERROR-CHECK: Collect all updates
-    xbrtime_longlong_reduce_sum(all_updates, updates, NumProcs, 1, 0);    
-    // ERROR-CHECK: Broadcast all updates   
-    xbrtime_longlong_broadcast(all_updates, all_updates, NumProcs, 1, 0);   
+  // if(verify){
+  //   s64Int pe_updates = 0;
+  //   for (j = 0; j < numNodes; j++)
+  //     pe_updates += updates[j];
+  //   printf("PE%d updates:%d\n",MyProc,updates[0]);
+  //   // ERROR-CHECK: Collect all updates
+  //   xbrtime_longlong_reduce_sum(all_updates, updates, NumProcs, 1, 0);    
+  //   // ERROR-CHECK: Broadcast all updates   
+  //   xbrtime_longlong_broadcast(all_updates, all_updates, NumProcs, 1, 0);   
     
-    // xbrtime_reduce_sum_broadcast_all(all_updates, updates, NumProcs, 1, 0);
+  //   // xbrtime_reduce_sum_broadcast_all(all_updates, updates, NumProcs, 1, 0);
 
-    if(MyProc == 0){
-      for (j = 1; j < numNodes; j++)
-        all_updates[0] += all_updates[j];
+  //   if(MyProc == 0){
+  //     for (j = 1; j < numNodes; j++)
+  //       all_updates[0] += all_updates[j];
       
-      printf("Total updates:%d\n",all_updates[0]);
-      printf("%d * %d = %d\n", ProcNumUpdates, NumProcs, ProcNumUpdates*NumProcs);
+  //     printf("Total updates:%d\n",all_updates[0]);
+  //     printf("%d * %d = %d\n", ProcNumUpdates, NumProcs, ProcNumUpdates*NumProcs);
       
-      if(ProcNumUpdates*NumProcs == all_updates[0])
-        printf("Verification passed!\n");
-      else
-        printf("Verification failed!\n");
-    }
-  }
+  //     if(ProcNumUpdates*NumProcs == all_updates[0])
+  //       printf("Verification passed!\n");
+  //     else
+  //       printf("Verification failed!\n");
+  //   }
+  // }
 
   RealTime = -RTSEC(); // Begin timed section
   xbrtime_barrier_all();

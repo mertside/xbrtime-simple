@@ -43,6 +43,8 @@ void *thread_func(void *arg) {
 
 int main() {
   xbrtime_init();
+  
+  int num_pes = xbrtime_num_pes();
 
   printf("Starting Test: Double Free\n");
 
@@ -51,22 +53,29 @@ int main() {
   resource.data = malloc(sizeof(char) * BUFFER_SIZE);	
   strcpy(resource.data, "Hello World! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
 
-  // Creating two threads to simulate potential double-free vulnerability
-  pthread_t threads[2];
-  for (int i = 0; i < 2; i++) {
-    if(pthread_create(&threads[i], NULL, thread_func, &resource) != 0) {
-      fprintf(stderr, "Error creating thread\n");
-      return 1;
-    }
+  for( int i = 0; i < num_pes; i++ ){
+    bool check = false;
+    check = tpool_add_work( threads[i].thread_queue, 
+                            thread_func, 
+                            NULL);
   }
 
-  // Joining threads
-  for (int i = 0; i < 2; i++) {
-    if(pthread_join(threads[i], NULL) != 0) {
-      fprintf(stderr, "Error joining thread\n");
-      return 1;
-    }
-  }
+  // // Creating two threads to simulate potential double-free vulnerability
+  // pthread_t threads[2];
+  // for (int i = 0; i < 2; i++) {
+  //   if(pthread_create(&threads[i], NULL, thread_func, &resource) != 0) {
+  //     fprintf(stderr, "Error creating thread\n");
+  //     return 1;
+  //   }
+  // }
+
+  // // Joining threads
+  // for (int i = 0; i < 2; i++) {
+  //   if(pthread_join(threads[i], NULL) != 0) {
+  //     fprintf(stderr, "Error joining thread\n");
+  //     return 1;
+  //   }
+  // }
 
   printf("Test Complete: Double Free\n\n");
 

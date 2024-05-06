@@ -19,7 +19,7 @@ int main() {
 
 
   printf("Printing characters of string before free:\n");
-  for(int i=0;i<83;i++) {
+  for(int i=0;i<BUFFER_SIZE;i++) {
           printf("%c", complete[i]);
   }
   printf("\n");
@@ -27,7 +27,7 @@ int main() {
   free(complete+8);
 
   printf("Printing characters of string after free:\n");
-  for(int i=0;i<83;i++) {
+  for(int i=0;i<BUFFER_SIZE;i++) {
          printf("%c", complete[i]); 
   }
 

@@ -62,6 +62,9 @@ m1:
 m2:	
 	$(MY_CC) -O0 -lpthread -o m2_free_not_at_start.exe security/m2_free_not_at_start.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+m4:
+	$(MY_CC) -O0 -lpthread -o m4_null_ptr_dereference.exe security/m4_null_ptr_dereference.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 m7:
 	$(MY_CC) -O0 -lpthread -o m7_use_after_free.exe security/m7_use_after_free.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
@@ -84,6 +87,7 @@ test:
 	./c6_ptr_rvk_tmprl_cntrl.exe
 	./m1_double_free.exe
 	./m2_free_not_at_start.exe
+	./m4_null_ptr_dereference.exe
 	./m7_use_after_free.exe
 
 clean:

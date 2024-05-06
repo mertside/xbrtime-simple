@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include "xbrtime_morello.h"
 
 #define BUFFER_SIZE 85
 
@@ -38,18 +39,30 @@ void *use_after_free(void *arg) {
 }
 
 int main() {
-    const int num_threads = 4; // Example for 4 PEs
-    pthread_t threads[num_threads];
 
-    // Create threads to simulate the use-after-free vulnerability across PEs
-    for(int i = 0; i < num_threads; i++) {
-        pthread_create(&threads[i], NULL, use_after_free, NULL);
-    }
+  xbrtime_init();
+  
+  int num_pes = xbrtime_num_pes();
 
-    // Wait for all threads to complete
-    for(int i = 0; i < num_threads; i++) {
-        pthread_join(threads[i], NULL);
-    }
+  for( int i = 0; i < num_pes; i++ ){
+    bool check = false;
+    check = tpool_add_work( threads[i].thread_queue, 
+                            use_after_free, 
+                            NULL);
+  }
+
+    // const int num_threads = 4; // Example for 4 PEs
+    // pthread_t threads[num_threads];
+
+    // // Create threads to simulate the use-after-free vulnerability across PEs
+    // for(int i = 0; i < num_threads; i++) {
+    //     pthread_create(&threads[i], NULL, use_after_free, NULL);
+    // }
+
+    // // Wait for all threads to complete
+    // for(int i = 0; i < num_threads; i++) {
+    //     pthread_join(threads[i], NULL);
+    // }
 
     return 0;
 }

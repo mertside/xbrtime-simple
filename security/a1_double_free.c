@@ -57,7 +57,7 @@ int main() {
     bool check = false;
     check = tpool_add_work( threads[i].thread_queue, 
                             thread_func, 
-                            NULL);
+                            &resource);
   }
 
   // // Creating two threads to simulate potential double-free vulnerability

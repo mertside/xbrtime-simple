@@ -59,6 +59,9 @@ c6:
 m1:
 	$(MY_CC) -O0 -lpthread -o m1_double_free.exe security/m1_double_free.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+m2:	
+	$(MY_CC) -O0 -lpthread -o m2_double_free.exe security/m2_double_free.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 m7:
 	$(MY_CC) -O0 -lpthread -o m7_use_after_free.exe security/m7_use_after_free.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
@@ -80,6 +83,7 @@ test:
 	./c5_ptr_over_pipe.exe
 	./c6_ptr_rvk_tmprl_cntrl.exe
 	./m1_double_free.exe
+	./m2_double_free.exe
 	./m7_use_after_free.exe
 
 clean:

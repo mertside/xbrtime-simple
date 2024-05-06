@@ -25,6 +25,7 @@
     "stdio.h": "c",
     "pthread.h": "c",
     "string.h": "c",
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "memory_resource": "c"
   }
 }

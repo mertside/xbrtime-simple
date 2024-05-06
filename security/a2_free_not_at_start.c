@@ -19,7 +19,7 @@
 #include <pthread.h>
 #include "xbrtime_morello.h"
 
-#define NUM_THREADS 2
+// #define NUM_THREADS 2
 #define BUFFER_SIZE 85
 
 // Thread function to manipulate the buffer
@@ -47,24 +47,29 @@ void *thread_function(void *arg) {
 int main() {
   xbrtime_init();
 
+  int num_pes = xbrtime_num_pes();
+
   printf("Starting Test: Free not at start\n");
 
   char *complete = malloc(sizeof(char) * BUFFER_SIZE); 
-  pthread_t threads[NUM_THREADS];
+  // pthread_t threads[NUM_THREADS];
 
-  // Create threads to perform the operation in parallel
-  for(int i = 0; i < NUM_THREADS; i++) {
-    pthread_create(&threads[i], NULL, thread_function, &complete);
+  for( int i = 0; i < num_pes; i++ ){
+    bool check = false;
+    check = tpool_add_work( threads[i].thread_queue, 
+                            thread_function, 
+                            &complete);
   }
 
-  // Join threads
-  for(int i = 0; i < NUM_THREADS; i++) {
-    pthread_join(threads[i], NULL);
-  }
+  // // Create threads to perform the operation in parallel
+  // for(int i = 0; i < NUM_THREADS; i++) {
+  //   pthread_create(&threads[i], NULL, thread_function, &complete);
+  // }
 
-  // Reminder: free(complete + 8) is unsafe. This should never be done in practice.
-  // Proper cleanup should occur here if it was not already attempted unsafely.
-  // Example: if(complete) free(complete);
+  // // Join threads
+  // for(int i = 0; i < NUM_THREADS; i++) {
+  //   pthread_join(threads[i], NULL);
+  // }
 
   printf("Test Ended: Free not at start\n\n");
 

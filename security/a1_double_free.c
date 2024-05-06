@@ -18,6 +18,8 @@
 #include <pthread.h>
 #include "xbrtime_morello.h"
 
+#define BUFFER_SIZE 85
+
 // Structure for shared data between threads
 typedef struct {
   char *data;
@@ -30,13 +32,9 @@ void *thread_func(void *arg) {
   
   // Locking the shared resource
   pthread_mutex_lock(&resource->lock);
-  if (resource->data != NULL) {
-    printf("PE %d: Freeing memory\n", xbrtime_mype());
-    free(resource->data);
-    resource->data = NULL;  // To prevent double-free by the second thread
-  } else {
-    printf("PE %d: Memory already freed\n", xbrtime_mype());
-  }
+  printf("PE %d: Freeing memory\n", xbrtime_mype());
+  free(resource->data);
+  
   // Unlocking the shared resource
   pthread_mutex_unlock(&resource->lock);
 
@@ -50,7 +48,7 @@ int main() {
 
   shared_resource_t resource;
   pthread_mutex_init(&resource.lock, NULL);
-  resource.data = malloc(sizeof(char) * 85);	
+  resource.data = malloc(sizeof(char) * BUFFER_SIZE);	
   strcpy(resource.data, "Hello World! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
 
   // Creating two threads to simulate potential double-free vulnerability

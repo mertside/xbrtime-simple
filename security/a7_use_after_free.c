@@ -15,8 +15,7 @@ void *use_after_free(void *arg) {
     printf("Starting Test: Use-After-Free\n");
 
     char *complete = malloc(sizeof(char) * BUFFER_SIZE);   
-    strcpy(complete, "Hello World! Lorem ipsum dolor sit amet, consectetur \
-    adipiscing elit, sed do eiusmod");
+    strcpy(complete, "Hello World!Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
 
     printf("Printing characters of string before free:\n");
     for(int i = 0; i < BUFFER_SIZE; i++) {

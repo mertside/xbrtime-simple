@@ -4,6 +4,9 @@
  * 
  */
 
+#include <stdio.h>
+#include <string.h>
+
 int main() {
 
   printf("Starting test: Null pointer dereference\n");

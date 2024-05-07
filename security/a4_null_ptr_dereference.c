@@ -47,7 +47,7 @@ void *null_pointer_dereference(void *arg) {
 int main() {
   xbrtime_init();
   int num_pes = xbrtime_num_pes();
-  pthread_t threads[num_pes];
+  // pthread_t threads[num_pes];
 
   printf("Starting test: Null pointer dereference\n");
 

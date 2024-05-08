@@ -97,5 +97,11 @@ miti:
 	./a5_out_of_bounds_read.exe
 	./a6_out_of_bounds_write.exe
 
+expl:
+	./a1_double_free.exe
+	./a2_free_not_at_start.exe
+	./a4_null_ptr_dereference.exe
+	./a7_use_after_free.exe
+
 clean:
 	rm -f ./*.o ./*.exe

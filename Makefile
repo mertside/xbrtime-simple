@@ -73,6 +73,8 @@ test:
 	./gather.exe
 	./broadcast8_demo.exe
 	./reduction8_demo.exe
+
+security:
 	./a1_double_free.exe
 	./a2_free_not_at_start.exe
 	./a3_free_not_on_heap.exe

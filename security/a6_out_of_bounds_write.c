@@ -67,7 +67,7 @@ int main() {
     bool check = false;
     check = tpool_add_work( threads[i].thread_queue, 
                             update_strings, 
-                            (void *) data);
+                            (void *) &data);
   }
 
   // // Parallel execution

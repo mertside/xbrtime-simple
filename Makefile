@@ -92,5 +92,10 @@ sec:
 	./m4_null_ptr_dereference.exe
 	./m7_use_after_free.exe
 
+miti:
+	./a3_free_not_on_heap.exe
+	./a5_out_of_bounds_read.exe
+	./a6_out_of_bounds_write.exe
+
 clean:
 	rm -f ./*.o ./*.exe

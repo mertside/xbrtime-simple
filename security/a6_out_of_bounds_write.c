@@ -13,7 +13,7 @@
 #include <pthread.h>
 #include "xbrtime_morello.h"
 
-#define NUM_THREADS 4
+// #define NUM_THREADS 4
 
 typedef struct {
   char *public;
@@ -70,17 +70,6 @@ int main() {
                             &data);
   }
 
-  // // Parallel execution
-  // pthread_t threads[NUM_THREADS];
-  // for (int i = 0; i < NUM_THREADS; i++) {
-  //   pthread_create(&threads[i], NULL, update_strings, &data);
-  // }
-
-  // // Join threads
-  // for (int i = 0; i < NUM_THREADS; i++) {
-  //   pthread_join(threads[i], NULL);
-  // }
-
   if (data.test_status == 0)
     printf("Test Failed: OOB Write\n\n");
 
@@ -91,3 +80,14 @@ int main() {
 
   return 0;
 }
+
+// // Parallel execution
+// pthread_t threads[NUM_THREADS];
+// for (int i = 0; i < NUM_THREADS; i++) {
+//   pthread_create(&threads[i], NULL, update_strings, &data);
+// }
+
+// // Join threads
+// for (int i = 0; i < NUM_THREADS; i++) {
+//   pthread_join(threads[i], NULL);
+// }

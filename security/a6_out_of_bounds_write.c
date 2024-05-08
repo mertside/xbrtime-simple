@@ -13,7 +13,7 @@
 #include <pthread.h>
 #include "xbrtime_morello.h"
 
-#define NUM_THREADS 2
+// #define NUM_THREADS 2
 
 typedef struct {
   char *public;
@@ -60,17 +60,26 @@ int main() {
   strcpy(data.private, "SECOND");
   data.offset = data.private - data.public;
   data.test_status = 1;
+  
+  int num_pes = xbrtime_num_pes();
 
-  // Parallel execution
-  pthread_t threads[NUM_THREADS];
-  for (int i = 0; i < NUM_THREADS; i++) {
-    pthread_create(&threads[i], NULL, update_strings, &data);
+  for( int i = 0; i < num_pes; i++ ){
+    bool check = false;
+    check = tpool_add_work( threads[i].thread_queue, 
+                            update_strings, 
+                            data);
   }
 
-  // Join threads
-  for (int i = 0; i < NUM_THREADS; i++) {
-    pthread_join(threads[i], NULL);
-  }
+  // // Parallel execution
+  // pthread_t threads[NUM_THREADS];
+  // for (int i = 0; i < NUM_THREADS; i++) {
+  //   pthread_create(&threads[i], NULL, update_strings, &data);
+  // }
+
+  // // Join threads
+  // for (int i = 0; i < NUM_THREADS; i++) {
+  //   pthread_join(threads[i], NULL);
+  // }
 
   if (data.test_status == 0)
     printf("Test Failed: OOB Write\n\n");

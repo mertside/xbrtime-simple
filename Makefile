@@ -74,7 +74,7 @@ test:
 	./broadcast8_demo.exe
 	./reduction8_demo.exe
 
-sec:
+secu:
 	./a1_double_free.exe
 	./a2_free_not_at_start.exe
 	./a3_free_not_on_heap.exe
@@ -93,13 +93,12 @@ sec:
 	./m7_use_after_free.exe
 
 miti:
+	./a2_free_not_at_start.exe
 	./a3_free_not_on_heap.exe
 	./a5_out_of_bounds_read.exe
 	./a6_out_of_bounds_write.exe
 
 expl:
-	./a1_double_free.exe
-	./a2_free_not_at_start.exe
 	./a4_null_ptr_dereference.exe
 	./a7_use_after_free.exe
 

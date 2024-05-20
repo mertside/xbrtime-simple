@@ -29,9 +29,9 @@ void *heartbleed_test(void *arg) {
     printf("%c", hb_input[i]);
 
     if (i > (6 + offset) && hb_input[i] == rsa_key[i - offset]) {
-      // pthread_mutex_lock(&lock);
+      pthread_mutex_lock(&lock);
       test_status = 0;
-      // pthread_mutex_unlock(&lock);
+      pthread_mutex_unlock(&lock);
     }
   }
 
@@ -87,7 +87,6 @@ int main() {
                             heartbleed_test, 
                             thread_ids[i]);
   }
-
 
   printf("\n");
 

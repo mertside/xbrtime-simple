@@ -24,6 +24,7 @@ void *heartbleed_test(void *arg) {
   int start = thread_id * chunk_size;
   int end = (thread_id == 3) ? num : start + chunk_size; // Last thread handles remaining characters
 
+  printf("Responding to heartbeat request with %d characters:\n", num);
   for (int i = start; i < end; i++) {
     printf("%c", hb_input[i]);
 
@@ -81,7 +82,7 @@ int main() {
     bool check = false;
 
     thread_ids[i] = i;
-
+    printf("Thread ID: %d\n", thread_ids[i]);
     check = tpool_add_work( threads[i].thread_queue, 
                             heartbleed_test, 
                             thread_ids[i]);

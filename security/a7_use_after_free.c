@@ -51,5 +51,7 @@ int main() {
                             NULL);
   }
 
+  xbrtime_close();
+
   return 0;
 }

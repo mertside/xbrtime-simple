@@ -1,6 +1,7 @@
-/*  Benchmark: Illegal Pointer
- *    This vulnerability demonstrates an illegal pointer dereference.
- *
+/*  Benchmark: Double Free Switch Statements
+ *    This vulnerability demonstrates an out of bound read. It involves directly
+ *      indexing an element of a string with an index greater than the string's 
+ *      length.
  */
 
 #include <stdio.h>

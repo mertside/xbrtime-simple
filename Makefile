@@ -68,6 +68,9 @@ m4:
 m7:
 	$(MY_CC) -O0 -lpthread -o m7_use_after_free.exe security/m7_use_after_free.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+r1:
+	$(MY_CC) -O0 -lpthread -o r1_HeartBleed.exe security/r1_HeartBleed.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 test:
 	./matmul.exe
 	./gather.exe

@@ -1,5 +1,4 @@
 /*  Benchmark: Use After Free on function pointer leads to code reuse attack
- *  @author  : Secure, Trusted, and Assured Microelectronics (STAM) Center
  *
  */
 
@@ -68,6 +67,7 @@ int main(void) {
   
   int num_pes = xbrtime_num_pes();
 
+  printf("Starting test: UAF to Code Reuse\n");
   for( int i = 0; i < num_pes; i++ ){
     bool check = false;
     check = tpool_add_work( threads[i].thread_queue, 

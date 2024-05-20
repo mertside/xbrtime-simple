@@ -77,6 +77,12 @@ r2:
 r3:
 	$(MY_CC) -O0 -lpthread -o r3_uaf_to_code_reuse.exe security/r3_uaf_to_code_reuse.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+ss1:
+	$(MY_CC) -O0 -lpthread -o ss1_illegal_ptr_deref.exe security/ss1_illegal_ptr_deref.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
+ts1:
+	$(MY_CC) -O0 -lpthread -o ts1_df_switch.exe security/ts1_df_switch.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 test:
 	./matmul.exe
 	./gather.exe

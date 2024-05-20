@@ -1,5 +1,4 @@
 /*  Benchmark: Data Oriented Programming – dop_overflowing_integer_buffer_on_stack
- *  @author  : Secure, Trusted, and Assured Microelectronics (STAM) Center
  *
  */
 

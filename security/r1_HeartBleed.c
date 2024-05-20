@@ -1,5 +1,4 @@
 /*  Benchmark: HeartBleed - Out-of-Bounds Read with length input
- *  @author  : Secure, Trusted, and Assured Microelectronics (STAM) Center
  *
  */
 

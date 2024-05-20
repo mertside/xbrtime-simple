@@ -40,12 +40,12 @@ void* thread_function(void* arg) {
   char* b = malloc(0x10);
   char* c = malloc(0x10);
 
-  if (b == NULL || c == NULL) {
-    printf("Thread %ld: Memory allocation failed for 'b' or 'c'\n", (long)arg);
-    if (b) free(b);
-    if (c) free(c);
-    return NULL;
-  }
+  // if (b == NULL || c == NULL) {
+  //   printf("Thread %ld: Memory allocation failed for 'b' or 'c'\n", (long)arg);
+  //   if (b) free(b);
+  //   if (c) free(c);
+  //   return NULL;
+  // }
 
   printf("Thread %ld:\na: %p\n", (long)arg, a); // a is freed ?
   printf("Thread %ld: b: %p\n", (long)arg, b);  // b is not freed ?
@@ -54,10 +54,7 @@ void* thread_function(void* arg) {
   if (b == c) {
     printf("Thread %ld: Test Failed: Switch fallthrough with metadata overwrite leading to Double Free\n", (long)arg);
   }
-
-  free(b);
-  free(c);
-
+  
   return NULL;
 }
 

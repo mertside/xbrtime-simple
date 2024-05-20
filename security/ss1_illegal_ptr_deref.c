@@ -15,15 +15,8 @@ void* thread_function(void* arg) {
 
     c = malloc(SIZE); // Allocate memory
 
-    if (c == NULL) {
-        printf("Thread %ld: Memory allocation failed\n", (long)arg);
-        return NULL;
-    }
-
     printf("Thread %ld: Address of x: %p\n", (long)arg, c); // Address of x
-
-    // Since malloc failed, we should not dereference c
-    printf("Thread %ld: Value of x: %d\n", (long)arg, *c); // Dereference c
+    printf("Thread %ld: Value of x: %d\n", (long)arg, *c);  // Dereference c
 
     if (*c != 0) {
       // Test failed if we reach here

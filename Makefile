@@ -71,6 +71,12 @@ m7:
 r1:
 	$(MY_CC) -O0 -lpthread -o r1_HeartBleed.exe security/r1_HeartBleed.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+r2:
+	$(MY_CC) -O0 -lpthread -o r2_dop.exe security/r2_dop.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
+r3:
+	$(MY_CC) -O0 -lpthread -o r3_uaf_to_code_reuse.exe security/r3_uaf_to_code_reuse.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 test:
 	./matmul.exe
 	./gather.exe

@@ -10,22 +10,25 @@
 #include "xbrtime_morello.h"
 
 void* thread_function(void* arg) {
-    long int SIZE = 0x40000000000; // Larger than the max size for malloc
-    int* c;                        // Uninitialized pointer
+  xbrtime_barrier();
 
-    c = malloc(SIZE); // Allocate memory
+  long int SIZE = 0x40000000000; // Larger than the max size for malloc
+  int* c;                        // Uninitialized pointer
 
-    printf("Thread %ld: Address of x: %p\n", (long)arg, c); // Address of x
-    printf("Thread %ld: Value of x: %d\n", (long)arg, *c);  // Dereference c
+  c = malloc(SIZE); // Allocate memory
 
-    if (*c != 0) {
-      // Test failed if we reach here
-      printf("Thread %ld: Test Failed: Illegal pointer access caused by incorrect sized memory allocation\n", (long)arg);
-    }
+  printf("Thread %ld: Address of x: %p\n", (long)arg, c); // Address of x
+  printf("Thread %ld: Value of x: %d\n", (long)arg, *c);  // Dereference c
 
-    free(c);
+  if (*c != 0) {
+    // Test failed if we reach here
+    printf("Thread %ld: Test Failed: Illegal pointer access caused by incorrect sized memory allocation\n", (long)arg);
+  }
 
-    return NULL;
+  free(c);
+
+  xbrtime_barrier();
+  return NULL;
 }
 
 int main() {

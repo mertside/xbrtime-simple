@@ -11,6 +11,7 @@
 #include "xbrtime_morello.h"
 
 void* thread_function(void* arg) {
+  xbrtime_barrier();
   char* a = malloc(0x10);
 
   if (a == NULL) {
@@ -54,7 +55,8 @@ void* thread_function(void* arg) {
   if (b == c) {
     printf("Thread %ld: Test Failed: Switch fallthrough with metadata overwrite leading to Double Free\n", (long)arg);
   }
-  
+
+  xbrtime_barrier();
   return NULL;
 }
 

@@ -9,8 +9,8 @@
 #include "xbrtime_morello.h"
 
 struct s_user {
-    void (*func_ptr)(void);
-    char username[8];
+    void (*func_ptr)(void); 
+    char username[8];       
 };
 
 int count = 0;
@@ -18,7 +18,7 @@ pthread_mutex_t count_mutex;
 
 void print_count() {
     pthread_mutex_lock(&count_mutex);
-    printf("Count: %d\n", count);
+    printf("Count: %d\n", count); 
     pthread_mutex_unlock(&count_mutex);
 }
 
@@ -74,19 +74,6 @@ int main(void) {
                             thread_function, 
                             NULL);
   }
-
-  // pthread_t threads[4];
-  // pthread_mutex_init(&count_mutex, NULL);
-
-  // for(int i = 0; i < 4; i++) {
-  //     pthread_create(&threads[i], NULL, thread_function, NULL);
-  // }
-
-  // for(int i = 0; i < 4; i++) {
-  //     pthread_join(threads[i], NULL);
-  // }
-
-  // pthread_mutex_destroy(&count_mutex);
 
   xbrtime_close();
 

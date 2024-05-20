@@ -46,9 +46,9 @@ void* thread_function(void* arg) {
     return NULL;
   }
 
-  printf("Thread %ld:\na: %p\n", (long)arg, a);
-  printf("Thread %ld: b: %p\n", (long)arg, b);
-  printf("Thread %ld: c: %p\n", (long)arg, c);
+  printf("Thread %ld:\na: %p\n", (long)arg, a); // a is freed ?
+  printf("Thread %ld: b: %p\n", (long)arg, b);  // b is not freed ?
+  printf("Thread %ld: c: %p\n", (long)arg, c);  // c is not freed ?
   
   if (b == c) {
     printf("Thread %ld: Test Failed: Switch fallthrough with metadata overwrite leading to Double Free\n", (long)arg);
@@ -64,16 +64,6 @@ int main() {
   xbrtime_init();
   
   int num_pes = xbrtime_num_pes();
-
-  // pthread_t threads[4];
-
-  // for (long i = 0; i < 4; i++) {
-  //     pthread_create(&threads[i], NULL, thread_function, (void*)i);
-  // }
-
-  // for (int i = 0; i < 4; i++) {
-  //     pthread_join(threads[i], NULL);
-  // }
 
   printf("Starting test: Illegal Pointer Dereference\n");
   for( int i = 0; i < num_pes; i++ ){

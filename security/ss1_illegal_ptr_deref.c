@@ -10,7 +10,8 @@
 #include "xbrtime_morello.h"
 
 void* thread_function(void* arg) {
-  xbrtime_barrier();
+  // xbrtime_barrier();
+  sleep(1);
 
   long int SIZE = 0x40000000000; // Larger than the max size for malloc
   int* c;                        // Uninitialized pointer
@@ -27,7 +28,8 @@ void* thread_function(void* arg) {
 
   free(c);
 
-  xbrtime_barrier();
+  sleep(1);
+  // xbrtime_barrier();
   return NULL;
 }
 

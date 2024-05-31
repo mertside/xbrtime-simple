@@ -18,29 +18,30 @@
 #include <pthread.h>
 #include "xbrtime_morello.h"
 
-// Define a global pointer that threads will manipulate
-char *global_ptr = "Hello World!";
 
 // Function that each thread will execute
 void *null_pointer_dereference(void *arg) {
-  int pe_id = xbrtime_mype();
-  if(pe_id == 0) {
-      // PE 0 will print hex characters of the known string
-      printf("PE %d printing hex characters of known string:\n", pe_id);
-      for(int i = 0; i < 12; i++) {
-          printf("%x ", global_ptr[i]);
-      }
-      printf("\n");
-  } else if(pe_id == 1) {
-      // PE 1 will attempt to dereference a NULL pointer
-      global_ptr = NULL;
-      printf("PE %d attempting to dereference NULL pointer:\n", pe_id);
-      for(int i = 0; i < 12; i++) {
-          // This operation is unsafe and demonstrates the vulnerability
-          printf("%x ", global_ptr[i]);
-      }
-      printf("\n");
+
+  char *complete = "Hello World!";
+  char *bad_ptr;
+
+  bad_ptr = complete;
+
+  printf("Printing hex characters of known string:\n");
+  for(int i=0;i<12;i++) {
+          printf("%x", bad_ptr[i]);
   }
+  printf("%c", '\n');
+
+  bad_ptr = NULL;
+
+  printf("Printing hex characters of NULL string:\n");
+  for(int i=0;i<12;i++) {
+         printf("%x", bad_ptr[i]); 
+  }
+
+  printf("%c", '\n');
+
   return NULL;
 }
 
@@ -58,22 +59,6 @@ int main() {
                             null_pointer_dereference, 
                             NULL);
   }
-
-  // // Creating threads
-  // for(int i = 0; i < num_pes; i++) {
-  //     if(pthread_create(&threads[i], NULL, null_pointer_dereference, NULL) != 0) {
-  //         fprintf(stderr, "Error creating thread\n");
-  //         return 1;
-  //     }
-  // }
-
-  // // Joining threads
-  // for(int i = 0; i < num_pes; i++) {
-  //     if(pthread_join(threads[i], NULL) != 0) {
-  //         fprintf(stderr, "Error joining thread\n");
-  //         return 1;
-  //     }
-  // }
 
   printf("Test Complete: Null pointer dereference\n\n");
   xbrtime_close();

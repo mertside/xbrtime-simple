@@ -32,14 +32,13 @@ int main(){
     long int SIZE = 0x40000000000; //Larger than the max size for malloc
     int* c; // Uninitialized pointer
    
-    printf("%lu\n", sizeof(long int));
+    // printf("%lu\n", sizeof(long int));  // MERT
 
-    //c = malloc(SIZE);
-    c = malloc(0x40000000000);
+    c = malloc(SIZE);
 
-    *c = 8;
-
-    //c = malloc(PTRDIFF_MAX+1);    
+    // c = malloc(0x40000000000);          // MERT
+    // *c = 8;                             // MERT       
+    // c = malloc(PTRDIFF_MAX+1);          // MERT
   
     printf("Address of x: %p\n", c);
     printf("Value of x: %d\n", *c);

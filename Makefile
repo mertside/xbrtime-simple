@@ -86,6 +86,9 @@ ts1:
 asu1:
 	$(MY_CC) -O0 -lpthread -o asu_df_switch.exe security/asu_df_switch.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+asu2:
+	$(MY_CC) -O0 -lpthread -o asu2_ip_large.exe security/asu2_ip_large.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 test:
 	./matmul.exe
 	./gather.exe

@@ -83,6 +83,9 @@ ss1:
 ts1:
 	$(MY_CC) -O0 -lpthread -o ts1_df_switch.exe security/ts1_df_switch.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+asu1:
+	$(MY_CC) -O0 -lpthread -o asu_df_switch.exe security/asu_df_switch.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 test:
 	./matmul.exe
 	./gather.exe

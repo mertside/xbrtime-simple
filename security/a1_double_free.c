@@ -20,24 +20,18 @@
 
 #define BUFFER_SIZE 85
 
-// Structure for shared data between threads
-typedef struct {
-  char *data;
-  pthread_mutex_t lock;
-} shared_resource_t;
-
 // Function to be executed by threads
-void *thread_func(void *arg) {
+void *double_free() {
+
+  char* complete  = malloc(sizeof(char) * BUFFER_SIZE);	
+  strcpy(complete, "Hello World!Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
   sleep(1);
-  shared_resource_t *resource = (shared_resource_t *)arg;
-  
-  // Locking the shared resource
-  // pthread_mutex_lock(&resource->lock);
-  printf("PE %d: Freeing memory\n", xbrtime_mype());
-  free(resource->data);
-  
-  // Unlocking the shared resource
-  // pthread_mutex_unlock(&resource->lock);
+  printf("Freeing memory(1)\n");
+  free(complete);
+  sleep(1);
+  printf("Freeing memory(2)\n");
+  free(complete);
+
 
   sleep(1);
   return NULL;
@@ -50,35 +44,12 @@ int main() {
 
   printf("Starting Test: Double Free\n");
 
-  shared_resource_t resource;
-  pthread_mutex_init(&resource.lock, NULL);
-  resource.data = malloc(sizeof(char) * BUFFER_SIZE);	
-  strcpy(resource.data, "Hello World! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
-
   for( int i = 0; i < num_pes; i++ ){
     bool check = false;
     check = tpool_add_work( threads[i].thread_queue, 
-                            thread_func, 
-                            &resource);
+                            double_free, 
+                            NULL);
   }
-
-  // // Creating two threads to simulate potential double-free vulnerability
-  // pthread_t threads[2];
-  // for (int i = 0; i < 2; i++) {
-  //   if(pthread_create(&threads[i], NULL, thread_func, &resource) != 0) {
-  //     fprintf(stderr, "Error creating thread\n");
-  //     return 1;
-  //   }
-  // }
-
-  // // Joining threads
-  // for (int i = 0; i < 2; i++) {
-  //   if(pthread_join(threads[i], NULL) != 0) {
-  //     fprintf(stderr, "Error joining thread\n");
-  //     return 1;
-  //   }
-  // }
-
   printf("Test Complete: Double Free\n\n");
 
   pthread_mutex_destroy(&resource.lock);

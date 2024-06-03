@@ -28,16 +28,18 @@ typedef struct {
 
 // Function to be executed by threads
 void *thread_func(void *arg) {
+  sleep(1);
   shared_resource_t *resource = (shared_resource_t *)arg;
   
   // Locking the shared resource
-  pthread_mutex_lock(&resource->lock);
+  // pthread_mutex_lock(&resource->lock);
   printf("PE %d: Freeing memory\n", xbrtime_mype());
   free(resource->data);
   
   // Unlocking the shared resource
-  pthread_mutex_unlock(&resource->lock);
+  // pthread_mutex_unlock(&resource->lock);
 
+  sleep(1);
   return NULL;
 }
 

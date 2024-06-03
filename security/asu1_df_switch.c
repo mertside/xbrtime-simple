@@ -45,7 +45,7 @@ int main(){
             printf("Char is %s\n", a);
             free(a);
         default:
-            // memcpy(a, "DEFAULT", 0X10);     // MERT: crashes here on morello
+            memcpy(a, "DEFAULT", 0X10);     // MERT: crashes here on morello
             printf("Char is %s\n", a);
             free(a);
     }

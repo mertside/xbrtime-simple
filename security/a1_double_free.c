@@ -52,7 +52,6 @@ int main() {
   }
   printf("Test Complete: Double Free\n\n");
 
-  pthread_mutex_destroy(&resource.lock);
   xbrtime_close();
 
   return 0;

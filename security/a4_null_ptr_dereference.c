@@ -28,7 +28,7 @@ void *null_pointer_dereference(void *arg) {
   bad_ptr = complete;
 
   sleep(1);
-  printf("Printing hex characters of known string:\n");
+  printf("\nPrinting hex characters of known string:\n");
   for(int i=0;i<12;i++) {
           printf("%x", bad_ptr[i]);
   }
@@ -37,12 +37,10 @@ void *null_pointer_dereference(void *arg) {
   bad_ptr = NULL;
 
   sleep(1);
-  printf("Printing hex characters of NULL string:\n");
+  printf("\nPrinting hex characters of NULL string:\n");
   for(int i=0;i<12;i++) {
          printf("%x", bad_ptr[i]); 
   }
-
-  sleep(1);
   printf("%c", '\n');
 
   return NULL;

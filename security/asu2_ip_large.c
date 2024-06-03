@@ -34,11 +34,11 @@ int main(){
    
     // printf("%lu\n", sizeof(long int));  // MERT
 
-    c = malloc(SIZE);
+    // c = malloc(SIZE);                   // MERT: crashes here
 
     // c = malloc(0x40000000000);          // MERT
     // *c = 8;                             // MERT       
-    // c = malloc(PTRDIFF_MAX+1);          // MERT
+    c = malloc(PTRDIFF_MAX+1);          // MERT: added
   
     printf("Address of x: %p\n", c);
     printf("Value of x: %d\n", *c);

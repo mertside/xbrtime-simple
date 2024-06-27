@@ -14,6 +14,7 @@
 #include "xbrtime_morello.h"
 
 void* thread_function(void* arg) {
+  sleep(1);
   xbrtime_barrier();
 
   char* c = malloc(0x10);
@@ -22,9 +23,11 @@ void* thread_function(void* arg) {
 
   *(c+0x18) = 0x61; //Manually edit size of d to a larger size so that it overlaps with e
   
+  sleep(1);
   free(d); //Free d for a reallocation
   free(e); //Free e for a reallocation
-
+  sleep(1);
+  
   /* 
     If a malloc is done for h with the size of e and for g with the adjusted size of d, 
     and is successful, then the memory allocated to h would be a subset of the memory
@@ -36,11 +39,11 @@ void* thread_function(void* arg) {
   char* h = malloc(0x10); 
   
   // If the exploit succeeded, then d and g will be the same, otherwise d and h will be the same
-  
+  sleep(1);
   memcpy(h, "victim's data", 0xe); //h copies in some data needed for program control
-  
+  sleep(1);
   memset(g+0x20, 0x41, 0xf); // This position is still within the legal memory range of g but the memory region overlaps with h
-
+  sleep(1);
 
   printf("d: %p\n", d);
   printf("e: %p\n\n", e);
@@ -53,6 +56,7 @@ void* thread_function(void* arg) {
     printf("Test Failed: Heap manipulation leading to overlapping memory regions\n");
   
   xbrtime_barrier();
+  sleep(1);
   return NULL;
 }
 

@@ -83,11 +83,21 @@ ss1:
 ts1:
 	$(MY_CC) -O0 -lpthread -o ts1_df_switch.exe security/ts1_df_switch.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
+asu1:
+	$(MY_CC) -O0 -lpthread -o asu1_ip_large.exe security/asu1_ip_large.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 asu2:
 	$(MY_CC) -O0 -lpthread -o asu2_df_switch.exe security/asu2_df_switch.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
-asu1:
-	$(MY_CC) -O0 -lpthread -o asu1_ip_large.exe security/asu1_ip_large.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+asu3:
+	$(MY_CC) -O0 -lpthread -o asu3_hm_fake_chunk_malloc.exe security/asu3_hm_fake_chunk_malloc.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
+asu4:
+	$(MY_CC) -O0 -lpthread -o asu4_hm_house_of_spirit.exe security/asu4_hm_house_of_spirit.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
+asu5:	
+	$(MY_CC) -O0 -lpthread -o asu5_hm_parent_and_child_chunk.exe security/asu5_hm_parent_and_child_chunk.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
 
 test:
 	./matmul.exe

@@ -33,42 +33,39 @@
 #include <string.h>
 
 int main(){
-    char* c = malloc(0x10);
-    char* d = malloc(0x10);
-    char* e = malloc(0x10);
+  char* c = malloc(0x10);
+  char* d = malloc(0x10);
+  char* e = malloc(0x10);
 
+  *(c+0x18) = 0x61; //Manually edit size of d to a larger size so that it overlaps with e
+  
+  free(d); //Free d for a reallocation
+  free(e); //Free e for a reallocation
 
-    *(c+0x18) = 0x61; //Manually edit size of d to a larger size so that it overlaps with e
-    
-    free(d); //Free d for a reallocation
-    free(e); //Free e for a reallocation
+  /* 
+    If a malloc is done for h with the size of e and for g with the adjusted size of d, 
+    and is successful, then the memory allocated to h would be a subset of the memory
+    allocated to g. Thus g would be able to legally control the contents of the memory 
+    allocated to h
+  */
+  
+  char* g = malloc(0x50); //Allocate a new variable with the increased size
+  char* h = malloc(0x10); 
+  
+  // If the exploit succeeded, then d and g will be the same, otherwise d and h will be the same
+  
+  memcpy(h, "victim's data", 0xe); //h copies in some data needed for program control
+  
+  memset(g+0x20, 0x41, 0xf); // This position is still within the legal memory range of g but the memory region overlaps with h
 
-    /* 
-      If a malloc is done for h with the size of e and for g with the adjusted size of d, 
-      and is successful, then the memory allocated to h would be a subset of the memory
-      allocated to g. Thus g would be able to legally control the contents of the memory 
-      allocated to h
-    */
-    
-    char* g = malloc(0x50); //Allocate a new variable with the increased size
-    char* h = malloc(0x10); 
-    
-    // If the exploit succeeded, then d and g will be the same, otherwise d and h will be the same
-    
-    memcpy(h, "victim's data", 0xe); //h copies in some data needed for program control
-    
-    memset(g+0x20, 0x41, 0xf); // This position is still within the legal memory range of g but the memory region overlaps with h
+  printf("d: %p\n", d);
+  printf("e: %p\n\n", e);
 
+  printf("g: %p -> %p\n", g, (g+0x50));
+  printf("h: %p\n", h);
+  printf("h: %s\n", h);
 
-    printf("d: %p\n", d);
-    printf("e: %p\n\n", e);
-
-    printf("g: %p -> %p\n", g, (g+0x50));
-    printf("h: %p\n", h);
-    printf("h: %s\n", h);
-
-    if(h[0] == 'A')
-      printf("Test Failed: Heap manipulation leading to overlapping memory regions\n");
-    
-
+  if(h[0] == 'A')
+    printf("Test Failed: Heap manipulation leading to overlapping memory regions\n");
+  
 }

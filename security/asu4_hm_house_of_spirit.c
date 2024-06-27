@@ -45,33 +45,33 @@ struct fast_chunk fake_chunks[2];   // Two chunks in consecutive memory
 void *ptr, *victim;
 
 int main(){
-    ptr = malloc(0x30);                 // First malloc
-    printf("ptr: %p\n", ptr);
+  ptr = malloc(0x30);                 // First malloc
+  printf("ptr: %p\n", ptr);
 
-    void *orig_ptr;
-    orig_ptr = ptr;
+  void *orig_ptr;
+  orig_ptr = ptr;
 
-    // Passes size check of "free(): invalid size"
-    fake_chunks[0].size = sizeof(struct fast_chunk);  // 0x40
+  // Passes size check of "free(): invalid size"
+  fake_chunks[0].size = sizeof(struct fast_chunk);  // 0x40
 
-    // Passes "free(): invalid next size (fast)"
-    fake_chunks[1].size = sizeof(struct fast_chunk);  // 0x40
+  // Passes "free(): invalid next size (fast)"
+  fake_chunks[1].size = sizeof(struct fast_chunk);  // 0x40
 
-    // Attacker overwrites a pointer that is about to be 'freed'
-    ptr = (void *)&fake_chunks[0].fd;
-    printf("Overwritten ptr: %p\n\n", ptr);
+  // Attacker overwrites a pointer that is about to be 'freed'
+  ptr = (void *)&fake_chunks[0].fd;
+  printf("Overwritten ptr: %p\n\n", ptr);
 
-    // fake_chunks[0] gets inserted into fastbin
-    free(ptr);
+  // fake_chunks[0] gets inserted into fastbin
+  free(ptr);
 
-    // Pointer freed
+  // Pointer freed
 
-    victim = malloc(0x30); // address returned from malloc
+  victim = malloc(0x30); // address returned from malloc
 
-    printf("victim: %p\n", victim);
+  printf("victim: %p\n", victim);
 
-    if(victim!=orig_ptr)
-      printf("Test Failed: Heap manipulation leading to arbitrary memory allocation\n");
+  if(victim!=orig_ptr)
+    printf("Test Failed: Heap manipulation leading to arbitrary memory allocation\n");
 
-    return 0;
+  return 0;
 }

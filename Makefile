@@ -80,8 +80,17 @@ r3:
 ss1:
 	$(MY_CC) -O0 -lpthread -o ss1_illegal_ptr_deref.exe security/ss1_illegal_ptr_deref.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
-ts1:
-	$(MY_CC) -O0 -lpthread -o ts1_df_switch.exe security/ts1_df_switch.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+ts2:
+	$(MY_CC) -O0 -lpthread -o ts2_df_switch.exe security/ts2_df_switch.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
+ts3:
+	$(MY_CC) -O0 -lpthread -o ts3_hm_fake_chunk_malloc.exe security/ts3_hm_fake_chunk_malloc.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
+ts4:
+	$(MY_CC) -O0 -lpthread -o ts4_hm_house_of_spirit.exe security/ts4_hm_house_of_spirit.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+
+ts5:
+	$(MY_CC) -O0 -lpthread -o ts5_hm_parent_and_child_chunk.exe security/ts5_hm_parent_and_child_chunk.c runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 asu1:
 	$(MY_CC) -O0 -lpthread -o asu1_ip_large.exe security/asu1_ip_large.c runtime/xbMrtime_api_asm.s -lm -Iruntime

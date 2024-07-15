@@ -506,7 +506,7 @@ void __xbrtime_get_u8_seq(uint64_t *base_src,
                           uint64_t *base_dest, // uint32_t pe,
                           uint32_t nelems, uint32_t stride);
 
-// ----------------------------------------------------------- U8 GET FUNCTION
+// ----------------------------------------------------- [xfer] U8 GET FUNCTION
 void xbrtime_ulonglong_get(unsigned long long *dest,
                            const unsigned long long *src, size_t nelems,
                            int stride, int pe) {
@@ -556,11 +556,14 @@ void xbrtime_ulonglong_get(unsigned long long *dest,
     //  XXX: multiple arguments do not pass to work!
     // tpool_add_work(pool, __xbrtime_get_u8_seq, func_args);
 
+    /*
     __xbrtime_get_u8_seq((uint64_t *)src, //__xbrtime_ltor((uint64_t)(src),pe),
                          (uint64_t *)(dest),
                          // xbrtime_decode_pe(pe),
                          (uint32_t)(nelems),
                          (uint32_t)(stride * sizeof(unsigned long long)));
+    */
+    dest = *src;
   }
   __xbrtime_asm_fence();
 
@@ -574,7 +577,7 @@ void __xbrtime_get_s8_seq(uint64_t *base_src,
                           uint64_t *base_dest, // uint32_t pe,
                           uint32_t nelems, uint32_t stride);
 
-// ----------------------------------------------------------- S8 GET FUNCTION
+// ----------------------------------------------------- [xfer] S8 GET FUNCTION
 void xbrtime_longlong_get(long long *dest, const long long *src, size_t nelems,
                           int stride, int pe) {
 #ifdef XBGAS_PRINT
@@ -615,11 +618,14 @@ void xbrtime_longlong_get(long long *dest, const long long *src, size_t nelems,
     return;
   } else /* if( (stride != 1) || (nelems == 1))*/ {
     /* sequential execution */
+    /*
     __xbrtime_get_s8_seq(
         (uint64_t *)(src), //__xbrtime_ltor((uint64_t)(src),pe),
         (uint64_t *)(dest),
         // xbrtime_decode_pe(pe),
         (uint32_t)(nelems), (uint32_t)(stride * sizeof(long long)));
+    */
+    dest = *src;
   }
   __xbrtime_asm_fence();
 }
@@ -629,7 +635,7 @@ void __xbrtime_put_s8_seq(uint64_t *base_src,
                           uint64_t *base_dest, // uint32_t pe,
                           uint32_t nelems, uint32_t stride);
 
-// ----------------------------------------------------------- S8 PUT FUNCTION
+// ----------------------------------------------------- [xfer] S8 PUT FUNCTION
 void xbrtime_longlong_put(long long *dest, const long long *src, size_t nelems,
                           int stride, int pe) {
 #ifdef XBGAS_PRINT
@@ -670,11 +676,14 @@ void xbrtime_longlong_put(long long *dest, const long long *src, size_t nelems,
     return;
   } else /* if( (stride != 1) || (nelems == 1))*/ {
     /* sequential execution */
+    /*
     __xbrtime_put_s8_seq(
         (uint64_t *)(src),
         (uint64_t *)(dest), //__xbrtime_ltor((uint64_t)(dest),pe),
         // xbrtime_decode_pe(pe),
         (uint32_t)(nelems), (uint32_t)(stride * sizeof(long long)));
+    */
+    dest = *src;
   }
   __xbrtime_asm_fence();
 }
@@ -683,7 +692,7 @@ void xbrtime_longlong_put(long long *dest, const long long *src, size_t nelems,
 void __xbrtime_get_s4_seq(uint64_t *base_src,
                           uint64_t *base_dest, // uint32_t pe,
                           uint32_t nelems, uint32_t stride);
-// ----------------------------------------------------------- INT GET FUNCTION
+// ---------------------------------------------------- [xfer] INT GET FUNCTION
 void xbrtime_int_get(int *dest, const int *src, size_t nelems, int stride, 
                      int pe) {
 #ifdef XBGAS_PRINT
@@ -694,12 +703,15 @@ void xbrtime_int_get(int *dest, const int *src, size_t nelems, int stride,
         return;
     } else {
         // Sequential execution for int data type
+        /*
         __xbrtime_get_s4_seq(
             (uint64_t *)(src), // Cast to int64_t* if necessary
             (uint64_t *)(dest),
             (uint32_t)(nelems), 
             (uint32_t)(stride * sizeof(int))
         );
+        */
+       dest = *src;
     }
     __xbrtime_asm_fence();
 }
@@ -708,7 +720,7 @@ void xbrtime_int_get(int *dest, const int *src, size_t nelems, int stride,
 void __xbrtime_put_s4_seq(uint64_t *base_src,
                           uint64_t *base_dest, // uint32_t pe,
                           uint32_t nelems, uint32_t stride);
-// ----------------------------------------------------------- INT PUT FUNCTION
+// ---------------------------------------------------- [xfer] INT PUT FUNCTION
 void xbrtime_int_put(int *dest, const int *src, size_t nelems, int stride, 
                      int pe) {
 #ifdef XBGAS_PRINT
@@ -719,12 +731,15 @@ void xbrtime_int_put(int *dest, const int *src, size_t nelems, int stride,
         return;
     } else {
         // Sequential execution for int data type
+        /*
         __xbrtime_put_s4_seq(
             (uint64_t *)(src), // Cast to int64_t* if necessary
             (uint64_t *)(dest),
             (uint32_t)(nelems), 
             (uint32_t)(stride * sizeof(int))
         );
+        */
+       dest = *src;
     }
     __xbrtime_asm_fence();
 }

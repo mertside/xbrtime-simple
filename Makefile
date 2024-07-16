@@ -1,6 +1,6 @@
 CCOM=~/cheri/cheri-exercises/tools/ccc
 ARCH=morello-purecap
-MY_CC?=$(CCOM) $(ARCH)
+MY_CC?=$(CCOM) #$(ARCH)
 #DIR=~/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
 
 all: matMul gather gupsM broadcast reduction a1 a2 a3 a4 a5 a6 a7 c4a c4b c5a c5b c6

@@ -1,5 +1,5 @@
 CCOM = /usr/local64/llvm-morello/bin/clang
-INCLUDES = -I ../../runtime/xbrtime_morello.h
+INCLUDES = -I../../runtime
 CFLAGS = -O0 -lpthread -lm -Iruntime
 MY_CC = $(CCOM) $(CFLAGS) $(INCLUDES)
 

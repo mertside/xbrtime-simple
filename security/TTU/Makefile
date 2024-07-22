@@ -42,6 +42,7 @@ ttuR4:
 	$(MY_CC) -o ttu_r4_illegal_ptr_deref.exe ttu_r4_illegal_ptr_deref.c
 ttuR5:
 	$(MY_CC) -o ttu_r5_df_switch.exe ttu_r5_df_switch.c
+
 runS:
 	./ttu_s1_free_not_at_start.exe
 	./ttu_s2_free_not_on_heap.exe
@@ -81,4 +82,4 @@ runA:
 	./ttu_r5_df_switch.exe
 
 clean:
-	rm -f ./*.o ./*.exe
+	rm -f ./*.o ./*.exe ./*.core

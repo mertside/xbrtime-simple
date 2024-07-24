@@ -7,23 +7,23 @@ echo "Running ASU tests"
 # ./asu_t3_hm_house_of_spirit.exe > asu_t3.out.txt 2> asu_t3.err.txt
 
 echo "ASU_T1:"
-asuT1=`./asu_t1_double_free.exe 2>&1`;
+asuT1=`./asu_t1_double_free.exe`;
 echo "$asuT1"
 
 echo "ASU_T2:"
-asuT2=`./asu_t2_hm_fake_chunk_malloc.exe 2>&1`;
+asuT2=`./asu_t2_hm_fake_chunk_malloc.exe`;
 echo "$asuT2"
 
 echo "ASU_T3:"
-asuT3=`./asu_t3_hm_house_of_spirit.exe 2>&1`;
+asuT3=`./asu_t3_hm_house_of_spirit.exe`;
 echo "$asuT3"
 
 echo "ASU_T4:"
-asuT4=`./asu_t4_hm_parent_and_child_chunk.exe 2>&1`;
+asuT4=`./asu_t4_hm_parent_and_child_chunk.exe`;
 echo "$asuT4"
 
 echo "ASU_T5:"
-asuT5=`./asu_t5_use_after_free.exe 2>&1`;
+asuT5=`./asu_t5_use_after_free.exe`;
 echo "$asuT5"
 
 

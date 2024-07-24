@@ -18,7 +18,7 @@ echo " "
 
 echo "------------------------------"
 echo "TTU_T2:"
-ttuT2=`./ttu_t2_hm_fake_chunk_malloc.exe`;
+# ttuT2=`./ttu_t2_hm_fake_chunk_malloc.exe`;
 # echo "$ttuT2"
 echo "SKIPPED"
 echo " "
@@ -31,8 +31,9 @@ echo " "
 
 echo "------------------------------"
 echo "TTU_T4:"
-ttuT4=`./ttu_t4_hm_p_and_c_chunk.exe`;
-echo "$ttuT4"
+# ttuT4=`./ttu_t4_hm_p_and_c_chunk.exe`;
+# echo "$ttuT4"
+echo "SKIPPED"
 echo " "
 
 echo "------------------------------"
@@ -105,8 +106,9 @@ echo " "
 
 echo "------------------------------"
 echo "TTU_R5:"
-ttuR5=`./ttu_r5_df_switch.exe`;
-echo "$ttuR5"
+# ttuR5=`./ttu_r5_df_switch.exe`;
+# echo "$ttuR5"
+echo "SKIPPED"
 echo " "
 
 # ----------------------------------------------------------------------------

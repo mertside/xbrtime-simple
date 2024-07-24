@@ -40,7 +40,7 @@ asuT5:
 	$(MY_CC) -O0 -lpthread -o asu_t5_use_after_free.exe asu_t5_use_after_free.c ../../runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 asuR1:
-	$(MY_CC) -O0 -lpthread -o asu_r1_HeartBleed.exe asu_r1_HeartBleed.c ../../runtime/xbMrtime_api_asm.s -lm -Iruntime
+	$(MY_CC) -O0 -lpthread -o asu_r1_heartbleed.exe asu_r1_heartbleed.c ../../runtime/xbMrtime_api_asm.s -lm -Iruntime
 
 asuR2:
 	$(MY_CC) -O0 -lpthread -o asu_r2_dop.exe asu_r2_dop.c ../../runtime/xbMrtime_api_asm.s -lm -Iruntime
@@ -69,7 +69,7 @@ runT:
 	./asu_t5_use_after_free.exe
 
 runR:
-	./asu_r1_HeartBleed.exe
+	./asu_r1_heartbleed.exe
 	./asu_r2_dop.exe
 	./asu_r3_uaf_to_code_reuse.exe
 	./asu_r4_ip_large_size.exe
@@ -86,7 +86,7 @@ runA:
 	./asu_t3_hm_house_of_spirit.exe
 	./asu_t4_hm_parent_and_child_chunk.exe
 	./asu_t5_use_after_free.exe
-	./asu_r1_HeartBleed.exe
+	./asu_r1_heartbleed.exe
 	./asu_r2_dop.exe
 	./asu_r3_uaf_to_code_reuse.exe
 	./asu_r4_ip_large_size.exe

@@ -2,7 +2,14 @@
 echo "============================================================"
 echo "Running ASU tests" 
 
+echo "DATE: " 
 date
+
+echo "UNAME: " 
+uname -a
+
+echo "SYSCTL: " 
+sysctl -a | egrep -i 'hw.machine|hw.model|hw.ncpu|hw.usermem'
 
 export NUM_OF_THREADS=4
 

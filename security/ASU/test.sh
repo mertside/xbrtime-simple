@@ -8,23 +8,23 @@ echo "Running ASU tests"
 
 echo "ASU_T1:"
 asuT1=`./asu_t1_double_free.exe`;
-echo "$asuT1"
+echo "$asuT1" > asu_t1.txt
 
 echo "ASU_T2:"
 asuT2=`./asu_t2_hm_fake_chunk_malloc.exe`;
-echo "$asuT2"
+echo "$asuT2" > asu_t2.txt
 
 echo "ASU_T3:"
 asuT3=`./asu_t3_hm_house_of_spirit.exe`;
-echo "$asuT3"
+echo "$asuT3" > asu_t3.txt
 
 echo "ASU_T4:"
 asuT4=`./asu_t4_hm_parent_and_child_chunk.exe`;
-echo "$asuT4"
+echo "$asuT4" > asu_t4.txt
 
 echo "ASU_T5:"
 asuT5=`./asu_t5_use_after_free.exe`;
-echo "$asuT5"
+echo "$asuT5" > asu_t5.txt
 
 
 # asuS1=`./asu_s1_free_not_at_start.exe 2>&1`; echo "ASU_S1:$asuS1" > asu_s1_free_not_at_start.txt

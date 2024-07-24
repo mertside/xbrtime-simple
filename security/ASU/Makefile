@@ -93,4 +93,4 @@ runA:
 	./asu_r5_df_switch_statements.exe
 
 clean:
-	rm -f ./*.o ./*.exe
+	rm -f ./*.o ./*.exe ./*.core

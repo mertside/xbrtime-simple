@@ -2,12 +2,15 @@
 echo "============================================================"
 echo "Running ASU tests" 
 
+echo " "
 echo "DATE: " 
 date
 
+echo " "
 echo "UNAME: " 
 uname -a
 
+echo " "
 echo "SYSCTL: " 
 sysctl -a | egrep -i 'hw.machine|hw.model|hw.ncpu|hw.usermem'
 

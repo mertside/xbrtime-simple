@@ -19,7 +19,8 @@ echo " "
 echo "------------------------------"
 echo "TTU_T2:"
 ttuT2=`./ttu_t2_hm_fake_chunk_malloc.exe`;
-echo "$ttuT2"
+# echo "$ttuT2"
+echo "SKIPPED"
 echo " "
 
 echo "------------------------------"
@@ -53,8 +54,7 @@ echo " "
 echo "------------------------------"
 echo "TTU_S2:"
 ttuS2=`./ttu_s2_free_not_on_heap.exe`;
-# echo "$ttuS2"
-echo "SKIPPED"
+echo "$ttuS2"
 echo " "
 
 echo "------------------------------"

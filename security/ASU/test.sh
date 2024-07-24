@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Running ASU tests" | ts 
+echo "Running ASU tests" | date 
 
 
 # ----------------------------------------------------------------------------

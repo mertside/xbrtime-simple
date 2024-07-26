@@ -49,10 +49,10 @@ int main() {
   printf("\n");
 
   printf("Printing characters of private array from public array\n");
-  // for(int i=0;i<14;i++) {
-  for(int i=6;i<20;i++) {
-          printf("%c", public[i]);
-          // printf("%c", public[i+offset]);
+  for(int i=0;i<14;i++) {
+  // for(int i=6;i<20;i++) {
+          // printf("%c", public[i]);
+          printf("%c", public[i+offset]);
 	  if(public[i+offset] == private[i])
 	    test_status = 0;
   }

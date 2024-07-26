@@ -26,9 +26,6 @@ struct fast_chunk fake_chunks[2];   // Two chunks in consecutive memory
 void *ptr, *victim;
 
 void* thread_function(void* arg) {
-  sleep(1);
-  xbrtime_barrier();
-
   ptr = malloc(0x30);                 // First malloc
   printf("ptr: %p\n", ptr);
 
@@ -43,9 +40,7 @@ void* thread_function(void* arg) {
   ptr = (void *)&fake_chunks[0].fd;
   printf("Overwritten ptr: %p\n\n", ptr);
   // fake_chunks[0] gets inserted into fastbin
-  sleep(1);
   free(ptr);
-  sleep(1);
   // Pointer freed
   victim = malloc(0x30); // address returned from malloc
 
@@ -54,8 +49,6 @@ void* thread_function(void* arg) {
   if(victim!=orig_ptr)
     printf("Test Failed: Heap manipulation leading to arbitrary memory allocation\n");
 
-  xbrtime_barrier();
-  sleep(1);
   return NULL;
 }
 

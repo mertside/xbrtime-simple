@@ -32,9 +32,11 @@ int main() {
 
   char *public     = (char *)malloc(6);
   strcpy(public, "public");
+  printf("public: %p\n", public);
 
   char *private    = (char *)malloc(14);
   strcpy(private, "secretpassword");
+  printf("private: %p\n", private);
 
   int offset = private-public;
 //  printf("Offset of private array w.r.t public array: %d\n", offset);

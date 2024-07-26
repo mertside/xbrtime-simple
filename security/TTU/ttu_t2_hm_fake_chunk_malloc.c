@@ -10,8 +10,8 @@
 #include "xbrtime_morello.h"
 
 void* thread_function(void* arg) {
-  sleep(1);
-  xbrtime_barrier();
+  // sleep(1);
+  // xbrtime_barrier();
 
   unsigned long int *ptr0, *ptr1, *target;
 
@@ -23,12 +23,12 @@ void* thread_function(void* arg) {
   printf("ptr1: %p\n", ptr1);
   printf("Target: %p\n\n", target);
 
-  sleep(1);
+  // sleep(1);
   
   free(ptr0);
   free(ptr1);
 
-  sleep(1);
+  // sleep(1);
 
   // Address of previous chunk is stored in ptr1. Increment by 64 to change this value to 
   // the address of the target
@@ -46,8 +46,8 @@ void* thread_function(void* arg) {
   if(ptr_y == target)
     printf("Test Failed: Heap manipulation leading to allocation on specific address\n");
 
-  xbrtime_barrier();
-  sleep(1);
+  // xbrtime_barrier();
+  // sleep(1);
   return NULL;
 }
 

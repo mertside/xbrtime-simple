@@ -47,8 +47,16 @@ void vulnerable_function() {
     printf("Enter some text: ");
     fgets(buffer, sizeof(buffer), stdin);  // Safer input function but still used unsafely
 
-    // Simulate a deliberate buffer overflow for educational purposes
-    strcpy(buffer + 60, (char *)&malicious_function);  // Overwrite part of the buffer to change the function pointer
+    // Example of manual overwrite for demonstration:
+    // Calculate the distance from the start of the buffer to the location of the function pointer
+    intptr_t distance = (char *)&func_ptr - buffer;
+    printf("Distance to function pointer: %ld bytes\n", distance);
+
+    // Check if the calculated distance is within the bounds of the buffer
+    if (distance >= 0 && distance < sizeof(buffer)) {
+        // Place the address of malicious_function into the calculated correct location
+        *(void **)(buffer + distance) = malicious_function;
+    }
 
     func_ptr();  // Call function via function pointer
 }

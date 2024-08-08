@@ -28,7 +28,7 @@ void vulnerable_function() {
     memset(buffer, 'A', sizeof(buffer));
 
     // Calculate the distance from the start of the buffer to the function pointer
-    intptr_t distance = (char *)&func_ptr - buffer;
+    __intptr_t distance = (char *)&func_ptr - buffer;
     printf("Function pointer initially points to: %p\n", (void *)func_ptr);
     printf("Buffer starts at: %p\n", (void *)buffer);
     printf("Function pointer is at offset: %ld\n", distance);

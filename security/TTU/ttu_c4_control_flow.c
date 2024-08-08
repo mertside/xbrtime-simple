@@ -30,41 +30,33 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Function declarations
-void benign_function();
-void malicious_function();
-
-// Structure to simulate more complex data structures and control flow
-typedef struct {
-    char buffer[64];
-    void (*func_ptr)();
-} DataStructure;
-
-// Benign function
+// Function declarations for the benign and malicious functions
 void benign_function() {
     printf("This is a benign function.\n");
 }
 
-// Malicious function
 void malicious_function() {
     printf("Control flow hijacked! This is a malicious function.\n");
 }
 
 // Function simulating a vulnerable scenario
-void simulate_vulnerability() {
-    DataStructure ds;
-    ds.func_ptr = benign_function;  // Initialize function pointer to benign function
+void vulnerable_function() {
+    char buffer[64];
+    void (*func_ptr)() = benign_function;  // Function pointer initialized to point to a benign function
 
-    printf("Enter some text (be careful, it's not safe!): ");
-    fgets(ds.buffer, sizeof(ds.buffer), stdin);  // Vulnerable function that can lead to buffer overflow
+    printf("Enter some text: ");
+    fgets(buffer, sizeof(buffer), stdin);  // Safer input function but still used unsafely
 
-    // Call function via function pointer
-    ds.func_ptr();
+    // Simulate a deliberate buffer overflow for educational purposes
+    strcpy(buffer + 60, (char *)&malicious_function);  // Overwrite part of the buffer to change the function pointer
+
+    func_ptr();  // Call function via function pointer
 }
 
 int main() {
     printf("Starting the control flow attack simulation.\n");
-    simulate_vulnerability();
+    vulnerable_function();
     printf("Exiting the program.\n");
     return EXIT_SUCCESS;
 }
+

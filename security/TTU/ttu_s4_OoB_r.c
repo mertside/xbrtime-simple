@@ -34,7 +34,6 @@ void* out_of_bounds_read(void* arg) {
 int main() {
   xbrtime_init();
   int num_pes = xbrtime_num_pes();
-  pthread_t threads[num_pes];
 
   printf("Starting test: Out-of-Bounds Read\n");
 

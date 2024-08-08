@@ -30,7 +30,7 @@ void vulnerable_function() {
 
     // Directly manipulate the function pointer to point to the malicious function
     // Calculate the position of the function pointer relative to the buffer start
-    intptr_t distance = (char *)&func_ptr - buffer;
+    __intptr_t distance = (char *)&func_ptr - buffer;
     if (distance < sizeof(buffer)) {
         *(void **)(buffer + distance) = malicious_function;
     }

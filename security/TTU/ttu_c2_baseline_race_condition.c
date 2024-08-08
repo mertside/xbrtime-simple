@@ -1,10 +1,11 @@
-/*  Benchmark: Use of Freed Memory
+/*  Benchmark: Race Condition in Memory Access
  *  @author  : Mert Side for TTU
  *  @brief   : Multiple threads attempt to manipulate shared memory concurrently 
  *             without proper synchronization mechanisms such as mutexes or 
  *             semaphores.
  * 
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>

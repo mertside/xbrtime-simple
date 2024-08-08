@@ -49,7 +49,7 @@ void vulnerable_function() {
 
     // Example of manual overwrite for demonstration:
     // Calculate the distance from the start of the buffer to the location of the function pointer
-    intptr_t distance = (char *)&func_ptr - buffer;
+    __intptr_t distance = (char *)&func_ptr - buffer;
     printf("Distance to function pointer: %ld bytes\n", distance);
 
     // Check if the calculated distance is within the bounds of the buffer

@@ -49,6 +49,8 @@ ttuC2B:
 	$(MY_CC) -o ttu_c2_baseline_race_condition.exe ttu_c2_baseline_race_condition.c
 ttuC3B:
 	$(MY_CC) -o ttu_c3_baseline_memory_leak.exe ttu_c3_baseline_memory_leak.c
+ttuC4B:
+	$(MY_CC) -o ttu_c4_control_flow.exe ttu_c4_control_flow.c
 
 runS:
 	./ttu_s1_free_not_at_start.exe

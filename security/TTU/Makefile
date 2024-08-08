@@ -51,6 +51,8 @@ ttuC3B:
 	$(MY_CC) -o ttu_c3_baseline_memory_leak.exe ttu_c3_baseline_memory_leak.c
 ttuC4B:
 	$(MY_CC) -o ttu_c4_control_flow.exe ttu_c4_control_flow.c
+ttuC5B:
+	$(MY_CC) -o ttu_c5_rop.exe ttu_c5_rop.c
 
 runS:
 	./ttu_s1_free_not_at_start.exe

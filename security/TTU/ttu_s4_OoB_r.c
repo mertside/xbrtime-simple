@@ -1,9 +1,61 @@
 /*  Benchmark: Out-of-Bounds Read
- *  @author  : Secure, Trusted, and Assured Microelectronics (STAM) Center 
- *             Adaptated by Mert Side for TTU
+ *  @author  : Mert Side for TTU
  *  @brief   : This benchmark is a simple test to demonstrate an out-of-bounds read.
  * 
  */
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include "xbrtime_morello.h"
+
+// Function to be executed by each thread
+void* out_of_bounds_read(void* arg) {
+  long thread_id = (long)arg;
+  int array[5];  // Array of 5 integers
+  int i;
+
+  // Initialize array
+  for (i = 0; i < 5; i++) {
+      array[i] = i * 10;  // Set array values
+  }
+
+  // Simulate out-of-bounds read
+  int out_of_bounds_index = 5 + thread_id; // Deliberately out of bounds
+  int read_value = array[out_of_bounds_index]; // Out-of-bounds read
+
+  printf("Thread %ld: Reading out-of-bounds index %d, value: %d\n", 
+          thread_id, out_of_bounds_index, read_value);
+
+  return NULL;
+}
+
+int main() {
+  xbrtime_init();
+  int num_pes = xbrtime_num_pes();
+  pthread_t threads[num_pes];
+
+  printf("Starting test: Out-of-Bounds Read\n");
+
+  for( int i = 0; i < num_pes; i++ ){
+    bool check = false;
+    check = tpool_add_work( threads[i].thread_queue, 
+                            out_of_bounds_read, 
+                            (void*) i);
+  }
+
+  printf("Test Completed: Out-of-Bounds Read\n\n");
+  xbrtime_close();
+
+  return 0;
+}
+
+
+
+// ---
+
+/*
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,3 +115,5 @@ int main() {
 
   return 0;
 }
+
+*/

@@ -43,6 +43,11 @@ ttuR4:
 ttuR5:
 	$(MY_CC) -o ttu_r5_df_switch.exe ttu_r5_df_switch.c
 
+ttuC1B:
+	$(MY_CC) -o ttu_c1_baseline_use_of_freed_memory.exe ttu_c1_baseline_use_of_freed_memory.c
+ttuC2B:
+	$(MY_CC) -o ttu_c2_baseline_race_condition.exe ttu_c2_baseline_race_condition.c
+
 runS:
 	./ttu_s1_free_not_at_start.exe
 	./ttu_s2_free_not_on_heap.exe

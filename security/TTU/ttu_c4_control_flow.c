@@ -56,7 +56,7 @@ void simulate_vulnerability() {
     ds.func_ptr = benign_function;  // Initialize function pointer to benign function
 
     printf("Enter some text (be careful, it's not safe!): ");
-    gets(ds.buffer);  // Vulnerable function that can lead to buffer overflow
+    fgets(ds.buffer, sizeof(ds.buffer), stdin);  // Vulnerable function that can lead to buffer overflow
 
     // Call function via function pointer
     ds.func_ptr();

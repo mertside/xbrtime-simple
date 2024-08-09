@@ -13,7 +13,7 @@ ttuC2B:
 ttuC3B:
 	$(MY_CC) -o ttu_c3_baseline_memory_leak.exe ttu_c3_baseline_memory_leak.c
 ttuC4B:
-	$(MY_CC) -o ttu_c4_control_flow.exe ttu_c4_control_flow.c
+	$(MY_CC) -o ttu_c4_baseline_control_flow.c.exe ttu_c4_baseline_control_flow.c.c
 ttuC5B:
 	$(MY_CC) -o ttu_c5_rop.exe ttu_c5_rop.c
 

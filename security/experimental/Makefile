@@ -15,7 +15,7 @@ ttuC3B:
 ttuC4B:
 	$(MY_CC) -o ttu_c4_baseline_control_flow.exe ttu_c4_baseline_control_flow.c
 ttuC5B:
-	$(MY_CC) -o ttu_c5_rop.exe ttu_c5_rop.c
+	$(MY_CC) -o ttu_c5_baseline_rop.exe ttu_c5_baseline_rop.c
 
 clean:
 	rm -f ./*.o ./*.exe ./*.core

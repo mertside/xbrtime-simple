@@ -1,6 +1,5 @@
 /*  Benchmark: Out-of-Bounds Write
- *  @author  : Secure, Trusted, and Assured Microelectronics (STAM) Center
- *             Adaptated by Mert Side for TTU
+ *  @author  : Mert Side for TTU
  *  @brief   : This benchmark is a simple test to demonstrate an out-of-bounds write.
  * 
  */

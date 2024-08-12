@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
-#include "xbrtime_morello.h"
 
 #define PUBLIC_SIZE 6
 #define PRIVATE_SIZE 14

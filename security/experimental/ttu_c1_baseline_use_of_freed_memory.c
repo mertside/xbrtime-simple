@@ -26,12 +26,6 @@
  *     New data is written into the reallocated memory block, and 
  *     then it's printed out, demonstrating how data could be 
  *     corrupted or manipulated due to the reuse of freed memory.
- *  - Security Considerations
- *     This example demonstrates the risk associated with improper 
- *     reuse of freed memory. In a real-world application, protective 
- *     measures such as setting pointers to NULL after freeing and 
- *     thorough checks before using dynamic memory are crucial to prevent 
- *     such vulnerabilities.
  */
 
 #include <stdio.h>

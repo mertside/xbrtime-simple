@@ -76,13 +76,13 @@ echo " "
 
 echo "------------------------------"
 echo "TTU_S4:"
-ttuS4=`./ttu_s4_OoB_r.exe`;
+ttuS4=`./asu_s4_oob_read.exe`;
 echo "$ttuS4"
 echo " "
 
 echo "------------------------------"
 echo "TTU_S5:"
-ttuS5=`./ttu_s5_OoB_w.exe`;
+ttuS5=`./asu_s5_oob_write.exe`;
 echo "$ttuS5"
 echo " "
 

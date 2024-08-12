@@ -33,14 +33,6 @@ void vulnerable_function() {
   printf("Buffer starts at: %p\n", (void *)buffer);
   printf("Function pointer is at offset: %ld\n", distance);
 
-  // Check if we can safely manipulate the function pointer within the buffer bounds
-  // if (distance < sizeof(buffer)) {
-  //   *(void **)(buffer + distance) = malicious_function;  // Overwrite function pointer
-  //   printf("Function pointer modified to point to: %p\n", (void *)malicious_function);
-  // } else {
-  //   printf("Function pointer location is outside of buffer bounds, cannot overwrite safely.\n");
-  // }
-
   *(void **)(buffer + distance) = malicious_function;  // Overwrite function pointer
 
   // Output the current buffer state near the function pointer location for debugging

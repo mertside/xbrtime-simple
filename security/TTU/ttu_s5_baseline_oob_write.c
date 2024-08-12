@@ -20,7 +20,6 @@ int main() {
   char* buffer = malloc(PUBLIC_SIZE + PRIVATE_SIZE);
   if (buffer == NULL) {
     printf("Memory allocation failed\n");
-    return NULL;
   }
 
   // Set 'public' and 'private' pointers within the buffer

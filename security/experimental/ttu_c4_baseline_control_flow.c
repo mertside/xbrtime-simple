@@ -61,35 +61,3 @@ int main() {
   printf("Exiting the program.\n");
   return EXIT_SUCCESS;
 }
-
-/*
-
-  #include <stdio.h>
-  #include <stdlib.h>
-
-  // Benign function
-  void benign_function() {
-      printf("This is a benign function.\n");
-  }
-
-  // Malicious function
-  void malicious_function() {
-      printf("This is a malicious function. Control flow has been hijacked!\n");
-  }
-
-  void vulnerable_function() {
-      void (*func_ptr)() = benign_function;  // Function pointer initialized to point to a benign function
-      char buffer[64];
-
-      printf("Enter some text: ");
-      gets(buffer);  // Vulnerable function that can lead to buffer overflow
-
-      func_ptr();  // Call function via function pointer
-  }
-
-  int main() {
-      vulnerable_function();
-      return 0;
-  }
-
-*/

@@ -12,12 +12,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Function to demonstrate use-after-reallocation
 void use_after_reallocation() {
   // Step 1: Allocate memory and initialize
   int *original_ptr = (int *)malloc(10 * sizeof(int));
-  printf("original_ptr starts at: %p\n", (void *)original_ptr);
-
   if (original_ptr == NULL) {
     printf("Memory allocation failed\n");
     return;
@@ -30,14 +27,15 @@ void use_after_reallocation() {
     printf("%d ", original_ptr[i]);
   }
   printf("\n");
-  
+
+  // Print the address of original_ptr
+  printf("Address of original_ptr: %p\n", (void *)original_ptr);
+
   // Step 2: Free the allocated memory
   free(original_ptr);
 
   // Step 3: Reallocate memory for a different purpose
   char *new_ptr = (char *)malloc(10 * sizeof(char));
-  printf("new_ptr starts at: %p\n", (void *)new_ptr);
-
   if (new_ptr == NULL) {
     printf("Memory allocation failed\n");
     return;
@@ -45,10 +43,20 @@ void use_after_reallocation() {
   strcpy(new_ptr, "NewData");
   printf("New data: %s\n", new_ptr);
 
-  // Step 4: Use after reallocation - accessing old data
-  printf("Use after reallocation (original pointer): ");
+  // Print the address of new_ptr
+  printf("Address of new_ptr: %p\n", (void *)new_ptr);
+
+  // Calculate the distance between original_ptr and new_ptr
+  ptrdiff_t distance = (char*)original_ptr - new_ptr;
+
+  // Print the calculated distance
+  printf("Calculated distance: %td bytes\n", distance);
+
+  // Step 4: Use new_ptr to access the original data using the calculated distance
+  printf("Accessing original data through new_ptr:\n");
   for (int i = 0; i < 10; i++) {
-    printf("%d ", original_ptr[i]);  // Accessing freed memory
+    int *access_ptr = (int *)(new_ptr + distance + i * sizeof(int));
+    printf("%d ", *access_ptr);
   }
   printf("\n");
 

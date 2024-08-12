@@ -48,7 +48,5 @@ int main() {
 
   printf("Test Completed: Out-of-Bounds Read\n\n");
 
-  xbrtime_close();
-
   return 0;
 }

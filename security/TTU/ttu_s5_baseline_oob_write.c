@@ -46,8 +46,6 @@ int main() {
   free(buffer);
 
   printf("Test complete: Out of Bounds Write\n");
-  
-  xbrtime_close();
 
   return 0;
 }

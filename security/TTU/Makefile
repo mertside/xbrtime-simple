@@ -19,9 +19,9 @@ ttuS2:
 ttuS3:
 	$(MY_CC) -o ttu_s3_null_ptr_dereference.exe ttu_s3_null_ptr_dereference.c
 ttuS4:
-	$(MY_CC) -o ttu_s4_OoB_r.exe ttu_s4_OoB_r.c
+	$(MY_CC) -o ttu_s4_oob_read.exe ttu_s4_oob_read.c
 ttuS5:
-	$(MY_CC) -o ttu_s5_OoB_w.exe ttu_s5_OoB_w.c
+	$(MY_CC) -o ttu_s5_oob_write.exe ttu_s5_oob_write.c
 ttuT1:
 	$(MY_CC) -o ttu_t1_double_free.exe ttu_t1_double_free.c
 ttuT2:
@@ -54,12 +54,17 @@ ttuC4B:
 ttuC5B:
 	$(MY_CC) -o ttu_c5_rop.exe ttu_c5_rop.c
 
+ttuS4B:
+	$(MY_CC) -o ttu_s4_baseline_oob_read.exe ttu_s4_baseline_oob_read.c
+ttuS5B:
+	$(MY_CC) -o ttu_s5_baseline_oob_write.exe ttu_s5_baseline_oob_write.c
+
 runS:
 	./ttu_s1_free_not_at_start.exe
 	./ttu_s2_free_not_on_heap.exe
 	./ttu_s3_null_ptr_dereference.exe
-	./ttu_s4_OoB_r.exe
-	./ttu_s5_OoB_w.exe
+	./ttu_s4_oob_read.exe
+	./ttu_s5_oob_write.exe
 
 runT:
 	./ttu_t1_double_free.exe
@@ -79,8 +84,8 @@ runA:
 	./ttu_s1_free_not_at_start.exe
 	./ttu_s2_free_not_on_heap.exe
 	./ttu_s3_null_ptr_dereference.exe
-	./ttu_s4_OoB_r.exe
-	./ttu_s5_OoB_w.exe
+	./ttu_s4_oob_read.exe
+	./ttu_s5_oob_write.exe
 	./ttu_t1_double_free.exe
 	./ttu_t2_hm_fake_chunk_malloc.exe
 	./ttu_t3_hm_house_of_spirit.exe

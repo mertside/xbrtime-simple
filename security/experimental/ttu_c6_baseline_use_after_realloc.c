@@ -16,24 +16,28 @@
 void use_after_reallocation() {
   // Step 1: Allocate memory and initialize
   int *original_ptr = (int *)malloc(10 * sizeof(int));
+  printf("original_ptr starts at: %p\n", (void *)original_ptr);
+
   if (original_ptr == NULL) {
     printf("Memory allocation failed\n");
     return;
   }
   for (int i = 0; i < 10; i++) {
-      original_ptr[i] = i * 10;
+    original_ptr[i] = i * 10;
   }
   printf("Original data: ");
   for (int i = 0; i < 10; i++) {
     printf("%d ", original_ptr[i]);
   }
   printf("\n");
-
+  
   // Step 2: Free the allocated memory
   free(original_ptr);
 
   // Step 3: Reallocate memory for a different purpose
   char *new_ptr = (char *)malloc(10 * sizeof(char));
+  printf("new_ptr starts at: %p\n", (void *)new_ptr);
+
   if (new_ptr == NULL) {
     printf("Memory allocation failed\n");
     return;

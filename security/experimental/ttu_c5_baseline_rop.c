@@ -1,11 +1,11 @@
 /*  Benchmark: Return-Oriented Programming (ROP) Attack
  *  @author  : Mert Side for TTU
- *  @brief   : For a more sophisticated control flow attack that tests both the 
- *             robustness of security mechanisms and the integrity of execution 
- *             flow, we implement a Return-Oriented Programming (ROP) attack. 
- *             This type of attack is a more advanced form of exploitation that 
- *             involves executing code snippets already present in a program's 
- *             memory, called "gadgets", without injecting any code.
+ *  @brief   : This C program simulates an automated control flow attack by 
+ *             exploiting a buffer overflow vulnerability. The goal is to 
+ *             overwrite the return address stored on the stack with the address 
+ *             of a function that should not normally be executed (print_flag). 
+ *             The program is designed to do this automatically without any user 
+ *             input.
  * 
  */
 

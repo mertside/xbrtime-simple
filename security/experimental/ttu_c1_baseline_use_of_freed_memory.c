@@ -49,8 +49,9 @@ void manipulate_data(DataStructure *ds) {
 
 void exploit_vulnerability(DataStructure *ds) {
   printf("Exploiting use of freed memory...\n");
-  strcpy(ds->data, "Exploit data written here.");
-  printf("Malicious data: %s\n", ds->data);
+  // Overwrite freed memory with malicious data
+  strcpy(ds->data, "Malicious data");
+  printf("Data after exploit: %s\n", ds->data);
 }
 
 int main() {
@@ -64,24 +65,25 @@ int main() {
 
   free(ds);  // Free memory
 
-  // Directly use the memory after it was freed to simulate an exploit
+  // Exploit the freed memory
   exploit_vulnerability(ds);
 
-  // Reallocate memory to show potential data corruption
-  DataStructure *new_ds = malloc(sizeof(DataStructure));  // Reallocate memory
+  // Reallocate the memory to simulate memory reuse
+  DataStructure *new_ds = malloc(sizeof(DataStructure));
   if (new_ds == NULL) {
     fprintf(stderr, "Memory allocation failed.\n");
     return EXIT_FAILURE;
   }
 
   if (ds == new_ds) {
-    printf("Memory reused at the same location. Potential data corruption could occur.\n");
+    printf("Memory reused at the same location.\n");
   }
 
-  strcpy(new_ds->data, "New data stored here.");  // Store new data
-  printf("New data after reallocation: %s\n", new_ds->data);
+  // Show effects of exploiting freed memory
+  printf("Reused data: %s\n", new_ds->data);
 
   free(new_ds);  // Free memory again
 
   return EXIT_SUCCESS;
 }
+

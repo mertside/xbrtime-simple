@@ -27,7 +27,6 @@ void use_after_reallocation() {
     printf("%d ", original_ptr[i]);
   }
   printf("\n");
-
   // Print the address of original_ptr
   printf("Address of original_ptr: %p\n", (void *)original_ptr);
 
@@ -42,7 +41,6 @@ void use_after_reallocation() {
   }
   strcpy(new_ptr, "NewData");
   printf("New data: %s\n", new_ptr);
-
   // Print the address of new_ptr
   printf("Address of new_ptr: %p\n", (void *)new_ptr);
 

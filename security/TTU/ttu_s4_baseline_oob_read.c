@@ -13,12 +13,6 @@
 #define PUBLIC_SIZE 6
 #define PRIVATE_SIZE 14
 
-void* out_of_bounds_read(void* arg) {
-
-
-  return NULL;
-}
-
 int main() {
   printf("Starting test: Out of Bounds Read\n");
 

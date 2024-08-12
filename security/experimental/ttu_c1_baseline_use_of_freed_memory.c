@@ -39,49 +39,49 @@
 #include <string.h>
 
 typedef struct {
-    char data[100];
+  char data[100];
 } DataStructure;
 
 void manipulate_data(DataStructure *ds) {
-    strcpy(ds->data, "Sensitive data stored here.");
-    printf("Initial data: %s\n", ds->data);
+  strcpy(ds->data, "Sensitive data stored here.");
+  printf("Initial data: %s\n", ds->data);
 }
 
-void exploit_vulnerability() {
-    printf("Exploiting use of freed memory...\n");
-    // Intentionally leaving this function empty to simulate potential malicious actions.
+void exploit_vulnerability(DataStructure *ds) {
+  printf("Exploiting use of freed memory...\n");
+  strcpy(ds->data, "Exploit data written here.");
+  printf("Malicious data: %s\n", ds->data);
 }
 
 int main() {
-    DataStructure *ds = malloc(sizeof(DataStructure));  // Allocate memory
-    if (ds == NULL) {
-        fprintf(stderr, "Memory allocation failed.\n");
-        return EXIT_FAILURE;
-    }
+  DataStructure *ds = malloc(sizeof(DataStructure));  // Allocate memory
+  if (ds == NULL) {
+    fprintf(stderr, "Memory allocation failed.\n");
+    return EXIT_FAILURE;
+  }
 
-    manipulate_data(ds);  // Manipulate data in allocated memory
+  manipulate_data(ds);  // Manipulate data in allocated memory
 
-    free(ds);  // Free memory
+  free(ds);  // Free memory
 
-    // The memory is freed, and now we accidentally reuse it.
-    DataStructure *new_ds = malloc(sizeof(DataStructure));  // Reallocate memory
-    if (new_ds == NULL) {
-        fprintf(stderr, "Memory allocation failed.\n");
-        return EXIT_FAILURE;
-    }
+  // Directly use the memory after it was freed to simulate an exploit
+  exploit_vulnerability(ds);
 
-    // Check if the newly allocated memory is at the same location as the freed memory
-    if (ds == new_ds) {
-        printf("Memory reused at the same location.\n");
-        exploit_vulnerability();  // Exploit the use of freed memory
-    } else {
-        printf("Memory was not reused at the same location.\n");
-    }
+  // Reallocate memory to show potential data corruption
+  DataStructure *new_ds = malloc(sizeof(DataStructure));  // Reallocate memory
+  if (new_ds == NULL) {
+    fprintf(stderr, "Memory allocation failed.\n");
+    return EXIT_FAILURE;
+  }
 
-    strcpy(new_ds->data, "New data stored here.");  // Store new data
-    printf("New data: %s\n", new_ds->data);
+  if (ds == new_ds) {
+    printf("Memory reused at the same location. Potential data corruption could occur.\n");
+  }
 
-    free(new_ds);  // Free memory again
+  strcpy(new_ds->data, "New data stored here.");  // Store new data
+  printf("New data after reallocation: %s\n", new_ds->data);
 
-    return EXIT_SUCCESS;
+  free(new_ds);  // Free memory again
+
+  return EXIT_SUCCESS;
 }

@@ -21,16 +21,27 @@ void vulnerable_function() {
   char buffer[64];
   void (*ret)() = print_flag;  // Direct function pointer for demonstration
 
+  // Print initial addresses
+  printf("Address of buffer: %p\n", (void *)buffer);
+  printf("Address of ret (function pointer): %p\n", (void *)&ret);
+  printf("Address of print_flag: %p\n", (void *)print_flag);
+
   // Simulate automatic overflow
   // This block mimics what would be user input but is done programmatically
   memset(buffer, 'A', sizeof(buffer));  // Fill the buffer with 'A'
-  
+  printf("Buffer content after memset: %s\n", buffer);
+
   // Automatically overwrite the return address
   memcpy(buffer + sizeof(buffer), &ret, sizeof(ret));
+  printf("Buffer content after memcpy: %s\n", buffer);
+  printf("Overwritten return address in buffer: %p\n", *(void **)(buffer + sizeof(buffer)));
 
   // Display the buffer and the overwritten return address for debugging
-  printf("Buffer content: %s\n", buffer);
-  printf("Overwritten return address: %p\n", *(void **)(buffer + sizeof(buffer)));
+  printf("Buffer state near the end:\n");
+  for (int i = 56; i < 72; ++i) {  // 72 = 64 (buffer size) + 8 (size of pointer)
+    printf("%02X ", buffer[i] & 0xFF);
+  }
+  printf("\n");
 
   // Normally, the program would return here, but we simulate the call to the new return address
   ((void(*)())*(void **)(buffer + sizeof(buffer)))();

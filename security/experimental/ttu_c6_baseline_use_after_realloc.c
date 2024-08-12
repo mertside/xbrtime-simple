@@ -47,7 +47,7 @@ void use_after_reallocation() {
   printf("Address of new_ptr: %p\n", (void *)new_ptr);
 
   // Calculate the distance between original_ptr and new_ptr
-  ptrdiff_t distance = (char*)original_ptr - new_ptr;
+  __ptrdiff_t distance = (char*)original_ptr - new_ptr;
 
   // Print the calculated distance
   printf("Calculated distance: %td bytes\n", distance);

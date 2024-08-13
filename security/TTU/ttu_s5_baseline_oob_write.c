@@ -45,7 +45,7 @@ int main() {
     public[offset + i] = 'A' + i;  // OOB write here
 
     // Check if the OOB write affects the 'private' data
-    if (public[PUBLIC_SIZE + offset] == private[i]) {
+    if (public[offset + i] != private[i]) {
       test_status = 0;
     }
   }

@@ -26,8 +26,8 @@ int main() {
   // char* private = buffer + PUBLIC_SIZE;
 
   // Allocate separate buffers for 'public' and 'private' data
-  char* public = malloc(PUBLIC_SIZE);
-  char* private = malloc(PRIVATE_SIZE);
+  char* public  = (char *) malloc(PUBLIC_SIZE);
+  char* private = (char *) malloc(PRIVATE_SIZE);
 
   // Initialize the 'public' and 'private' segments
   strcpy(public, "public");

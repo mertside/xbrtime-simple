@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 
 #define PUBLIC_SIZE 6
 #define PRIVATE_SIZE 14
@@ -33,6 +32,14 @@ int main() {
   strcpy(public, "public");
   strcpy(private, "secretpassword");
 
+  // Print the starting addresses of the 'public' and 'private' segments
+  printf("Address of public array: %p\n", (void *)public);
+  printf("Address of private array: %p\n", (void *)private);
+
+  // Calculate the offset between the 'public' and 'private' segments
+  __intptr_t offset = private - public;
+  printf("Offset of private array w.r.t public array: %p\n", offset);
+
   // Simulate a safe print of the 'public' data
   printf("Printing characters of public array\n");
   for (int i = 0; i < PUBLIC_SIZE; i++) {
@@ -43,7 +50,8 @@ int main() {
   // Simulate an out-of-bounds read from the 'public' segment to access 'private' data
   printf("Printing characters of private array from public array\n");
   for (int i = 0; i < PRIVATE_SIZE; i++) {
-    printf("%c", public[PUBLIC_SIZE + i]);  // OOB read here
+    // printf("%c", public[PUBLIC_SIZE + i]);    // OOB read here
+    printf("%c", public[i + offset]);         // OOB read here
   }
   printf("\n");
 

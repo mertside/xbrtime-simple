@@ -9,8 +9,8 @@
 #include <string.h>
 #include <pthread.h>
 
-#define PUBLIC_SIZE 7
-#define PRIVATE_SIZE 16
+#define PUBLIC_SIZE 6
+#define PRIVATE_SIZE 14
 
 int main() {
   printf("Starting test: Out of Bounds Read\n");

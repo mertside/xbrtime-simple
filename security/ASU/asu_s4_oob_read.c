@@ -1,7 +1,7 @@
 /*  Benchmark: Out-of-Bounds Read
  *  @author  : Secure, Trusted, and Assured Microelectronics (STAM) Center
 
- *  Copyright (c) 2023 Trireme (STAM/SCAI/ASU)
+ *  Copyright (c) 2024 Memory Safety Benchmarks (STAM/SCAI/ASU)
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
@@ -32,11 +32,9 @@ int main() {
 
   char *public     = (char *)malloc(6);
   strcpy(public, "public");
-  printf("public: %p\n", public);
 
   char *private    = (char *)malloc(14);
   strcpy(private, "secretpassword");
-  printf("private: %p\n", private);
 
   int offset = private-public;
 //  printf("Offset of private array w.r.t public array: %d\n", offset);
@@ -50,8 +48,6 @@ int main() {
 
   printf("Printing characters of private array from public array\n");
   for(int i=0;i<14;i++) {
-  // for(int i=6;i<20;i++) {
-          // printf("%c", public[i]);
           printf("%c", public[i+offset]);
 	  if(public[i+offset] == private[i])
 	    test_status = 0;

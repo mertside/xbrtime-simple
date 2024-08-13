@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 
 #define PUBLIC_SIZE 6
 #define PRIVATE_SIZE 14

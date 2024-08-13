@@ -33,8 +33,12 @@ int main() {
   __intptr_t offset = private - public;
   printf("  Offset of private to public: %p\n", (void *)offset);
 
-  // Display initial state of the buffer
-  printf("Initial buffer content: %s\n", buffer);
+  // Print the initial state of the 'public' and 'private' data
+  printf("Initial public array:\n");
+  printf("  %s\n", public);
+  printf("Initial private array:\n");
+  printf("  %s\n", private);
+
 
   // Simulate an out-of-bounds write by writing beyond the 'public' segment
   printf("Performing out-of-bounds write\n");
@@ -47,11 +51,15 @@ int main() {
     }
   }
 
-  // Display modified state of the buffer to show impact of the OOB write
-  printf("Modified buffer content: %s\n", buffer);
+  // Print the modified state of the 'public' and 'private' data
+  printf("New public array:\n");
+  printf("  %s\n", public);
+  printf("New private array:\n");
+  printf("  %s\n", private);
 
-  // Free the allocated buffer
-  free(buffer);
+  // Free the allocated memory
+  free(public);
+  free(private);
 
   // Print the test result
   if(test_status == 0)

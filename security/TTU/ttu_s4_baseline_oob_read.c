@@ -14,6 +14,8 @@
 int main() {
   printf("Starting test: Out of Bounds Read\n");
 
+  int test_status = 1;
+
   // Allocate a single buffer large enough to hold both 'public' and 'private' data
   // char* buffer = malloc(PUBLIC_SIZE + PRIVATE_SIZE);
   // if (buffer == NULL) {
@@ -33,12 +35,12 @@ int main() {
   strcpy(private, "secretpassword");
 
   // Print the starting addresses of the 'public' and 'private' segments
-  printf("Address of public array: %p\n", (void *)public);
-  printf("Address of private array: %p\n", (void *)private);
+  printf("  Address of public array:    %p\n", (void *)public);
+  printf("  Address of private array:   %p\n", (void *)private);
 
   // Calculate the offset between the 'public' and 'private' segments
   __intptr_t offset = private - public;
-  printf("Offset of private array w.r.t public array: %p\n", offset);
+  printf("  Offset of private array w.r.t public array: \t%ld\n", offset);
 
   // Simulate a safe print of the 'public' data
   printf("Printing characters of public array\n");
@@ -52,6 +54,11 @@ int main() {
   for (int i = 0; i < PRIVATE_SIZE; i++) {
     // printf("%c", public[PUBLIC_SIZE + i]);    // OOB read here
     printf("%c", public[i + offset]);         // OOB read here
+
+    // Check if the OOB read matches the corresponding 'private' data
+    if (public[i + offset] == private[i]) {
+      test_status = 0;
+    }
   }
   printf("\n");
 
@@ -60,7 +67,11 @@ int main() {
   free(public);
   free(private); 
 
-  printf("Test Completed: Out-of-Bounds Read\n\n");
+  // Print the test result
+  if(test_status == 0)
+    printf("Test: Out-of-Bounds Read: EXPLOITED!\n");
+  else
+    printf("Test: Out-of-Bounds Read: Mitigated!\n");
 
   return 0;
 }

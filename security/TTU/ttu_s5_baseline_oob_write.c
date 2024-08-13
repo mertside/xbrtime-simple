@@ -43,7 +43,7 @@ int main() {
   // Simulate an out-of-bounds write by writing beyond the 'public' segment
   printf("Performing out-of-bounds write\n");
   for (int i = 0; i < PRIVATE_SIZE; i++) {
-    public[PUBLIC_SIZE + offset] = 'A' + i;  // OOB write here
+    public[PUBLIC_SIZE + offset + i] = 'A';  // OOB write here
 
     // Check if the OOB write affects the 'private' data
     if (public[PUBLIC_SIZE + offset] == private[i]) {

@@ -48,7 +48,9 @@ int main() {
   printf("\n");
 
   // Free the allocated buffer
-  free(buffer);
+  // free(buffer);
+  free(public);
+  free(private); 
 
   printf("Test Completed: Out-of-Bounds Read\n\n");
 

@@ -16,16 +16,6 @@ int main() {
 
   int test_status = 1;
 
-  // Allocate a single buffer large enough to hold both 'public' and 'private' data
-  // char* buffer = malloc(PUBLIC_SIZE + PRIVATE_SIZE);
-  // if (buffer == NULL) {
-  //   printf("Memory allocation failed\n");
-  // }
-
-  // Set 'public' and 'private' pointers within the buffer
-  // char* public = buffer;
-  // char* private = buffer + PUBLIC_SIZE;
-
   // Allocate separate buffers for 'public' and 'private' data
   char* public  = (char *) malloc(PUBLIC_SIZE);
   char* private = (char *) malloc(PRIVATE_SIZE);
@@ -52,7 +42,6 @@ int main() {
   // Simulate an out-of-bounds read from the 'public' segment to access 'private' data
   printf("Printing characters of private array from public array\n");
   for (int i = 0; i < PRIVATE_SIZE; i++) {
-    // printf("%c", public[PUBLIC_SIZE + i]);    // OOB read here
     printf("%c", public[i + offset]);         // OOB read here
 
     // Check if the OOB read matches the corresponding 'private' data
@@ -62,8 +51,7 @@ int main() {
   }
   printf("\n");
 
-  // Free the allocated buffer
-  // free(buffer);
+  // Free the allocated memory
   free(public);
   free(private); 
 

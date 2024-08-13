@@ -35,12 +35,12 @@ int main() {
   strcpy(private, "secretpassword");
 
   // Print the starting addresses of the 'public' and 'private' segments
-  printf("  Address of public array:    %p\n", (void *)public);
-  printf("  Address of private array:   %p\n", (void *)private);
+  printf("  Address of public array:     %p\n", (void *)public);
+  printf("  Address of private array:    %p\n", (void *)private);
 
   // Calculate the offset between the 'public' and 'private' segments
   __intptr_t offset = private - public;
-  printf("  Offset of private array w.r.t public array: \t%ld\n", offset);
+  printf("  Offset of private to public: %p\n", (void *)offset);
 
   // Simulate a safe print of the 'public' data
   printf("Printing characters of public array\n");

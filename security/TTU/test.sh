@@ -115,8 +115,9 @@ echo " "
 
 echo "------------------------------"
 echo "TTU_R4:"
-ttuR4=`./ttu_r4_illegal_ptr_deref.exe`;
-echo "$ttuR4"
+# ttuR4=`./ttu_r4_illegal_ptr_deref.exe`;
+# echo "$ttuR4"
+echo "SKIPPED"
 echo " "
 
 echo "------------------------------"

@@ -1,7 +1,9 @@
-CCOM = /usr/local64/llvm-morello/bin/clang
+CCOM = cc
+# CCOM = /usr/local64/llvm-morello/bin/clang
+# CFLAGS = -O0 -lpthread -lm -Iruntime
+CFLAGS = -g -O2 -Wall -lpthread -lm
 INCLUDES = -I../../runtime
 ASM = ../../runtime/xbMrtime_api_asm.s
-CFLAGS = -O0 -lpthread -lm -Iruntime
 MY_CC = $(CCOM) $(CFLAGS) $(INCLUDES) $(ASM)
 
 all: ttuC1B ttuC4B ttuC5B ttuC6B

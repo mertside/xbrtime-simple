@@ -1,26 +1,28 @@
-CCOM=/usr/local64/llvm-morello/bin/clang
-#CCOM=~/old_workspace/cheri/cheri-exercises/tools/ccc
-#CCOM=~/cheri/cheri-exercises/tools/ccc
-ARCH=morello-purecap
-MY_CC?=$(CCOM) #$(ARCH)
+CCOM = cc
+# CCOM = /usr/local64/llvm-morello/bin/clang
+# CFLAGS = -O0 -lpthread -lm -Iruntime
+CFLAGS = -g -O2 -Wall -lpthread -lm
+INCLUDES = -I../../runtime
+ASM = ../../runtime/xbMrtime_api_asm.s
+MY_CC = $(CCOM) $(CFLAGS) $(INCLUDES) $(ASM)
 #DIR=~/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
 
 all: matMul gather gupsM broadcast reduction gupsM
 
 matMul:
-	$(MY_CC) -O0 -lpthread -o matmul.exe matmul_M.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+	$(MY_CC) -o matmul.exe matmul_M.c
 
 gather:
-	$(MY_CC) -O0 -lpthread -o gather.exe gather_M.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+	$(MY_CC) -o gather.exe gather_M.c
 
 gupsM:
-	$(MY_CC) -O0 -lpthread -o gups.exe SHMEMRandomAccess.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+	$(MY_CC) -o gups.exe SHMEMRandomAccess.c
 
 broadcast:
-	$(MY_CC) -O0 -lpthread -o broadcast8_demo.exe broadcast8_demo.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+	$(MY_CC) -o broadcast8_demo.exe broadcast8_demo.c
 
 reduction:
-	$(MY_CC) -O0 -lpthread -o reduction8_demo.exe reduction8_demo.c runtime/xbMrtime_api_asm.s -lm -Iruntime
+	$(MY_CC) -o reduction8_demo.exe reduction8_demo.c
 
 test:
 	./matmul.exe

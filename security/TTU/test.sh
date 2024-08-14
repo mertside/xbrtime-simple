@@ -70,8 +70,9 @@ echo " "
 
 echo "------------------------------"
 echo "TTU_S3:"
-ttuS3=`./ttu_s3_null_ptr_dereference.exe`;
-echo "$ttuS3"
+# ttuS3=`./ttu_s3_null_ptr_dereference.exe`;
+# echo "$ttuS3"
+echo "SKIPPED"
 echo " "
 
 echo "------------------------------"

@@ -61,32 +61,32 @@ echo "============================================================"
 echo " "
 
 echo "------------------------------"
-echo "TTU_S1:"
+echo "TTU_S1: Free Not At Start"
 ttuS1=`./ttu_s1_free_not_at_start.exe`;
 echo "$ttuS1"
 echo " "
 
 echo "------------------------------"
-echo "TTU_S2:"
+echo "TTU_S2: Free Not On Heap"
 ttuS2=`./ttu_s2_free_not_on_heap.exe`;
 echo "$ttuS2"
 echo " "
 
 echo "------------------------------"
-echo "TTU_S3:"
+echo "TTU_S3: Null Pointer Dereference"
 # ttuS3=`./ttu_s3_null_ptr_dereference.exe`;
 # echo "$ttuS3"
 echo "SKIPPED"
 echo " "
 
 echo "------------------------------"
-echo "TTU_S4:"
+echo "TTU_S4: Out Of Bounds Read"
 ttuS4=`./ttu_s4_oob_read.exe`;
 echo "$ttuS4"
 echo " "
 
 echo "------------------------------"
-echo "TTU_S5:"
+echo "TTU_S5: Out Of Bounds Write"
 ttuS5=`./ttu_s5_oob_write.exe`;
 echo "$ttuS5"
 echo " "

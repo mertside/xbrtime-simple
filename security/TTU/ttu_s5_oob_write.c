@@ -97,7 +97,7 @@ int main() {
                             out_of_bounds_write,
                             (void*)i);
     if (check == false) { 
-      printf("Thread %d: Failed to add work\n", i);
+      printf("Thread %ld: Failed to add work\n", i);
       return 1;
     }
   }

@@ -86,7 +86,7 @@ int main() {
 
   printf("Starting test: Out of Bounds Read\n");
 
-  for (int i = 0; i < num_pes; i++) {
+  for (long i = 0; i < num_pes; i++) {
     bool check = false;
     check = tpool_add_work(threads[i].thread_queue,
                             out_of_bounds_read,

@@ -95,7 +95,7 @@ int main() {
     bool check = false;
     check = tpool_add_work(threads[i].thread_queue,
                             out_of_bounds_write,
-                            i);
+                            (void*)i);
     if (check == false) { 
       printf("Thread %d: Failed to add work\n", i);
       return 1;

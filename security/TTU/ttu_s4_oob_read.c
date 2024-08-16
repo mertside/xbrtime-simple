@@ -91,6 +91,9 @@ int main() {
     check = tpool_add_work(threads[i].thread_queue,
                             out_of_bounds_read,
                             i);
+    if (!check) {
+      printf("Thread %d: Failed to add work\n", i);
+    }
   }
 
   printf("ompleted: Out-of-Bounds Read\n");

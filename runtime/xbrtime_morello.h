@@ -168,7 +168,7 @@ __attribute__((destructor)) void __xbrtime_dtor() {
     // }
 
     // Free the memory associated with the threads
-    tpool_thread_free(threads);
+    tpool_thread_free((volatile tpool_thread_t *) threads);
 
     // Cleanup the allocated memory for `xb_barrier`
     free((void *)xb_barrier);

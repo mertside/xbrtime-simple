@@ -290,6 +290,10 @@ extern int xbrtime_init() {
 #ifdef XBGAS_PRINT
   printf("[R] Entered xbrtime_init()\n");
 #endif
+  static int initialized = 0;
+  if (initialized) {
+    return 0;  // Already initialized
+  }
 
   // Ensure that the global configuration isn't already initialized
   if (__XBRTIME_CONFIG) {
@@ -383,6 +387,7 @@ extern int xbrtime_init() {
 
   pthread_cond_init(&barrier_cond, NULL);
 
+  initialized = 1;  // Mark as initialized
   return 0; // Return 0 to indicate successful initialization
 }
 

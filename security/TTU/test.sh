@@ -25,33 +25,33 @@ echo "============================================================"
 echo " "
 
 echo "------------------------------"
-echo "TTU_T1:"
+echo "TTU_T1: Double Free"
 ttuT1=`./ttu_t1_double_free.exe`;
 echo "$ttuT1"
 echo " "
 
 echo "------------------------------"
-echo "TTU_T2:"
+echo "TTU_T2: HM - Fake Chunk Malloc"
 ttuT2=`./ttu_t2_hm_fake_chunk_malloc.exe`;
 echo "$ttuT2"
 # echo "SKIPPED"
 echo " "
 
 echo "------------------------------"
-echo "TTU_T3:"
+echo "TTU_T3: HM - House Of Spirit"
 ttuT3=`./ttu_t3_hm_house_of_spirit.exe`;
 echo "$ttuT3"
 echo " "
 
 echo "------------------------------"
-echo "TTU_T4:"
+echo "TTU_T4: HM - Parent and Child Chunk (Poison Null Byte)"
 ttuT4=`./ttu_t4_hm_p_and_c_chunk.exe`;
 echo "$ttuT4"
 # echo "SKIPPED"
 echo " "
 
 echo "------------------------------"
-echo "TTU_T5:"
+echo "TTU_T5: Use After Free"
 ttuT5=`./ttu_t5_use_after_free.exe`;
 echo "$ttuT5"
 echo " "

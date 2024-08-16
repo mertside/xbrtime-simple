@@ -68,7 +68,7 @@ void* null_pointer_dereference(void* arg) {
   }
   printf("\n");
 
-  printf("[Thread %ld] Test completed (message may not appear if crashed).\n", 
+  printf("[Thread %ld] EXPLOITED! (message may not appear if crashed).\n", 
           tid);
 
   return NULL;
@@ -76,7 +76,7 @@ void* null_pointer_dereference(void* arg) {
 
 int main() {
   if (abort_flag > 0) {
-    printf("Abort Reached!\n");
+    printf("Abort Reached: Mitigated!\n");
     abort();  // Force the program to terminate
   }
 
@@ -96,7 +96,7 @@ int main() {
     tpool_wait(threads[i].thread_queue);
   }
 
-  printf("Completed multi-threaded test: Null pointer dereference\n");
+  printf("Completed test: Null pointer dereference EXPLOITED!\n");
 
   xbrtime_close();
 

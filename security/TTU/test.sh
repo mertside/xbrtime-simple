@@ -74,9 +74,9 @@ echo " "
 
 echo "------------------------------"
 echo "TTU_S3: Null Pointer Dereference"
-# ttuS3=`./ttu_s3_null_ptr_dereference.exe`;
-# echo "$ttuS3"
-echo "SKIPPED"
+ttuS3=`./ttu_s3_null_ptr_dereference.exe`;
+echo "$ttuS3"
+# echo "SKIPPED"
 echo " "
 
 echo "------------------------------"

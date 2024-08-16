@@ -3,10 +3,11 @@
  * Adapted by Mert Side for Texas Tech University
  *
  * Key Notes:
- * 
- * This code involves creating a scenario where multiple threads attempt to free
- *  a statically allocated string (which should not be freed because it was not
- *  dynamically allocated).
+ * This program attempts to free memory that was not dynamically allocated on 
+ *   the heap, here as memory allocated on the stack (alternatively this could 
+ *   be in a static/global area). This can lead to undefined behavior, including 
+ *   crashes or memory corruption, because the system's memory management 
+ *   expects free to only be used on heap-allocated memory.
  * 
  */
 
@@ -21,9 +22,10 @@ void* free_invalid_buffer(void* arg) {
 
   // Static string (not on heap)
   char *complete  = "Hello World!";
+  int sizeOfComplete = sizeof(complete);
 
   printf("[Thread %ld] Printing characters of string before free:\n", tid);
-  for(int i = 0; i < 12; i++) {
+  for(int i = 0; i < sizeOfComplete; i++) {
     printf("%c", complete[i]);
   }
   printf("\n");
@@ -32,7 +34,7 @@ void* free_invalid_buffer(void* arg) {
   free(complete);
 
   printf("[Thread %ld] Printing characters of string after free:\n", tid);
-  for(int i = 0; i < 12; i++) {
+  for(int i = 0; i < sizeOfComplete; i++) {
     printf("%c", complete[i]);
   }
   printf("\n");

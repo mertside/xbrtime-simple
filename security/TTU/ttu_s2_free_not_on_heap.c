@@ -11,61 +11,58 @@
  */
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include "xbrtime_morello.h"
 
-char *shared_string = "Hello World!";
+// Function to simulate the vulnerability
+void* free_invalid_buffer(void* arg) {
+  long tid = (long)arg;
+  printf("[Thread %ld] Starting test: Free not on Heap\n", tid);
 
-// Function to be executed by threads
-void *free_string(void *arg) {
-    (void)arg; // Argument not used
+  // Static string (not on heap)
+  char *complete  = "Hello World!";
 
-    printf("PE %d attempting to free string not on heap\n", xbrtime_mype());
-    free(shared_string);
+  printf("[Thread %ld] Printing characters of string before free:\n", tid);
+  for(int i = 0; i < 12; i++) {
+    printf("%c", complete[i]);
+  }
+  printf("\n");
 
-    // Attempting to access string after erroneous free attempt
-    printf("PE %d printing characters of string after free attempt:\n", xbrtime_mype());
-    for(int i = 0; i < 12; i++) {
-        printf("%c", shared_string[i]);
-    }
-    printf("%c", '\n');
+  printf("[Thread %ld] Attempting to free string not on heap\n", tid);
+  free(complete);
 
-    return NULL;
+  printf("[Thread %ld] Printing characters of string after free:\n", tid);
+  for(int i = 0; i < 12; i++) {
+    printf("%c", complete[i]);
+  }
+  printf("\n");
+
+  printf("[Thread %ld] Test completed 
+          (this message may not appear if the free causes a crash).\n", tid);
+
+  return NULL;
 }
 
 int main() {
-    xbrtime_init();
+  xbrtime_init();
 
-    int num_pes = xbrtime_num_pes();
-    pthread_t threads[num_pes];
+  int num_pes = xbrtime_num_pes();
 
-    printf("Starting test: Free not on Heap\n");
-    printf("Printing characters of string before free:\n");
-    for(int i = 0; i < 12; i++) {
-        printf("%c", shared_string[i]);
-    }
-    printf("\n");
+  printf("Starting multi-threaded test: Free not on Heap\n");
 
-    // Creating threads to simulate the vulnerability across PEs
-    for (int i = 0; i < num_pes; i++) {
-        if(pthread_create(&threads[i], NULL, free_string, NULL) != 0) {
-            fprintf(stderr, "Error creating thread\n");
-            return 1;
-        }
-    }
+  // Add work to each thread in the thread pool
+  for (long i = 0; i < num_pes; i++) {
+    tpool_add_work(threads[i].thread_queue, free_invalid_buffer, (void*)i);
+  }
 
-    // Joining threads
-    for (int i = 0; i < num_pes; i++) {
-        if(pthread_join(threads[i], NULL) != 0) {
-            fprintf(stderr, "Error joining thread\n");
-            return 1;
-        }
-    }
+  // Wait for all threads to complete their work
+  for (int i = 0; i < num_pes; i++) {
+    tpool_wait(threads[i].thread_queue);
+  }
 
-    printf("Test Complete: Free not on Heap\n\n");
-    xbrtime_close();
+  printf("Completed multi-threaded test: Free not on Heap\n");
 
-    return 0;
+  xbrtime_close();
+
+  return 0;
 }

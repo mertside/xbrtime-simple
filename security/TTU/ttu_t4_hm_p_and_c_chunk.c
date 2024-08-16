@@ -10,58 +10,69 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 #include "xbrtime_morello.h"
 
-void* thread_function(void* arg) {
+// Function to simulate the heap manipulation exploit in a multi-threaded context
+void* heap_manipulation_test(void* arg) {
+  long tid = (long)arg;
+
+  printf("[Thread %ld] Starting test: Heap Manipulation\n", tid);
+
   char* c = malloc(0x10);
   char* d = malloc(0x10);
   char* e = malloc(0x10);
 
-  *(c+0x18) = 0x61; //Manually edit size of d to a larger size so that it overlaps with e
-  
-  free(d); //Free d for a reallocation
-  free(e); //Free e for a reallocation
-  
-  /* 
-    If a malloc is done for h with the size of e and for g with the adjusted size of d, 
-    and is successful, then the memory allocated to h would be a subset of the memory
-    allocated to g. Thus g would be able to legally control the contents of the memory 
-    allocated to h
-  */
-  
-  char* g = malloc(0x50); //Allocate a new variable with the increased size
-  char* h = malloc(0x10); 
-  
+  printf("[Thread %ld] c: %p\n", tid, c);
+  printf("[Thread %ld] d: %p\n", tid, d);
+  printf("[Thread %ld] e: %p\n", tid, e);
+
+  // Manually edit the size of d to a larger size so that it overlaps with e
+  *(c + 0x18) = 0x61;
+
+  // Free the chunks to prepare them for reallocation
+  free(d);
+  free(e);
+
+  // Allocate new chunks with manipulated sizes
+  char* g = malloc(0x50);
+  char* h = malloc(0x10);
+
   // If the exploit succeeded, then d and g will be the same, otherwise d and h will be the same
-  memcpy(h, "victim's data", 0xe); //h copies in some data needed for program control
-  memset(g+0x20, 0x41, 0xf); // This position is still within the legal memory range of g but the memory region overlaps with h
+  memcpy(h, "victim's data", 0xe);  // h copies in some data needed for program control
 
-  printf("d: %p\n", d);
-  printf("e: %p\n\n", e);
+  // This position is still within the legal memory range of g but overlaps with h
+  memset(g + 0x20, 0x41, 0xf);
 
-  printf("g: %p -> %p\n", g, (g+0x50));
-  printf("h: %p\n", h);
-  printf("h: %s\n", h);
+  printf("[Thread %ld] g: %p -> %p\n", tid, g, (g + 0x50));
+  printf("[Thread %ld] h: %p\n", tid, h);
+  printf("[Thread %ld] h: %s\n", tid, h);
 
-  if(h[0] == 'A')
-    printf("Test Failed: Heap manipulation leading to overlapping memory regions\n");
-  
+  // Check if the memory overlap was exploited
+  if (h[0] == 'A') {
+    printf("[Thread %ld] Test Failed: Heap manipulation leading to overlapping memory regions\n", tid);
+  }
+
   return NULL;
 }
 
 int main() {
-  xbrtime_init();
-  
+    xbrtime_init();
+
   int num_pes = xbrtime_num_pes();
 
-  printf("Starting test: Heap manipulation leading to allocation on specific address\n");
-  for( int i = 0; i < num_pes; i++ ){
-    bool check = false;
-    check = tpool_add_work( threads[i].thread_queue, 
-                            thread_function, 
-                            (void*)i);
+  printf("Starting multi-threaded test: Heap Manipulation\n");
+
+  // Add work to each thread in the thread pool
+  for (long i = 0; i < num_pes; i++) {
+    tpool_add_work(threads[i].thread_queue, heap_manipulation_test, (void*)i);
   }
+
+  // Wait for all threads to complete their work
+  for (int i = 0; i < num_pes; i++) {
+    tpool_wait(threads[i].thread_queue);
+  }
+
+  printf("Completed multi-threaded test: Heap Manipulation\n");
 
   xbrtime_close();
 

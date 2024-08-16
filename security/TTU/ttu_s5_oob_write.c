@@ -1,6 +1,6 @@
 /*  Benchmark: Out-of-Bounds Write
  *  @author  : Mert Side for TTU
- *  @brief   : This benchmark is a simple test to demonstrate an out-of-bounds write.
+ *  @brief   : This benchmark is a simple test for an out-of-bounds write.
  * 
  */
 

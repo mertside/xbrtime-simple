@@ -10,60 +10,73 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 #include "xbrtime_morello.h"
 
+// Define the structure for the heap chunks
 struct fast_chunk {
   size_t prev_size;
   size_t size;
   struct fast_chunk *fd;
   struct fast_chunk *bk;
-  char buf[0x20];                   // chunk falls in fastbin size range
+  char buf[0x20];  // chunk falls in fastbin size range
 };
 
-struct fast_chunk fake_chunks[2];   // Two chunks in consecutive memory
-
+// Global variables for the chunks and pointers
+struct fast_chunk fake_chunks[2];  // Two chunks in consecutive memory
 void *ptr, *victim;
 
-void* thread_function(void* arg) {
-  ptr = malloc(0x30);                 // First malloc
-  printf("ptr: %p\n", ptr);
+// Function to simulate the heap manipulation exploit in a multi-threaded context
+void* heap_manipulation_test(void* arg) {
+  long tid = (long)arg;
+
+  printf("[Thread %ld] Starting test: Heap Manipulation\n", tid);
+
+  ptr = malloc(0x30);  // First malloc
+  printf("[Thread %ld] ptr: %p\n", tid, ptr);
 
   void *orig_ptr;
   orig_ptr = ptr;
 
-  // Passes size check of "free(): invalid size"
+  // Set up the fake chunks
   fake_chunks[0].size = sizeof(struct fast_chunk);  // 0x40
-  // Passes "free(): invalid next size (fast)"
   fake_chunks[1].size = sizeof(struct fast_chunk);  // 0x40
-  // Attacker overwrites a pointer that is about to be 'freed'
+
+  // Overwrite pointer to simulate attack
   ptr = (void *)&fake_chunks[0].fd;
-  printf("Overwritten ptr: %p\n\n", ptr);
-  // fake_chunks[0] gets inserted into fastbin
+  printf("[Thread %ld] Overwritten ptr: %p\n", tid, ptr);
+
+  // Free the fake chunk, placing it into the fastbin
   free(ptr);
-  // Pointer freed
-  victim = malloc(0x30); // address returned from malloc
 
-  printf("victim: %p\n", victim);
+  // Allocate memory again, expecting it to return the address of the fake chunk
+  victim = malloc(0x30);
+  printf("[Thread %ld] victim: %p\n", tid, victim);
 
-  if(victim!=orig_ptr)
-    printf("Test Failed: Heap manipulation leading to arbitrary memory allocation\n");
+  // Check if the victim pointer matches the original pointer
+  if (victim != orig_ptr)
+    printf("[Thread %ld] Test Failed: Heap manipulation leading to arbitrary memory allocation\n", tid);
 
   return NULL;
 }
 
 int main() {
   xbrtime_init();
-  
+
   int num_pes = xbrtime_num_pes();
 
-  printf("Starting test: Heap manipulation leading to arbitrary memory allocation\n");
-  for( int i = 0; i < num_pes; i++ ){
-    bool check = false;
-    check = tpool_add_work( threads[i].thread_queue, 
-                            thread_function, 
-                            (void*)i);
+  printf("Starting multi-threaded test: Heap Manipulation\n");
+
+  // Add work to each thread in the thread pool
+  for (long i = 0; i < num_pes; i++) {
+    tpool_add_work(threads[i].thread_queue, heap_manipulation_test, (void*)i);
   }
+
+  // Wait for all threads to complete their work
+  for (int i = 0; i < num_pes; i++) {
+    tpool_wait(threads[i].thread_queue);
+  }
+
+  printf("Completed multi-threaded test: Heap Manipulation - EXPLOITED!\n");
 
   xbrtime_close();
 

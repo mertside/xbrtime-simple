@@ -67,7 +67,7 @@ int main() {
     tpool_wait(threads[i].thread_queue);
   }
 
-  printf("Completed multi-threaded test: Free not on Heap - EXPLOITED!\n");
+  printf("Completed multi-threaded test: Free not on Heap:       EXPLOITED!\n");
 
   xbrtime_close();
 

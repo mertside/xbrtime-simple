@@ -102,7 +102,7 @@ int main() {
     }
   }
 
-  printf("Completed: Out of Bounds Write\n");
+  printf("Completed: Out of Bounds Write:                        EXPLOITED!\n");
   
   xbrtime_close();
 

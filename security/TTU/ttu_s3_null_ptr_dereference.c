@@ -96,7 +96,7 @@ int main() {
     tpool_wait(threads[i].thread_queue);
   }
 
-  printf("Completed test: Null pointer dereference EXPLOITED!\n");
+  printf("Completed test: Null pointer dereference:              EXPLOITED!\n");
 
   xbrtime_close();
 

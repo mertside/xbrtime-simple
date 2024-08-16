@@ -59,7 +59,7 @@ int main() {
 
   // Print the test result
   if(test_status == 0)
-    printf("Test: Out-of-Bounds Read: EXPLOITED!\n");
+    printf("Test: Out-of-Bounds Read:                            EXPLOITED!\n");
   else
     printf("Test: Out-of-Bounds Read: Mitigated!\n");
 

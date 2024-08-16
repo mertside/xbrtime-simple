@@ -96,7 +96,7 @@ int main() {
     }
   }
 
-  printf("ompleted: Out-of-Bounds Read\n");
+  printf("Completed: Out-of-Bounds Read:                         EXPLOITED!\n");
 
   xbrtime_close();
 

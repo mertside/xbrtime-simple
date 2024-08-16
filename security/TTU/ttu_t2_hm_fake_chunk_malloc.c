@@ -67,7 +67,7 @@ int main() {
     tpool_wait(threads[i].thread_queue);
   }
 
-  printf("Completed multi-threaded test: Heap Manipulation - EXPLOITED!\n");
+  printf("Completed multi-threaded test: Heap Manipulation:      EXPLOITED!\n");
 
   xbrtime_close();
 

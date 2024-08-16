@@ -54,7 +54,7 @@ int main() {
   //     tpool_wait(threads[i].thread_queue);
   // }
 
-  printf("Completed multi-threaded test: Double Free - EXPLOITED!\n");
+  printf("Completed multi-threaded test: Double Free:            EXPLOITED!\n");
 
   xbrtime_close();
 

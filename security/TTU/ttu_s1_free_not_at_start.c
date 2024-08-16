@@ -61,16 +61,6 @@ int main() {
                             &complete);
   }
 
-  // // Create threads to perform the operation in parallel
-  // for(int i = 0; i < NUM_THREADS; i++) {
-  //   pthread_create(&threads[i], NULL, thread_function, &complete);
-  // }
-
-  // // Join threads
-  // for(int i = 0; i < NUM_THREADS; i++) {
-  //   pthread_join(threads[i], NULL);
-  // }
-
   printf("Test Ended: Free not at start\n\n");
 
   xbrtime_close();

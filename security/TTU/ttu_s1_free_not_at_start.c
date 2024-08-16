@@ -61,7 +61,7 @@ int main() {
                             &complete);
   }
 
-  printf("Test Ended: Free not at start\n\n");
+  printf("Test Ended: Free not at start - EXPLOITED!\n");
 
   xbrtime_close();
   return 0;

@@ -76,7 +76,7 @@ __attribute__((constructor)) void __xbrtime_ctor() {
   xb_barrier = malloc(sizeof(uint64_t) * 2 * 10);
 
   //  ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   numOfThreads
-  int i = 0;
+  // int i = 0;
   int numOfThreads = MAX_NUM_OF_THREADS;
 
   // Get number of threads from the environment

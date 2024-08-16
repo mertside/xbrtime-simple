@@ -41,7 +41,7 @@ int main() {
   }
   printf("\n");
 
-  // Simulate an out-of-bounds read from the 'public' segment to access 'private' data
+  // Simulate an out-of-bounds read from the 'public' to access 'private' data
   printf("Printing characters of private array from public array\n");
   for (int i = 0; i < PRIVATE_SIZE; i++) {
     printf("%c", public[i + offset]);         // OOB read here

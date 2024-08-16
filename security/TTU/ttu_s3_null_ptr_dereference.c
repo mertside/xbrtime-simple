@@ -28,6 +28,8 @@
 #include <stdlib.h>
 #include "xbrtime_morello.h"
 
+int abort_flag = 0;
+
 // Function to simulate the null pointer dereference vulnerability
 void* null_pointer_dereference(void* arg) {
   long tid = (long)arg;
@@ -73,6 +75,11 @@ void* null_pointer_dereference(void* arg) {
 }
 
 int main() {
+  if (abort_flag > 0) {
+    printf("Abort Reached!\n");
+    abort();  // Force the program to terminate
+  }
+
   xbrtime_init();
   int num_pes = xbrtime_num_pes();
 
@@ -80,6 +87,7 @@ int main() {
 
   // Add work to each thread in the thread pool
   for (long i = 0; i < num_pes; i++) {
+    abort_flag++;
     tpool_add_work(threads[i].thread_queue, null_pointer_dereference, (void*)i);
   }
 

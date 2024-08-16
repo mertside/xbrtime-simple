@@ -15,42 +15,46 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 #include "xbrtime_morello.h"
 
 #define BUFFER_SIZE 85
 
-// Function to be executed by threads
-void *double_free() {
+// Function to simulate the double-free vulnerability in a multi-threaded context
+void* double_free_test(void* arg) {
+  long tid = (long)arg;
 
-  char* complete  = malloc(sizeof(char) * BUFFER_SIZE);	
-  strcpy(complete, "Hello World!Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
-  sleep(1);
-  printf("Freeing memory(1)\n");
+  printf("[Thread %ld] Starting Test: Double Free\n", tid);
+  char* complete = malloc(sizeof(char) * BUFFER_SIZE);	
+  strcpy(complete, "Hello World! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod");
+
+  printf("[Thread %ld] Freeing memory(1)\n", tid);
   free(complete);
-  sleep(1);
-  printf("Freeing memory(2)\n");
+  printf("[Thread %ld] Freeing memory(2)\n", tid);
   free(complete);
 
+  printf("[Thread %ld] Test Failed: Double Free\n\n", tid);
 
-  sleep(1);
   return NULL;
 }
 
 int main() {
   xbrtime_init();
-  
+
   int num_pes = xbrtime_num_pes();
 
-  printf("Starting Test: Double Free\n");
+  printf("Starting multi-threaded test: Double Free\n");
 
-  for( int i = 0; i < num_pes; i++ ){
-    bool check = false;
-    check = tpool_add_work( threads[i].thread_queue, 
-                            double_free, 
-                            NULL);
+  // Add work to each thread in the thread pool
+  for (long i = 0; i < num_pes; i++) {
+      tpool_add_work(threads[i].thread_queue, double_free_test, (void*)i);
   }
-  printf("Test Complete: Double Free\n\n");
+
+  // Wait for all threads to complete their work
+  // for (int i = 0; i < num_pes; i++) {
+  //     tpool_wait(threads[i].thread_queue);
+  // }
+
+  printf("Completed multi-threaded test: Double Free - EXPLOITED!\n");
 
   xbrtime_close();
 

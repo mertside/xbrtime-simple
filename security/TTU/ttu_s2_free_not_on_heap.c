@@ -23,6 +23,12 @@ void* free_invalid_buffer(void* arg) {
   // Static string (not on heap)
   char *complete  = "Hello World!";
   int sizeOfComplete = sizeof(complete);
+  printf("  [Thread %ld] Address of string:            %p\n", 
+          tid, (void *)complete);
+  printf("  [Thread %ld] Size of string:               %d\n", 
+          tid, sizeOfComplete);
+  printf("  [Thread %ld] Full capability (inc. meta.): %#p\n", 
+          tid, (void *)complete);
 
   printf("[Thread %ld] Printing characters of string before free:\n", tid);
   for(int i = 0; i < sizeOfComplete; i++) {

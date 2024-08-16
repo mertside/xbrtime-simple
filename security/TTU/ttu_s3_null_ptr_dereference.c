@@ -43,9 +43,9 @@ void* null_pointer_dereference(void* arg) {
           tid, (void *)complete);
 
   char *bad_ptr;
-  printf("[Thread %ld] Address of bad pointer:          %p\n", 
+  printf("  [Thread %ld] Address of bad pointer:         %p\n", 
           tid, (void *)bad_ptr);
-  printf("[Thread %ld] Full capability (inc. meta.):   %#p\n", 
+  printf("  [Thread %ld] Full capability (inc. meta.):   %#p\n", 
           tid, (void *)bad_ptr);
 
   // Assign known string to bad_ptr

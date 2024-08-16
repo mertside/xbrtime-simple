@@ -92,7 +92,7 @@ int main() {
                             out_of_bounds_read,
                             (void*)i);
     if (!check) {
-      printf("Thread %d: Failed to add work\n", i);
+      printf("Thread %ld: Failed to add work\n", i);
     }
   }
 

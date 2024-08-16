@@ -39,8 +39,7 @@ void* free_invalid_buffer(void* arg) {
   }
   printf("\n");
 
-  printf("[Thread %ld] Test completed 
-          (this message may not appear if the free causes a crash).\n", tid);
+  printf("[Thread %ld] Test completed (this message may not appear if the free causes a crash).\n", tid);
 
   return NULL;
 }

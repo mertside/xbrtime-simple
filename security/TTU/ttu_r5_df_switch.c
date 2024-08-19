@@ -1,58 +1,56 @@
-/*  Benchmark: Double Free Switch Statements
- *    This vulnerability demonstrates an out of bound read. It involves directly
- *      indexing an element of a string with an index greater than the string's 
- *      length.
+/*
+ * Benchmark: Double Free on Switch Fallthrough
+ * Adapted for xBGAS by Mert Side for Texas Tech University
+ * 
+ * Key Notes:
+ * This program demonstrates a double-free vulnerability caused by a switch-case 
+ * fallthrough, where the same memory is freed multiple times. This version is 
+ * adapted to run in a multi-threaded xBGAS environment on Morello.
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
-#include <pthread.h>
 #include "xbrtime_morello.h"
 
-void* thread_function(void* arg) {
-  char* a = malloc(0x10);
+// Function to simulate the double-free vulnerability
+void* double_free_vulnerability(void* arg) {
+  long tid = (long)arg;
+  printf("[Thread %ld] Starting test: Double Free\n", tid);
 
-  if (a == NULL) {
-    printf("Thread %ld: Memory allocation failed for 'a'\n", (long)arg);
-    return NULL;
-  }
+  char* a = malloc(0x10);
 
   *a = 'C';
 
-  switch(*a) {
+  // Switch case with fallthrough leading to multiple free operations
+  switch (*a) {
     case 'A':
-      printf("Thread %ld: Char is %c\n", (long)arg, *a);
+      printf("[Thread %ld] Char is %s\n", tid, a);
       free(a);
       // No break included. Default statement runs
     case 'B':
-      printf("Thread %ld: Char is %c\n", (long)arg, *a);
+      printf("[Thread %ld] Char is %s\n", tid, a);
       free(a);
     case 'C':
-      printf("Thread %ld: Char is %c\n", (long)arg, *a);
+      printf("[Thread %ld] Char is %s\n", tid, a);
       free(a);
     default:
-      memcpy(a, "DEFAULT", 0x10);
-      printf("Thread %ld: Char is %s\n", (long)arg, a);
+      memcpy(a, "DEFAULT", 0X10);
+      printf("[Thread %ld] Char is %s\n", tid, a);
       free(a);
   }
 
   char* b = malloc(0x10);
   char* c = malloc(0x10);
 
-  // if (b == NULL || c == NULL) {
-  //   printf("Thread %ld: Memory allocation failed for 'b' or 'c'\n", (long)arg);
-  //   if (b) free(b);
-  //   if (c) free(c);
-  //   return NULL;
-  // }
+  printf("[Thread %ld] a: %p\n", tid, (void*)a);
+  printf("[Thread %ld] b: %p\n", tid, (void*)b);
+  printf("[Thread %ld] c: %p\n", tid, (void*)c);
 
-  printf("Thread %ld:\na: %p\n", (long)arg, a); // a is freed ?
-  printf("Thread %ld: b: %p\n", (long)arg, b);  // b is not freed ?
-  printf("Thread %ld: c: %p\n", (long)arg, c);  // c is not freed ?
-  
   if (b == c) {
-    printf("Thread %ld: Test Failed: Switch fallthrough with metadata overwrite leading to Double Free\n", (long)arg);
+    printf("[Thread %ld] Test Failed: Switch fallthrough with metadata overwrite leading to Double Free\n", tid);
+  } else {
+    printf("[%ld] Test Passed: overwrite prevented (may not reach)\n", tid);
   }
 
   return NULL;
@@ -60,20 +58,25 @@ void* thread_function(void* arg) {
 
 int main() {
   xbrtime_init();
-  
   int num_pes = xbrtime_num_pes();
 
-  printf("Starting test: Illegal Pointer Dereference\n");
-  for( int i = 0; i < num_pes; i++ ){
-    bool check = false;
-    check = tpool_add_work( threads[i].thread_queue, 
-                            thread_function, 
-                            (void*)i);
+  printf("Starting multi-threaded test: Double Free\n");
+
+  // Add work to each thread in the thread pool
+  for (long i = 0; i < num_pes; i++) {
+    tpool_add_work(threads[i].thread_queue, 
+                    double_free_vulnerability, 
+                    (void*)i);
   }
+
+  // Wait for all threads to complete their work
+  for (int i = 0; i < num_pes; i++) {
+    tpool_wait(threads[i].thread_queue);
+  }
+
+  printf("Completed multi-threaded test: Double Free:            EXPLOITED!\n");
 
   xbrtime_close();
 
   return 0;
 }
-
-

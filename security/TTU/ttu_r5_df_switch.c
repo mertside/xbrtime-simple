@@ -43,9 +43,13 @@ void* double_free_vulnerability(void* arg) {
   char* b = malloc(0x10);
   char* c = malloc(0x10);
 
-  printf("[Thread %ld] a: %p\n", tid, (void*)a);
-  printf("[Thread %ld] b: %p\n", tid, (void*)b);
-  printf("[Thread %ld] c: %p\n", tid, (void*)c);
+  printf("[Thread %ld] a: %#p\n", tid, (void*)a);
+  printf("[Thread %ld] b: %#p\n", tid, (void*)b);
+  printf("[Thread %ld] c: %#p\n", tid, (void*)c);
+
+  // printf("[Thread %ld] capabilites of a: %d\n", tid, xbrtime_get_cap(a));
+  // printf("[Thread %ld] capabilites of b: %d\n", tid, xbrtime_get_cap(b));
+  // printf("[Thread %ld] capabilites of c: %d\n", tid, xbrtime_get_cap(c));
 
   if (b == c) {
     printf("[Thread %ld] Test Failed: Switch fallthrough with metadata overwrite leading to Double Free\n", tid);

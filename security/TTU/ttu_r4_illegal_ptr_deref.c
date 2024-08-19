@@ -1,28 +1,41 @@
-/*  Benchmark: Illegal Pointer
- *    This vulnerability demonstrates an illegal pointer dereference.
- *
+/*
+ * Benchmark: Illegal Pointer
+ * Adapted for xBGAS by Mert Side for Texas Tech University
+ * 
+ * Key Notes:
+ * This program demonstrates an illegal pointer dereference caused by 
+ * an attempt to allocate an extremely large amount of memory.
+ * This version is adapted to run in a multi-threaded xBGAS environment on 
+ * Morello.
+ * 
  */
 
 #include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <pthread.h>
+#include <stdlib.h>
 #include "xbrtime_morello.h"
 
-void* thread_function(void* arg) {
-  long int SIZE = 0x40000000000; // Larger than the max size for malloc
-  int* c;                        // Uninitialized pointer
+#define SIZE 0x40000000000 // Larger than the max size for malloc
 
-  c = malloc(SIZE); // Allocate memory
+// Function to simulate the illegal pointer dereference vulnerability
+void* illegal_pointer_dereference(void* arg) {
+  long tid = (long)arg;
+  printf("[Thread %ld] Starting test: Illegal Pointer Dereference\n", tid);
 
-  printf("Thread %ld: Address of x: %p\n", (long)arg, c); // Address of x
-  printf("Thread %ld: Value of x: %d\n", (long)arg, *c);  // Dereference c
+  int* c = malloc(SIZE);
 
-  if (*c != 0) {
-    // Test failed if we reach here
-    printf("Thread %ld: Test Failed: Illegal pointer access caused by incorrect sized memory allocation\n", (long)arg);
+  // Check if malloc failed
+  if (c == NULL) {
+    printf("[Thread %ld] Malloc failed: Could not allocate the requested memory size.\n", tid);
+    return NULL;
   }
 
+  printf("[Thread %ld] Address of c: %p\n", tid, c);
+  printf("[Thread %ld] Value of c: %d\n", tid, *c);
+
+  if (*c != 0)
+    printf("[Thread %ld] Test Failed: Illegal pointer access caused by incorrect sized memory allocation\n", tid);
+
+  // Free allocated memory if malloc succeeded
   free(c);
 
   return NULL;
@@ -30,18 +43,23 @@ void* thread_function(void* arg) {
 
 int main() {
   xbrtime_init();
-  
   int num_pes = xbrtime_num_pes();
 
-  printf("Starting test: Illegal Pointer Dereference\n");
-  for( int i = 0; i < num_pes; i++ ){
-    bool check = false;
-    check = tpool_add_work( threads[i].thread_queue, 
-                            thread_function, 
-                            (void*)i);
+  printf("Starting multi-threaded test: Illegal Pointer Dereference\n");
+
+  // Add work to each thread in the thread pool
+  for (long i = 0; i < num_pes; i++) {
+    tpool_add_work(threads[i].thread_queue, illegal_pointer_dereference, (void*)i);
   }
 
+  // Wait for all threads to complete their work
+  for (int i = 0; i < num_pes; i++) {
+    tpool_wait(threads[i].thread_queue);
+  }
+
+  printf("Completed multi-threaded test: Illegal Pointer Dereference\n");
+
   xbrtime_close();
-  
+
   return 0;
 }

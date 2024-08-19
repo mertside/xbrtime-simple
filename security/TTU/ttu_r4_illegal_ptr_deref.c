@@ -29,8 +29,9 @@ void* illegal_pointer_dereference(void* arg) {
     return NULL;
   }
 
-  printf("[Thread %ld] Address of c: %p\n", tid, c);
-  printf("[Thread %ld] Value of c: %d\n", tid, *c);
+  printf("[Thread %ld] Address of c:      %p\n", tid, c);
+  printf("[Thread %ld] Capability of c:   %#p\n", tid, (void *)c);
+  printf("[Thread %ld] Value of c:        %d\n", tid, *c);
 
   if (*c != 0)
     printf("[Thread %ld] Test Failed: Illegal pointer access caused by incorrect sized memory allocation\n", tid);

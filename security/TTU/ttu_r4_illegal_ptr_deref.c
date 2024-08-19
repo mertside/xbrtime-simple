@@ -1,5 +1,5 @@
 /*
- * Benchmark: Illegal Pointer
+ * Benchmark: Illegal Pointer Dereference on Large Size Allocation 
  * Adapted for xBGAS by Mert Side for Texas Tech University
  * 
  * Key Notes:
@@ -36,7 +36,7 @@ void* illegal_pointer_dereference(void* arg) {
   if (*c != 0)
     printf("[Thread %ld] Test Failed: Illegal pointer access caused by incorrect sized memory allocation\n", tid);
   else
-    printf("[Thread %ld] Test Passed: Illegal pointer access prevented by correct sized memory allocation\n", tid);
+    printf("[Thread %ld] Test Passed: access prevented (may not reach)\n", tid);
 
   // Free allocated memory if malloc succeeded
   free(c);

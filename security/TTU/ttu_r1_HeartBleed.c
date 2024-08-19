@@ -1,44 +1,59 @@
-/*  Benchmark: HeartBleed - Out-of-Bounds Read with length input
- *
+/*
+ * Benchmark: HeartBleed - Out-of-Bounds Read with length input
+ * Adapted for xBGAS by Mert Side for Texas Tech University
+ * 
+ * Key Notes:
+ * This program simulates a Heartbleed-like vulnerability where an attacker can 
+ * request more data than what was originally allocated, leading to the exposure 
+ * of sensitive information. This version is adapted to run in a multi-threaded 
+ * xBGAS environment.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 #include "xbrtime_morello.h"
 
-// Global variables to be accessed by all threads
-char *hb_input;
-char *rsa_key;
-int offset;
-int test_status = 1;
-pthread_mutex_t lock;
+#define HB_INPUT_SIZE 6
+#define RSA_KEY_SIZE 7
 
-// Function to be executed by each thread
-void *heartbleed_test(void *arg) {
-  int thread_id = *(int *)arg;
+// Function to simulate the Heartbleed vulnerability
+void* heartbleed_vulnerability(void* arg) {
+  long tid = (long)arg;
+  printf("[Thread %ld] Starting test: HeartBleed Example\n", tid);
 
-  // Length of heartbeat message + RSA key
-  int num = 6 + offset + 7; 
-  // Divide the work into chunks for each thread
-  int chunk_size = num / 4; 
-  // Start index for each thread  
-  int start = thread_id * chunk_size; 
-  // Last thread handles remaining characters
-  int end = (thread_id == 3) ? num : start + chunk_size; 
+  int test_status = 1;
 
-  printf("Responding to heartbeat request with %d characters:\n", num);
-  for (int i = start; i < end; i++) {
-    printf("%c", hb_input[i]); // Send the heartbeat message
-    
-    // Check if the RSA key is leaked
-    if (i > (6 + offset) && hb_input[i] == rsa_key[i - offset]) {
-      pthread_mutex_lock(&lock);
-      test_status = 0; // Test failed
-      pthread_mutex_unlock(&lock);
-    }
+  // Simulate input heartbeat request
+  char *hb_input = (char *)malloc(HB_INPUT_SIZE);
+  strcpy(hb_input, "HB MSG");
+
+  // Sensitive information stored in memory
+  char *rsa_key = (char *)malloc(RSA_KEY_SIZE);
+  strcpy(rsa_key, "RSA KEY");
+
+  // Calculate offset between hb_input and rsa_key
+  int offset = rsa_key - hb_input;
+
+  // Simulate user input with len greater than provided characters
+  int num = HB_INPUT_SIZE + offset + RSA_KEY_SIZE;
+
+  printf("[Thread %ld] Responding to heartbeat request with %d characters:\n", 
+          tid, num);
+  for (int i = 0; i < num; i++) {
+    printf("%c", hb_input[i]);
+
+    if (i > (HB_INPUT_SIZE + offset) && hb_input[i] == rsa_key[i - offset])
+      test_status = 0;
   }
+  printf("\n");
+
+  if (test_status == 0)
+    printf("[Thread %ld] Test Failed: HeartBleed\n\n", tid);
+
+  // Free allocated memory
+  free(hb_input);
+  free(rsa_key);
 
   return NULL;
 }
@@ -46,41 +61,22 @@ void *heartbleed_test(void *arg) {
 int main() {
   xbrtime_init();
   int num_pes = xbrtime_num_pes();
-  // pthread_t threads[4];
-  int thread_ids[num_pes];
-  
-  printf("Starting test: HeartBleed Example\n");
 
-  // Simulate input heartbeat request
-  hb_input = (char *)malloc(6);
-  strcpy(hb_input, "HB MSG");
+  printf("Starting multi-threaded test: HeartBleed Example\n");
 
-  // Sensitive information stored in memory
-  rsa_key = (char *)malloc(7);
-  strcpy(rsa_key, "RSA KEY");
-
-  offset = rsa_key - hb_input;
-
-  for( int i = 0; i < num_pes; i++ ){
-    bool check = false;
-
-    thread_ids[i] = i;
-    printf("Thread ID: %d\n", thread_ids[i]);
-    check = tpool_add_work( threads[i].thread_queue, 
-                            heartbleed_test, 
-                            thread_ids[i]);
+  // Add work to each thread in the thread pool
+  for (long i = 0; i < num_pes; i++) {
+    tpool_add_work(threads[i].thread_queue, heartbleed_vulnerability, (void*)i);
   }
 
-  printf("\n");
+  // Wait for all threads to complete their work
+  for (int i = 0; i < num_pes; i++) {
+    tpool_wait(threads[i].thread_queue);
+  }
 
-  if (test_status == 0)
-    printf("Test Failed: HeartBleed\n\n");
+  printf("Completed multi-threaded test: HeartBleed Example:     EXPLOITED!\n");
 
   xbrtime_close();
-
-  // Free allocated memory
-  free(hb_input);
-  free(rsa_key);
 
   return 0;
 }

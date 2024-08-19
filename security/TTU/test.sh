@@ -34,7 +34,6 @@ echo "------------------------------"
 echo "TTU_T2: HM - Fake Chunk Malloc"
 ttuT2=`./ttu_t2_hm_fake_chunk_malloc.exe`;
 echo "$ttuT2"
-# echo "SKIPPED"
 echo " "
 
 echo "------------------------------"
@@ -76,7 +75,6 @@ echo "------------------------------"
 echo "TTU_S3: Null Pointer Dereference"
 ttuS3=`./ttu_s3_null_ptr_dereference.exe`;
 echo "$ttuS3"
-# echo "SKIPPED"
 echo " "
 
 echo "------------------------------"

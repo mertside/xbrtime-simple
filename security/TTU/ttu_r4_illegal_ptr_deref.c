@@ -49,7 +49,9 @@ int main() {
 
   // Add work to each thread in the thread pool
   for (long i = 0; i < num_pes; i++) {
-    tpool_add_work(threads[i].thread_queue, illegal_pointer_dereference, (void*)i);
+    tpool_add_work(threads[i].thread_queue, 
+                   illegal_pointer_dereference, 
+                   (void*)i);
   }
 
   // Wait for all threads to complete their work
@@ -57,7 +59,7 @@ int main() {
     tpool_wait(threads[i].thread_queue);
   }
 
-  printf("Completed multi-threaded test: Illegal Pointer Dereference\n");
+  printf("Completed test: Illegal Pointer Dereference:           EXPLOITED!\n");
 
   xbrtime_close();
 

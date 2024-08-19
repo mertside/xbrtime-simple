@@ -35,6 +35,8 @@ void* illegal_pointer_dereference(void* arg) {
 
   if (*c != 0)
     printf("[Thread %ld] Test Failed: Illegal pointer access caused by incorrect sized memory allocation\n", tid);
+  else
+    printf("[Thread %ld] Test Passed: Illegal pointer access prevented by correct sized memory allocation\n", tid);
 
   // Free allocated memory if malloc succeeded
   free(c);

@@ -121,8 +121,8 @@ echo " "
 echo "------------------------------"
 echo "TTU_R5:"
 # ttuR5=`./ttu_r5_df_switch.exe`;
-# echo "$ttuR5"
-echo "SKIPPED"
+echo "$ttuR5"
+# echo "SKIPPED"
 echo " "
 
 # ----------------------------------------------------------------------------

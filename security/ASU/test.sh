@@ -14,6 +14,10 @@ echo " "
 echo "SYSCTL: " 
 sysctl -a | egrep -i 'hw.machine|hw.model|hw.ncpu|hw.usermem'
 
+echo " "
+echo "CC: "
+cc --version
+
 export NUM_OF_THREADS=4
 
 # ----------------------------------------------------------------------------
@@ -21,31 +25,31 @@ echo "============================================================"
 echo " "
 
 echo "------------------------------"
-echo "ASU_T1:"
+echo "ASU_T1: Double Free"
 asuT1=`./asu_t1_double_free.exe`;
 echo "$asuT1"
 echo " "
 
 echo "------------------------------"
-echo "ASU_T2:"
+echo "ASU_T2: HM - Fake Chunk Malloc"
 asuT2=`./asu_t2_hm_fake_chunk_malloc.exe`;
 echo "$asuT2"
 echo " "
 
 echo "------------------------------"
-echo "ASU_T3:"
+echo "ASU_T3: HM - House Of Spirit"
 asuT3=`./asu_t3_hm_house_of_spirit.exe`;
 echo "$asuT3"
 echo " "
 
 echo "------------------------------"
-echo "ASU_T4:"
+echo "ASU_T4: HM - Parent and Child Chunk"
 asuT4=`./asu_t4_hm_parent_and_child_chunk.exe`;
 echo "$asuT4"
 echo " "
 
 echo "------------------------------"
-echo "ASU_T5:"
+echo "ASU_T5: Use After Free"
 asuT5=`./asu_t5_use_after_free.exe`;
 echo "$asuT5"
 echo " "
@@ -89,31 +93,31 @@ echo "============================================================"
 echo " "
 
 echo "------------------------------"
-echo "ASU_R1:"
+echo "ASU_R1: Heartbleed"
 asuR1=`./asu_r1_heartbleed.exe`;
 echo "$asuR1"
 echo " "
 
 echo "------------------------------"
-echo "ASU_R2:"
+echo "ASU_R2: DOP"
 asuR2=`./asu_r2_dop.exe`;
 echo "$asuR2"
 echo " "
 
 echo "------------------------------"
-echo "ASU_R3:"
+echo "ASU_R3: UAF to code reuse"
 asuR3=`./asu_r3_uaf_to_code_reuse.exe`;
 echo "$asuR3"
 echo " "
 
 echo "------------------------------"
-echo "ASU_R4:"
+echo "ASU_R4: Illegal pointer dereference"
 asuR4=`./asu_r4_ip_large_size.exe`;
 echo "$asuR4"
 echo " "
 
 echo "------------------------------"
-echo "ASU_R5:"
+echo "ASU_R5: Double Free on Switch statements"
 asuR5=`./asu_r5_df_switch_statements.exe`;
 echo "$asuR5"
 echo " "

@@ -94,33 +94,33 @@ echo "============================================================"
 echo " "
 
 echo "------------------------------"
-echo "TTU_R1:"
+echo "TTU_R1: HeartBleed"
 ttuR1=`./ttu_r1_HeartBleed.exe`;
 echo "$ttuR1"
 echo " "
 
 echo "------------------------------"
-echo "TTU_R2:"
+echo "TTU_R2: DOP"
 ttuR2=`./ttu_r2_dop.exe`;
 echo "$ttuR2"
 echo " "
 
 echo "------------------------------"
-echo "TTU_R3:"
+echo "TTU_R3: UAF to Code Reuse"
 ttuR3=`./ttu_r3_uaf_to_code_reuse.exe`;
 echo "$ttuR3"
 echo " "
 
 echo "------------------------------"
-echo "TTU_R4:"
-# ttuR4=`./ttu_r4_illegal_ptr_deref.exe`;
-# echo "$ttuR4"
-echo "SKIPPED"
+echo "TTU_R4: Illegal Pointer Dereference"
+ttuR4=`./ttu_r4_illegal_ptr_deref.exe`;
+echo "$ttuR4"
+# echo "SKIPPED"
 echo " "
 
 echo "------------------------------"
-echo "TTU_R5:"
-# ttuR5=`./ttu_r5_df_switch.exe`;
+echo "TTU_R5: Double Free Switch"
+ttuR5=`./ttu_r5_df_switch.exe`;
 echo "$ttuR5"
 # echo "SKIPPED"
 echo " "

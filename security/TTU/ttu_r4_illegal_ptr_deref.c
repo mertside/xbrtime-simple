@@ -14,16 +14,19 @@
 #include <stdlib.h>
 #include "xbrtime_morello.h"
 
+#include <stdint.h>
+
 #define SIZE 0x40000000000 // Larger than the max size for malloc
 
 // Function to simulate the illegal pointer dereference vulnerability
 void* illegal_pointer_dereference(void* arg) {
   long tid = (long)arg;
   printf("[Thread %ld] Starting test: Illegal Pointer Dereference\n", tid);
+  // printf("[Thread %ld] Attempting to allocate %ld bytes of memory\n", tid, SIZE);
 
-  printf("[Thread %ld] Attempting to allocate %ld bytes of memory\n", tid, SIZE);
-
-  int* c = malloc(SIZE);
+  // int* c = malloc(SIZE);
+  int* c; // Uninitialized pointer
+  c = malloc(PTRDIFF_MAX+1); // MERT: added
 
   // Check if malloc failed
   if (c == NULL) {
@@ -51,7 +54,7 @@ int main() {
   int num_pes = xbrtime_num_pes();
 
   printf("Starting multi-threaded test: Illegal Pointer Dereference\n");
-  printf("Size of int: %ld bytes\n", sizeof(int));
+  printf("  PTRDIFF_MAX: %ld\n", PTRDIFF_MAX);
 
   // Add work to each thread in the thread pool
   for (long i = 0; i < num_pes; i++) {

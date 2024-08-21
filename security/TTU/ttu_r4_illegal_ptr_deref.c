@@ -34,8 +34,8 @@ void* illegal_pointer_dereference(void* arg) {
   printf("  [Thread %ld] Address with cap. of c:   %#p\n", tid, (void *)c);
 
   // Check if malloc failed
-  if (*c == 0) { 
-  // if (c == NULL) {
+  // if (*c == 0) { 
+  if (c == NULL) {
     printf("[Thread %ld] Malloc failed: Could not allocate the requested memory size.\n", 
             tid);
     return NULL;

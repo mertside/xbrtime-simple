@@ -22,33 +22,31 @@
 void* illegal_pointer_dereference(void* arg) {
   long tid = (long)arg;
   printf("[Thread %ld] Starting test: Illegal Pointer Dereference\n", tid);
+  
   // printf("[Thread %ld] Attempting to allocate %ld bytes of memory\n", tid, SIZE);
-
   // int* c = malloc(SIZE);
-  int* c; // Uninitialized pointer
-  c = malloc(PTRDIFF_MAX+1); // Allocate a size larger than the max size for malloc
 
-  printf("  [Thread %ld] Address of c:      %p\n", tid, c);
-  printf("  [Thread %ld] Capability of c:   %#p\n", tid, (void *)c);
-  printf("  [Thread %ld] Value of c:        %d\n", tid, *c);
+  // Uninitialized pointer
+  int* c; 
+  // Allocate a size larger than the max size for malloc
+  c = malloc(PTRDIFF_MAX+1); 
+
+  printf("  [Thread %ld] Address with cap. of c:   %#p\n", tid, (void *)c);
 
   // Check if malloc failed
   if (*c == 0) { 
   // if (c == NULL) {
-    printf("[Thread %ld] Malloc failed: Could not allocate the requested memory size.\n", tid);
+    printf("[Thread %ld] Malloc failed: Could not allocate the requested memory size.\n", 
+            tid);
     return NULL;
   } else {
-    printf("[Thread %ld] Malloc succeeded: Allocated %ld bytes of memory\n", tid, PTRDIFF_MAX+1);
+    printf("[Thread %ld] Malloc succeeded: Allocated %ld bytes of memory\n", 
+            tid, PTRDIFF_MAX+1);
   }
 
-  // printf("  [Thread %ld] Address of c:      %p\n", tid, c);
-  // printf("  [Thread %ld] Capability of c:   %#p\n", tid, (void *)c);
-  // printf("  [Thread %ld] Value of c:        %d\n", tid, *c);
-
-  // if (*c != 0)
-  //   printf("[Thread %ld] Test Failed: Illegal pointer access caused by incorrect sized memory allocation\n", tid);
-  // else
-  //   printf("[Thread %ld] Test Passed: access prevented (may not reach)\n", tid);
+  printf("  [Thread %ld] Address of c:             %p\n", tid, c);
+  printf("  [Thread %ld] Address with cap. of c:   %#p\n", tid, (void *)c);
+  printf("  [Thread %ld] Value of c:               %d\n", tid, *c);
 
   // Free allocated memory if malloc succeeded
   free(c);

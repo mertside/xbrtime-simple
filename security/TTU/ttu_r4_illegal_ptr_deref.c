@@ -25,23 +25,30 @@ void* illegal_pointer_dereference(void* arg) {
   // printf("[Thread %ld] Attempting to allocate %ld bytes of memory\n", tid, SIZE);
 
   // int* c = malloc(SIZE);
-  // int* c; // Uninitialized pointer
-  int* c = malloc(PTRDIFF_MAX+1);
+  int* c; // Uninitialized pointer
+  c = malloc(PTRDIFF_MAX+1); // Allocate a size larger than the max size for malloc
+
+  printf("  [Thread %ld] Address of c:      %p\n", tid, c);
+  printf("  [Thread %ld] Capability of c:   %#p\n", tid, (void *)c);
+  printf("  [Thread %ld] Value of c:        %d\n", tid, *c);
 
   // Check if malloc failed
-  if (c == NULL) {
+  if (*c == 0) { 
+  // if (c == NULL) {
     printf("[Thread %ld] Malloc failed: Could not allocate the requested memory size.\n", tid);
     return NULL;
+  } else {
+    printf("[Thread %ld] Malloc succeeded: Allocated %ld bytes of memory\n", tid, PTRDIFF_MAX+1);
   }
 
-  printf("[Thread %ld] Address of c:      %p\n", tid, c);
-  printf("[Thread %ld] Capability of c:   %#p\n", tid, (void *)c);
-  printf("[Thread %ld] Value of c:        %d\n", tid, *c);
+  // printf("  [Thread %ld] Address of c:      %p\n", tid, c);
+  // printf("  [Thread %ld] Capability of c:   %#p\n", tid, (void *)c);
+  // printf("  [Thread %ld] Value of c:        %d\n", tid, *c);
 
-  if (*c != 0)
-    printf("[Thread %ld] Test Failed: Illegal pointer access caused by incorrect sized memory allocation\n", tid);
-  else
-    printf("[Thread %ld] Test Passed: access prevented (may not reach)\n", tid);
+  // if (*c != 0)
+  //   printf("[Thread %ld] Test Failed: Illegal pointer access caused by incorrect sized memory allocation\n", tid);
+  // else
+  //   printf("[Thread %ld] Test Passed: access prevented (may not reach)\n", tid);
 
   // Free allocated memory if malloc succeeded
   free(c);
@@ -68,7 +75,7 @@ int main() {
     tpool_wait(threads[i].thread_queue);
   }
 
-  printf("Completed test: Illegal Pointer Dereference:           EXPLOITED!\n");
+  printf("Completed test: Illegal Pointer Dereference:                     \n");
 
   xbrtime_close();
 

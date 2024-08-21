@@ -25,8 +25,8 @@ void* illegal_pointer_dereference(void* arg) {
   // printf("[Thread %ld] Attempting to allocate %ld bytes of memory\n", tid, SIZE);
 
   // int* c = malloc(SIZE);
-  int* c; // Uninitialized pointer
-  c = malloc(PTRDIFF_MAX+1); // MERT: added
+  // int* c; // Uninitialized pointer
+  int* c = malloc(PTRDIFF_MAX+1);
 
   // Check if malloc failed
   if (c == NULL) {

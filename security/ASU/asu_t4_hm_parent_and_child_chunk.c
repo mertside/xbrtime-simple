@@ -60,11 +60,11 @@ int main(){
     memset(g+0x20, 0x41, 0xf); // This position is still within the legal memory range of g but the memory region overlaps with h
 
 
-    printf("d: %p\n", d);
-    printf("e: %p\n\n", e);
+    printf("d: %#p\n", d);
+    printf("e: %#p\n\n", e);
 
-    printf("g: %p -> %p\n", g, (g+0x50));
-    printf("h: %p\n", h);
+    printf("g: %#p -> %#p\n", g, (g+0x50));
+    printf("h: %#p\n", h);
     printf("h: %s\n", h);
 
     if(h[0] == 'A')

@@ -41,7 +41,7 @@ int main(){
     *(c+0x18) = 0x61; //Manually edit size of d to a larger size so that it overlaps with e
     
     for(int i = 0; i < 48; i++){ 
-      printf("%c ", *(c+i));
+      printf("%c ", (c+i));
     }
 
     free(d); //Free d for a reallocation

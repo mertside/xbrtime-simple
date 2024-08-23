@@ -20,6 +20,8 @@ ttuC12B:
 	$(MY_CC) -o ttu_c12b_race_condition.exe ttu_c12b_race_condition.c
 ttuC13B:
 	$(MY_CC) -o ttu_c13b_use_of_freed_memory.exe ttu_c13b_use_of_freed_memory.c
+ttuT:
+	$(MY_CC) -o ttu_t_hm_parent_and_child_chunk.exe ttu_t_hm_parent_and_child_chunk.c
 
 clean:
 	rm -f ./*.o ./*.exe ./*.core

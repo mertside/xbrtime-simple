@@ -22,9 +22,9 @@ void* heap_manipulation_test(void* arg) {
   char* d = malloc(0x10);
   char* e = malloc(0x10);
 
-  printf("[Thread %ld] c: %p\n", tid, c);
-  printf("[Thread %ld] d: %p\n", tid, d);
-  printf("[Thread %ld] e: %p\n", tid, e);
+  printf("[Thread %ld] c: %#p\n", tid, c);
+  printf("[Thread %ld] d: %#p\n", tid, d);
+  printf("[Thread %ld] e: %#p\n", tid, e);
 
   // Manually edit the size of d to a larger size so that it overlaps with e
   *(c + 0x18) = 0x61;
@@ -43,8 +43,8 @@ void* heap_manipulation_test(void* arg) {
   // This position is still within the legal memory range of g but overlaps with h
   memset(g + 0x20, 0x41, 0xf);
 
-  printf("[Thread %ld] g: %p -> %p\n", tid, g, (g + 0x50));
-  printf("[Thread %ld] h: %p\n", tid, h);
+  printf("[Thread %ld] g: %#p -> %#p\n", tid, g, (g + 0x50));
+  printf("[Thread %ld] h: %#p\n", tid, h);
   printf("[Thread %ld] h: %s\n", tid, h);
 
   // Check if the memory overlap was exploited

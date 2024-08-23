@@ -25,12 +25,12 @@ int main(){
   // Initialize c, d, and e with 'Z'
   memset(c, 'Z', 0x10);     // 0x5A == 'Z'    
   memset(d, 'Z', 0x10);     
-  memset(e, 'Z', 0x10);      
-
+  memset(e, 'Z', 0x10);     
+ 
   // Print what is stored a the memory location of c, d, and e
-  printf("c: %s\n", c);
-  printf("d: %s\n", d);
-  printf("e: %s\n", e);
+  // printf("c: %s\n", c);
+  // printf("d: %s\n", d);
+  // printf("e: %s\n", e);
 
   // Manually edit size of d to a larger size so that it overlaps with e
   *(c+0x18) = 0x61; 

@@ -22,10 +22,15 @@ int main(){
   char* d = malloc(0x10);   // 16   // 00000000 00000000
   char* e = malloc(0x10);   // 32   // 00000000 00000000
 
-  // Initialize c, d, and e with 0
-  memset(c, 0, 0x10);      
-  memset(d, 0, 0x10);     
-  memset(e, 0, 0x10);      
+  // Initialize c, d, and e with 'Z'
+  memset(c, 0x5A, 0x10);      
+  memset(d, 0x5A, 0x10);     
+  memset(e, 0x5A, 0x10);      
+
+  // Print what is stored a the memory location of c, d, and e
+  printf("c: %s\n", c);
+  printf("d: %s\n", d);
+  printf("e: %s\n", e);
 
   // Manually edit size of d to a larger size so that it overlaps with e
   *(c+0x18) = 0x61; 
@@ -64,9 +69,9 @@ int main(){
   printf("h: %s\n", h);
 
   if(h[0] == 'A')
-    printf("Test Failed: Heap manipulation leading to overlapping memory regions\n");
+    printf("\nTest Failed: Heap manipulation leading to overlapping memory regions\n");
   else
-    printf("Test Passed: Heap manipulation unsuccesful!\n");
+    printf("\nTest Passed: Heap manipulation unsuccesful!\n");
 
   return 0;
 }

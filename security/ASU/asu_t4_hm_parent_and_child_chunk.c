@@ -33,13 +33,17 @@
 #include <string.h>
 
 int main(){
-    char* c = malloc(0x10);
-    char* d = malloc(0x10);
-    char* e = malloc(0x10);
+    char* c = malloc(0x10); // 0    00000000 00000000
+    char* d = malloc(0x10); // 16   00000000 00000000
+    char* e = malloc(0x10); // 32   00000000 00000000
 
 
     *(c+0x18) = 0x61; //Manually edit size of d to a larger size so that it overlaps with e
     
+    for(int i = 0; i < 48; i++){ {
+      printf("%#c ", *(c+i));
+    }
+
     free(d); //Free d for a reallocation
     free(e); //Free e for a reallocation
 

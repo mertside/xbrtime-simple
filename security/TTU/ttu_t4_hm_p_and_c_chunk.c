@@ -56,7 +56,7 @@ void* heap_manipulation_test(void* arg) {
 }
 
 int main() {
-    xbrtime_init();
+  xbrtime_init();
 
   int num_pes = xbrtime_num_pes();
 

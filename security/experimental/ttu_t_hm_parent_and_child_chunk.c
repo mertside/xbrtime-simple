@@ -31,9 +31,9 @@ int main(){
   *(c+0x18) = 0x61; 
   
   // Print every byte of the memory allocated to c
-  for(int i = 0; i < 0x20; i++){
-    printf("c[%d]: %x\n", i, c[i]);
-  }
+  // for(int i = 0; i < 0x20; i++){
+  //   printf("c[%d]: %x\n", i, c[i]);
+  // }
 
   free(d); //Free d for a reallocation
   free(e); //Free e for a reallocation

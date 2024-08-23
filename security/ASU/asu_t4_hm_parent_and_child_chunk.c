@@ -69,7 +69,7 @@ int main(){
 
     printf("g: %#p -> %#p\n", g, (g+0x50));
     printf("h: %#p\n", h);
-    printf("h: %#s\n", h);
+    printf("h: %s\n", h);
 
     if(h[0] == 'A')
       printf("Test Failed: Heap manipulation leading to overlapping memory regions\n");

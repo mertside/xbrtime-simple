@@ -33,17 +33,13 @@
 #include <string.h>
 
 int main(){
-    char* c = malloc(0x10); // 0    00000000 00000000
-    char* d = malloc(0x10); // 16   00000000 00000000
-    char* e = malloc(0x10); // 32   00000000 00000000
+    char* c = malloc(0x10);
+    char* d = malloc(0x10);
+    char* e = malloc(0x10);
 
 
     *(c+0x18) = 0x61; //Manually edit size of d to a larger size so that it overlaps with e
     
-    for(int i = 0; i < 48; i++){ 
-      printf("%c ", *(c+i));
-    }
-
     free(d); //Free d for a reallocation
     free(e); //Free e for a reallocation
 
@@ -64,11 +60,11 @@ int main(){
     memset(g+0x20, 0x41, 0xf); // This position is still within the legal memory range of g but the memory region overlaps with h
 
 
-    printf("d: %#p\n", d);
-    printf("e: %#p\n\n", e);
+    printf("d: %p\n", d);
+    printf("e: %p\n\n", e);
 
-    printf("g: %#p -> %#p\n", g, (g+0x50));
-    printf("h: %#p\n", h);
+    printf("g: %p -> %p\n", g, (g+0x50));
+    printf("h: %p\n", h);
     printf("h: %s\n", h);
 
     if(h[0] == 'A')

@@ -23,9 +23,9 @@ int main(){
   char* e = malloc(0x10);   // 32   // 00000000 00000000
 
   // Initialize c, d, and e with 'Z'
-  memset(c, 'Z', 0x10);     // 0x5A == 'Z'    
-  memset(d, 'Z', 0x10);     
-  memset(e, 'Z', 0x10);     
+  // memset(c, 'Z', 0x10);     // 0x5A == 'Z'    
+  // memset(d, 'Z', 0x10);     
+  // memset(e, 'Z', 0x10);     
  
   // Print what is stored a the memory location of c, d, and e
   // printf("c: %s\n", c);

@@ -25,6 +25,40 @@ echo "============================================================"
 echo " "
 
 echo "------------------------------"
+echo "ASU_S1: Free not at start"
+asuS1=`./asu_s1_free_not_at_start.exe`;
+echo "$asuS1"
+echo " "
+
+echo "------------------------------"
+echo "ASU_S2: Free not on heap"
+asuS2=`./asu_s2_free_not_on_heap.exe`;
+echo "$asuS2"
+echo " "
+
+echo "------------------------------"
+echo "ASU_S3: Null pointer dereference"
+asuS3=`./asu_s3_null_ptr_dereference.exe`;
+echo "$asuS3"
+echo " "
+
+echo "------------------------------"
+echo "ASU_S4: Out of bounds read"
+asuS4=`./asu_s4_oob_read.exe`;
+echo "$asuS4"
+echo " "
+
+echo "------------------------------"
+echo "ASU_S5: Out of bounds write"
+asuS5=`./asu_s5_oob_write.exe`;
+echo "$asuS5"
+echo " "
+
+# ----------------------------------------------------------------------------
+echo "============================================================"
+echo " "
+
+echo "------------------------------"
 echo "ASU_T1: Double Free"
 asuT1=`./asu_t1_double_free.exe`;
 echo "$asuT1"
@@ -54,38 +88,16 @@ asuT5=`./asu_t5_use_after_free.exe`;
 echo "$asuT5"
 echo " "
 
-# ----------------------------------------------------------------------------
-echo "============================================================"
+echo "------------------------------"
+echo "ASU_T6: UAF Function Pointer"
+asuT6=`./asu_t6_uaf_function_pointer.exe`;
+echo "$asuT6"
 echo " "
 
 echo "------------------------------"
-echo "ASU_S1: Free not at start"
-asuS1=`./asu_s1_free_not_at_start.exe`;
-echo "$asuS1"
-echo " "
-
-echo "------------------------------"
-echo "ASU_S2: Free not on heap"
-asuS2=`./asu_s2_free_not_on_heap.exe`;
-echo "$asuS2"
-echo " "
-
-echo "------------------------------"
-echo "ASU_S3: Null pointer dereference"
-asuS3=`./asu_s3_null_ptr_dereference.exe`;
-echo "$asuS3"
-echo " "
-
-echo "------------------------------"
-echo "ASU_S4: Out of bounds read"
-asuS4=`./asu_s4_oob_read.exe`;
-echo "$asuS4"
-echo " "
-
-echo "------------------------------"
-echo "ASU_S5: Out of bounds write"
-asuS5=`./asu_s5_oob_write.exe`;
-echo "$asuS5"
+echo "ASU_T7: UAF Memcpy"
+asuT7=`./asu_t7_uaf_memcpy.exe`;
+echo "$asuT7"
 echo " "
 
 # ----------------------------------------------------------------------------

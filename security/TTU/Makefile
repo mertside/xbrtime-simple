@@ -6,9 +6,9 @@ INCLUDES = -I../../runtime
 ASM = ../../runtime/xbMrtime_api_asm.s
 MY_CC = $(CCOM) $(CFLAGS) $(INCLUDES) $(ASM)
 
-all: ttuS1 ttuS2 ttuS3 ttuS4 ttuS5 ttuT1 ttuT2 ttuT3 ttuT4 ttuT5 ttuR1 ttuR2 ttuR3 ttuR4 ttuR5
+all: ttuS1 ttuS2 ttuS3 ttuS4 ttuS5 ttuT1 ttuT2 ttuT3 ttuT4 ttuT5 ttuT6 ttuT7 ttuR1 ttuR2 ttuR3 ttuR4 ttuR5
 
-temporal: ttuT1 ttuT2 ttuT3 ttuT4 ttuT5
+temporal: ttuT1 ttuT2 ttuT3 ttuT4 ttuT5 ttuT6 ttuT7
 
 spatial: ttuS1 ttuS2 ttuS3 ttuS4 ttuS5
 
@@ -24,6 +24,7 @@ ttuS4:
 	$(MY_CC) -o ttu_s4_oob_read.exe ttu_s4_oob_read.c
 ttuS5:
 	$(MY_CC) -o ttu_s5_oob_write.exe ttu_s5_oob_write.c
+
 ttuT1:
 	$(MY_CC) -o ttu_t1_double_free.exe ttu_t1_double_free.c
 ttuT2:
@@ -34,6 +35,11 @@ ttuT4:
 	$(MY_CC) -o ttu_t4_hm_p_and_c_chunk.exe ttu_t4_hm_p_and_c_chunk.c
 ttuT5:
 	$(MY_CC) -o ttu_t5_use_after_free.exe ttu_t5_use_after_free.c
+ttuT6:
+	$(MY_CC) -o ttu_t6_uaf_function_pointer.exe ttu_t6_uaf_function_pointer.c
+ttuT7:
+	$(MY_CC) -o ttu_t7_uaf_memcpy.exe ttu_t7_uaf_memcpy.c
+
 ttuR1:
 	$(MY_CC) -o ttu_r1_HeartBleed.exe ttu_r1_HeartBleed.c
 ttuR2:
@@ -74,6 +80,8 @@ runT:
 	./ttu_t3_hm_house_of_spirit.exe
 	./ttu_t4_hm_p_and_c_chunk.exe
 	./ttu_t5_use_after_free.exe
+	./ttu_t6_uaf_function_pointer.exe
+	./ttu_t7_uaf_memcpy.exe
 
 runR:
 	./ttu_r1_HeartBleed.exe
@@ -93,6 +101,8 @@ runA:
 	./ttu_t3_hm_house_of_spirit.exe
 	./ttu_t4_hm_p_and_c_chunk.exe
 	./ttu_t5_use_after_free.exe
+	./ttu_t6_uaf_function_pointer.exe
+	./ttu_t7_uaf_memcpy.exe
 	./ttu_r1_HeartBleed.exe
 	./ttu_r2_dop.exe
 	./ttu_r3_uaf_to_code_reuse.exe

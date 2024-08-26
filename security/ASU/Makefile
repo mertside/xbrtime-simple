@@ -8,9 +8,9 @@ ASM = ../../runtime/xbMrtime_api_asm.s
 MY_CC = $(CCOM) $(CFLAGS)
 #  $(INCLUDES) $(ASM)
 
-all: asuS1 asuS2 asuS3 asuS4 asuS5 asuT1 asuT2 asuT3 asuT4 asuT5 asuR1 asuR2 asuR3 asuR4 asuR5
+all: asuS1 asuS2 asuS3 asuS4 asuS5 asuT1 asuT2 asuT3 asuT4 asuT5 asuT6 asuT7 asuR1 asuR2 asuR3 asuR4 asuR5
 
-temporal: asuT1 asuT2 asuT3 asuT4 asuT5
+temporal: asuT1 asuT2 asuT3 asuT4 asuT5 asuT6 asuT7
 
 spatial: asuS1 asuS2 asuS3 asuS4 asuS5
 
@@ -46,6 +46,12 @@ asuT4:
 asuT5:
 	$(MY_CC) -o asu_t5_use_after_free.exe asu_t5_use_after_free.c
 
+asuT6:
+	$(MY_CC) -o asu_t6_uaf_function_pointer.exe asu_t6_uaf_function_pointer.c
+
+asuT7:
+	$(MY_CC) -o asu_t7_uaf_memcpy.exe asu_t7_uaf_memcpy.c
+
 asuR1:
 	$(MY_CC) -o asu_r1_heartbleed.exe asu_r1_heartbleed.c
 
@@ -74,6 +80,8 @@ runT:
 	./asu_t3_hm_house_of_spirit.exe
 	./asu_t4_hm_parent_and_child_chunk.exe
 	./asu_t5_use_after_free.exe
+	./asu_t6_uaf_function_pointer.exe
+	./asu_t7_uaf_memcpy.exe
 
 runR:
 	./asu_r1_heartbleed.exe
@@ -93,6 +101,8 @@ runA:
 	./asu_t3_hm_house_of_spirit.exe
 	./asu_t4_hm_parent_and_child_chunk.exe
 	./asu_t5_use_after_free.exe
+	./asu_t6_uaf_function_pointer.exe
+	./asu_t7_uaf_memcpy.exe
 	./asu_r1_heartbleed.exe
 	./asu_r2_dop.exe
 	./asu_r3_uaf_to_code_reuse.exe

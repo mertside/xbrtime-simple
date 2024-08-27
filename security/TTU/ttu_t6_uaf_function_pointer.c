@@ -14,7 +14,6 @@
 #include "xbrtime_morello.h"
 
 typedef void (*fp)();
-
 void default_function();
 void target_function();
 

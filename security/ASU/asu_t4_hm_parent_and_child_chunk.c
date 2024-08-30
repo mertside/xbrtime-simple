@@ -37,6 +37,9 @@ int main(){
     char* d = malloc(0x10);
     char* e = malloc(0x10);
 
+    printf("  c: %#p\n", c);
+    printf("  d: %#p\n", d);
+    printf("  e: %#p\n\n", e);
 
     *(c+0x18) = 0x61; //Manually edit size of d to a larger size so that it overlaps with e
     
@@ -59,7 +62,7 @@ int main(){
     
     memset(g+0x20, 0x41, 0xf); // This position is still within the legal memory range of g but the memory region overlaps with h
 
-
+    printf("c: %#p\n", c);
     printf("d: %#p\n", d);
     printf("e: %#p\n\n", e);
 

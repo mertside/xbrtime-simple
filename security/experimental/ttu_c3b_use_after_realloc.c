@@ -8,6 +8,24 @@
  * 
  */
 
+/*
+ * Changes in This Version after Mishels Comments on August 24th:
+ *   
+ *  Focus on Temporal Safety: The memory allocated for new_ptr has the same 
+ *      size as original_ptr. If the allocator reuses the same memory block, 
+ *      the test would trigger a use-after-reallocation issue when original_ptr 
+ *      is accessed after being freed.
+ *   
+ *  No Out-of-Bounds Access: The previous out-of-bounds write was removed. 
+ *      This revision now focuses purely on temporal safety without introducing 
+ *      spatial safety violations.
+ *   
+ *   Checking for Address Reuse: A check is added to see if the allocator reuses 
+ *      the same memory address for both original_ptr and new_ptr. If this 
+ *      happens, it highlights the temporal safety issue.
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,34 +45,35 @@ void use_after_reallocation() {
     printf("%d ", original_ptr[i]);
   }
   printf("\n");
-  // Print the address of original_ptr
+
+  // Store the address of the original pointer for comparison later
   printf("Address of original_ptr: %p\n", (void *)original_ptr);
 
   // Step 2: Free the allocated memory
   free(original_ptr);
 
   // Step 3: Reallocate memory for a different purpose
-  char *new_ptr = (char *)malloc(10 * sizeof(char));
+  int *new_ptr = (int *)malloc(10 * sizeof(int));  // Same size allocation
   if (new_ptr == NULL) {
-    printf("Memory allocation failed\n");
-    return;
+      printf("Memory allocation failed\n");
+      return;
   }
-  strcpy(new_ptr, "NewData");
-  printf("New data: %s\n", new_ptr);
-  // Print the address of new_ptr
+
+  // Print the address of the new pointer
   printf("Address of new_ptr: %p\n", (void *)new_ptr);
 
-  // Calculate the distance between original_ptr and new_ptr
-  __ptrdiff_t distance = (char*)original_ptr - new_ptr;
+  // Check if the same memory was reused for new_ptr
+  if (new_ptr == original_ptr) {
+    printf("Memory reused! Potential temporal safety violation.\n");
+  } else {
+    printf("Memory not reused.\n");
+  }
 
-  // Print the calculated distance
-  printf("Calculated distance: %td bytes\n", distance);
-
-  // Step 4: Use new_ptr to access the original data using the calculated distance
-  printf("Accessing original data through new_ptr:\n");
+  // Step 4: Access the old data through the original pointer
+  // (Note: This is unsafe and leads to undefined behavior)
+  printf("Attempting to access old data through original_ptr:\n");
   for (int i = 0; i < 10; i++) {
-    int *access_ptr = (int *)(new_ptr + distance + i * sizeof(int));
-    printf("%d ", *access_ptr);
+    printf("%d ", original_ptr[i]);  // This would trigger a temporal violation
   }
   printf("\n");
 

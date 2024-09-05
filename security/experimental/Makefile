@@ -11,7 +11,7 @@ all: ttuC1B ttuC2B ttuC3B ttuC11B ttuC12B ttuC13B
 ttuC1B:
 	$(MY_CC) -o ttu_c1b_control_flow.exe ttu_c1b_control_flow.c
 ttuC2B:
-	$(MY_CC) -o ttu_c2b_rop.exe ttu_c2b_rop.c
+	$(MY_CC) -o ttu_c2b_rop.exe ttu_c2b_rop.c -fasm
 ttuC3B:
 	$(MY_CC) -o ttu_c3b_use_after_realloc.exe ttu_c3b_use_after_realloc.c
 ttuC11B:

@@ -77,6 +77,15 @@ void use_after_reallocation() {
   }
   printf("\n");
 
+  // Step 5: Access the old data through the new pointer
+  // (Note: This is unsafe and leads to undefined behavior)
+  printf("Attempting to access old data through new_ptr:\n");
+  for (int i = 0; i < 10; i++) {
+    printf("%d ", new_ptr[i]);  // This would trigger a temporal violation
+  }
+  printf("\n");
+
+
   // Clean up
   free(new_ptr);
 }

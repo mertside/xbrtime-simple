@@ -1,12 +1,6 @@
 CCOM = cc
-# CCOM = /usr/local64/llvm-morello/bin/clang
-# CFLAGS = -O0 -lpthread -lm -Iruntime
 CFLAGS = -g -O2 -Wall 
-# -lpthread -lm
-INCLUDES = -I../../runtime
-ASM = ../../runtime/xbMrtime_api_asm.s
 MY_CC = $(CCOM) $(CFLAGS)
-#  $(INCLUDES) $(ASM)
 
 all: asuS1 asuS2 asuS3 asuS4 asuS5 asuT1 asuT2 asuT3 asuT4 asuT5 asuT6 asuT7 asuR1 asuR2 asuR3 asuR4 asuR5
 
@@ -15,6 +9,8 @@ temporal: asuT1 asuT2 asuT3 asuT4 asuT5 asuT6 asuT7
 spatial: asuS1 asuS2 asuS3 asuS4 asuS5
 
 real: asuR1 asuR2 asuR3 asuR4 asuR5
+
+heap: asuT2 asuT3 asuT4
 
 asuS1:
 	$(MY_CC) -o asu_s1_free_not_at_start.exe asu_s1_free_not_at_start.c

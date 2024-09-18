@@ -14,6 +14,8 @@ spatial: ttuS1 ttuS2 ttuS3 ttuS4 ttuS5
 
 real: ttuR1 ttuR2 ttuR3 ttuR4 ttuR5
 
+heap: ttuT2 ttuT3 ttuT4
+
 ttuS1:
 	$(MY_CC) -o ttu_s1_free_not_at_start.exe ttu_s1_free_not_at_start.c
 ttuS2:

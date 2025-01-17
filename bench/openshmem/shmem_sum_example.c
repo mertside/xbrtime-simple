@@ -18,18 +18,22 @@
 #include <shmem.h>
 #include <stdio.h>
 
+#define NITER 1000  
+
 int main(void) {
   shmem_init();  // Initialize the OpenSHMEM environment
 
   int me = shmem_my_pe();  // Get the ID of this PE
   int npes = shmem_n_pes();  // Get the total number of PEs
 
-  // Computation Phase: Calculate the square of the PE's ID
-  int local_square = me * me;
+  for(int i = 0; i < NITER; i++) {
+    // Computation Phase: Calculate the square of the PE's ID
+    int local_square = me * me;
 
-  // Communication Phase: Sum all local_square values across all PEs
-  int total_sum = 0;
-  shmem_int_sum_to_all(&total_sum, &local_square, 1, 0, 0, npes, NULL, NULL);
+    // Communication Phase: Sum all local_square values across all PEs
+    int total_sum = 0; // TODO: check if stack var is ok?
+    shmem_int_sum_to_all(&total_sum, &local_square, 1, 0, 0, npes, NULL, NULL);
+  }
 
   // Print the result from PE 0
   if (me == 0) {

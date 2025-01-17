@@ -24,6 +24,7 @@
 #include <stdlib.h>
 
 #define N 1000  // Size of the vectors
+#define NITER 1000  
 
 int main(void) {
   shmem_init();  // Initialize OpenSHMEM environment
@@ -46,26 +47,28 @@ int main(void) {
     local_b[i] = (me * local_n + i + 1) * 2;
   }
 
-  // Perform element-wise addition of local_a and local_b
-  for (int i = 0; i < local_n; i++) {
-    local_sum[i] = local_a[i] + local_b[i];
-  }
-
   // PE 0 will gather the results into the final vector
   int* global_sum = NULL;
   if (me == 0) {
-    global_sum = (int*) malloc(N * sizeof(int));  // Allocate space for the full vector
-  }
+    global_sum = (int*) shmem_malloc(N * sizeof(int));  // Allocate space for the full vector
+  } // TODO: shmem malloc
 
-  // Gather all local_sum parts into the global_sum array on PE 0
-  shmem_int_gather(global_sum, local_sum, local_n, 0, 0, npes, NULL);
-
-  // Handle the remainder if N is not divisible by npes
-  if (remainder != 0 && me == 0) {
-    for (int i = npes * local_n; i < N; i++) {
-      global_sum[i] = (i + 1) + (i + 1) * 2;
+  for(int i = 0; i < NITER; i++) {  
+    // Perform element-wise addition of local_a and local_b
+    for (int i = 0; i < local_n; i++) {
+      local_sum[i] = local_a[i] + local_b[i];
     }
-  }
+
+    // Gather all local_sum parts into the global_sum array on PE 0
+    shmem_int_gather(global_sum, local_sum, local_n, 0, 0, npes, NULL);
+
+    // Handle the remainder if N is not divisible by npes
+    if (remainder != 0 && me == 0) {
+      for (int i = npes * local_n; i < N; i++) {
+        global_sum[i] = (i + 1) + (i + 1) * 2;
+      }
+    }
+  } 
 
   // PE 0 prints the final result (for brevity, only first 10 elements)
   if (me == 0) {

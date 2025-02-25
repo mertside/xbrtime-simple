@@ -2,8 +2,8 @@ CCOM = cc
 # CCOM = /usr/local64/llvm-morello/bin/clang
 # CFLAGS = -O0 -lpthread -lm -Iruntime
 CFLAGS = -g -O2 -Wall -lpthread -lm
-INCLUDES = -I../../runtime
-ASM = ../../runtime/xbMrtime_api_asm.s
+INCLUDES = -I../runtime
+ASM = ../runtime/xbMrtime_api_asm.s
 MY_CC = $(CCOM) $(CFLAGS) $(INCLUDES) $(ASM)
 #DIR=~/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
 

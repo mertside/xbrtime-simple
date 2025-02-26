@@ -24,9 +24,9 @@ double get_time() {
 // Worker function for thread pool
 void update_remote_value(void *arg) {
   work_t *work = (work_t *)arg;
-  int64_t remote_value = xbrtime_longlong_get(&work->table[work->remote_index], work->target_pe);
+  int64_t remote_value = xbrtime_longlong_get(&work->table[work->remote_index], work->target_pe, 1, 1, 0);
   remote_value += 1;
-  xbrtime_longlong_put(&work->table[work->remote_index], &remote_value, work->target_pe, sizeof(int64_t));
+  xbrtime_longlong_put(&work->table[work->remote_index], &remote_value, work->target_pe, 1, 1, 0);
   free(work);
 }
 
@@ -51,20 +51,22 @@ int main(int argc, char *argv[]) {
 
   // Start benchmark
   double start_time = get_time();
-  for (size_t i = 0; i < NUM_UPDATES / npes; i++) {
-    // Generate a random index in the table
-    int64_t index = (rand() % TABLE_SIZE);
-    int target_pe = index % npes; // Determine target PE
-    int64_t remote_index = index / npes; // Remote offset
+  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+    for (size_t i = 0; i < NUM_UPDATES / npes; i++) {
+      // Generate a random index in the table
+      int64_t index = (rand() % TABLE_SIZE);
+      int target_pe = index % npes; // Determine target PE
+      int64_t remote_index = index / npes; // Remote offset
 
-    // Create work task
-    work_t *work = malloc(sizeof(work_t));
-    work->table = table;
-    work->remote_index = remote_index;
-    work->target_pe = target_pe;
-    
-    // Enqueue work into thread pool
-    tpool_add_work(threads[currentPE].thread_queue, update_remote_value, work);
+      // Create work task
+      work_t *work = malloc(sizeof(work_t));
+      work->table = table;
+      work->remote_index = remote_index;
+      work->target_pe = target_pe;
+      
+      // Enqueue work into thread pool
+      tpool_add_work(threads[currentPE].thread_queue, update_remote_value, work);
+    }
   }
   
   // Wait for all tasks to complete

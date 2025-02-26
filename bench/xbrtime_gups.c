@@ -83,6 +83,6 @@ int main(int argc, char *argv[]) {
 
   // Cleanup
   xbrtime_free(table);
-  xbrtime_finalize();
-  return EXIT_SUCCESS;
+  xbrtime_close();
+  return 0;
 }

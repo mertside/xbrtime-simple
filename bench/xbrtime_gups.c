@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
   // Start benchmark
   double start_time = get_time();
-  for (int currentPE = 0; currentPE < NumProcs; currentPE++) {
+  for (int currentPE = 0; currentPE < npes; currentPE++) {
     for (size_t i = 0; i < NUM_UPDATES / npes; i++) {
       // Generate a random index in the table
       int64_t index = (rand() % TABLE_SIZE);

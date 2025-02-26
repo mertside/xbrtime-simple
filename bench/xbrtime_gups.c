@@ -24,9 +24,10 @@ double get_time() {
 // Worker function for thread pool
 void update_remote_value(void *arg) {
   work_t *work = (work_t *)arg;
-  int64_t remote_value = xbrtime_longlong_get(&work->table[work->remote_index], work->target_pe, 1, 1, 0);
+  int64_t remote_value = 0;
+  xbrtime_longlong_get(&remote_value, &work->table[work->remote_index], 1, 0, work->target_pe);
   remote_value += 1;
-  xbrtime_longlong_put(&work->table[work->remote_index], &remote_value, work->target_pe, 1, 1, 0);
+  xbrtime_longlong_put(&work->table[work->remote_index], &remote_value, 1, 0, work->target_pe);
   free(work);
 }
 

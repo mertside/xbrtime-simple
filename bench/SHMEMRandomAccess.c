@@ -157,7 +157,7 @@ int main(int argc, char **argv)
   RealTime = -RTSEC(); // Begin timed section
   xbrtime_init();
   RealTime += RTSEC(); // End timed section
-  printf("\tINIT: Real time used = %.6f seconds\n", RealTime );
+  printf("\tINIT: RTSEC used = %.6f seconds\n", RealTime );
 
   /*Allocate symmetric memory*/
   sAbort = (int *)xbrtime_malloc(sizeof(int));
@@ -372,6 +372,8 @@ int main(int argc, char **argv)
 
   /* End timed section */
   RealTime += RTSEC();
+  RealTime += RTSEC(); // End timed section
+  printf("\tRTSEC for updates = %f seconds\n", RealTime );
 
   /* Print timing results */
   if (MyProc == 0){
@@ -412,7 +414,7 @@ int main(int argc, char **argv)
   RealTime = -RTSEC(); // Begin timed section
   xbrtime_barrier_all();
   RealTime += RTSEC(); // End timed section
-  printf("\tBARRIER: Real time used = %.6f seconds\n", RealTime );
+  printf("\tBARRIER: RTSEC used = %.6f seconds\n", RealTime );
 
   //xbrtime_barrier();
   // for (int currentPE = 0; currentPE < NumProcs; currentPE++) {

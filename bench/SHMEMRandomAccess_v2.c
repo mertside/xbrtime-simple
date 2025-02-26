@@ -4,12 +4,12 @@
 #include "tpool.h"
 #include <sys/time.h>
 
-#define TABLE_SIZE (1 << 23)  // Example: 8M elements
-#define NUM_UPDATES (1 << 25) // Example: 32M updates
+#define TABLE_SIZE (1 << 24)  // Example: 16M elements
+#define NUM_UPDATES (1 << 26) // Example: 64M updates
 
 typedef struct {
-    long long *table;
-    long long remote_index;
+    int64_t *table;
+    int64_t remote_index;
     int target_pe;
 } work_t;
 
@@ -23,10 +23,15 @@ static double RTSEC() {
 // Worker function for thread pool
 void update_remote_value(void *arg) {
     work_t *work = (work_t *)arg;
-    long long remote_value = 0;
+    int64_t remote_value = 0;
 
+    // Debugging print
+    printf("PE %d updating index %ld on PE %d\n", xbrtime_mype(), work->remote_index, work->target_pe);
+    fflush(stdout);
+
+    // Fetch, modify, and write back
     xbrtime_longlong_get(&remote_value, &work->table[work->remote_index], 1, 0, work->target_pe);
-    remote_value ^= work->remote_index;
+    remote_value += 1;
     xbrtime_longlong_put(&work->table[work->remote_index], &remote_value, 1, 0, work->target_pe);
 
     free(work);
@@ -37,56 +42,62 @@ int main(int argc, char *argv[]) {
     int me = xbrtime_mype();
     int npes = xbrtime_num_pes();
 
-    // Allocate shared memory
-    long long *table = (long long *) xbrtime_malloc(TABLE_SIZE * sizeof(long long));
+    // Allocate symmetric shared memory table
+    int64_t *table = (int64_t *) xbrtime_malloc(TABLE_SIZE * sizeof(int64_t));
     if (!table) {
         fprintf(stderr, "PE %d: Failed to allocate memory\n", me);
         xbrtime_close();
         return EXIT_FAILURE;
     }
 
-    // Initialize table with PE ID
+    // Initialize table
     for (size_t i = 0; i < TABLE_SIZE; i++) {
-        table[i] = me;
+        table[i] = 0;
     }
-    xbrtime_barrier_all();
-
-    // Create thread pool
-    threadpool_t *pool = tpool_create(4);
-    if (!pool) {
-        fprintf(stderr, "PE %d: Failed to create thread pool\n", me);
-        xbrtime_free(table);
-        xbrtime_close();
-        return EXIT_FAILURE;
-    }
+    xbrtime_barrier();
 
     // Start benchmark
     double start_time = RTSEC();
 
-    // Perform updates
-    for (size_t i = 0; i < NUM_UPDATES / npes; i++) {
-        long long index = rand() % TABLE_SIZE;
-        int target_pe = index % npes;
-        long long remote_index = index / npes;
+    // Ensure thread pools are correctly initialized
+    for (int currentPE = 0; currentPE < npes; currentPE++) {
+        for (size_t i = 0; i < NUM_UPDATES / npes; i++) {
+            // Generate a random index
+            int64_t index = (rand() % TABLE_SIZE);
+            int target_pe = index % npes;
+            int64_t remote_index = index / npes;
 
-        work_t *work = malloc(sizeof(work_t));
-        if (!work) {
-            fprintf(stderr, "PE %d: Memory allocation failed!\n", me);
-            continue;
+            // Bounds check for capability safety
+            if (remote_index >= TABLE_SIZE / npes) {
+                fprintf(stderr, "PE %d: Invalid remote index: %ld\n", me, remote_index);
+                continue;
+            }
+
+            // Allocate work safely
+            work_t *work = malloc(sizeof(work_t));
+            if (!work) {
+                fprintf(stderr, "PE %d: Memory allocation failed!\n", me);
+                continue;
+            }
+
+            work->table = table;
+            work->remote_index = remote_index;
+            work->target_pe = target_pe;
+
+            // Submit task to the correct PE's thread queue
+            tpool_add_work(threads[currentPE].thread_queue, update_remote_value, work);
         }
-
-        work->table = table;
-        work->remote_index = remote_index;
-        work->target_pe = target_pe;
-
-        tpool_add_work(pool, update_remote_value, work);
     }
 
-    // Ensure all tasks are completed
-    tpool_wait(pool);
-    xbrtime_barrier_all();
+    // Wait for all tasks before measuring GUPS
+    for (int currentPE = 0; currentPE < npes; currentPE++) {
+        tpool_wait(threads[currentPE].thread_queue);
+    }
 
+    xbrtime_barrier();
     double end_time = RTSEC();
+
+    // Compute and print GUPS
     double elapsed_time = end_time - start_time;
     double updates_per_second = (double)NUM_UPDATES / elapsed_time;
     double gups = updates_per_second / 1e9;
@@ -96,8 +107,12 @@ int main(int argc, char *argv[]) {
     }
 
     // Cleanup
-    tpool_destroy(pool);
+    printf("PE %d freeing memory...\n", me);
+    fflush(stdout);
     xbrtime_free(table);
+    printf("PE %d memory freed!\n", me);
+    fflush(stdout);
+
     xbrtime_close();
     return EXIT_SUCCESS;
 }

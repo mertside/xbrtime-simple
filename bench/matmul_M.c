@@ -168,7 +168,7 @@ int main( int argc, char **argv ){
               RESET, i, j, check ? "true" : "false", threads[i].thread_handle);
         fflush(stdout);
       }
-    
+    }
     printf("[M] "BGRN"Passed xbrtime_ulonglong_get()\n"RESET);
   }
   RealTime += RTSEC(); // End timed section

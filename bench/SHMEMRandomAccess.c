@@ -372,7 +372,6 @@ int main(int argc, char **argv)
 
   /* End timed section */
   RealTime += RTSEC(); // End timed section
-  printf("\tRTSEC for updates = %f seconds\n", RealTime );
 
   /* Print timing results */
   if (MyProc == 0){

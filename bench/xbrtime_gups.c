@@ -34,7 +34,6 @@ int main(int argc, char *argv[]) {
   xbrtime_init();
   int me = xbrtime_mype();
   int npes = xbrtime_num_pes();
-  threadpool_t *pool = tpool_create(4); // Create a thread pool with 4 threads
 
   // Allocate symmetric shared memory table
   int64_t *table = (int64_t *) xbrtime_malloc(TABLE_SIZE * sizeof(int64_t));
@@ -69,7 +68,6 @@ int main(int argc, char *argv[]) {
   }
   
   // Wait for all tasks to complete
-  tpool_wait(pool);
   xbrtime_barrier();
   double end_time = get_time();
 
@@ -83,7 +81,6 @@ int main(int argc, char *argv[]) {
   }
 
   // Cleanup
-  tpool_destroy(pool);
   xbrtime_free(table);
   xbrtime_finalize();
   return EXIT_SUCCESS;

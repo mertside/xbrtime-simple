@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     work->target_pe = target_pe;
     
     // Enqueue work into thread pool
-    tpool_add_work(pool, update_remote_value, work);
+    tpool_add_work(threads[currentPE].thread_queue, update_remote_value, work);
   }
   
   // Wait for all tasks to complete

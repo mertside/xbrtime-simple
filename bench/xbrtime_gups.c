@@ -46,8 +46,8 @@ int main(int argc, char *argv[]) {
   int64_t *table = (int64_t *) xbrtime_malloc(TABLE_SIZE * sizeof(int64_t));
   if (!table) {
     fprintf(stderr, "PE %d: Failed to allocate memory\n", me);
-    xbrtime_finalize();
-    return EXIT_FAILURE;
+    xbrtime_close();
+    return 1;
   }
 
   // Initialize table with zeros

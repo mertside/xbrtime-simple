@@ -7,29 +7,32 @@ ASM = ../runtime/xbMrtime_api_asm.s
 MY_CC = $(CCOM) $(CFLAGS) $(INCLUDES) $(ASM)
 #DIR=~/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
 
-all: matMul gather gupsM broadcast reduction
+all: matMul gather gups SHMEMRandomAccess broadcast reduction
 
 matMul:
-	$(MY_CC) -o matmul.exe matmul_M.c
+	$(MY_CC) -o matmul.exe xbrtime_matmul.c
 
 gather:
-	$(MY_CC) -o gather.exe gather_M.c
+	$(MY_CC) -o gather.exe xbrtime_gather.c
 
-gupsM:
-	$(MY_CC) -o gups.exe SHMEMRandomAccess.c
+gups:
+	$(MY_CC) -o gups.exe xbrtime_gups.c
+
+SHMEMRandomAccess:
+	$(MY_CC) -o SHMEMRandomAccess.exe SHMEMRandomAccess.c
 
 broadcast:
-	$(MY_CC) -o broadcast8_demo.exe broadcast8_demo.c
-
+	$(MY_CC) -o broadcast8.exe xbrtime_broadcast8.c
 reduction:
-	$(MY_CC) -o reduction8_demo.exe reduction8_demo.c
+	$(MY_CC) -o reduction8.exe xbrtime_reduction8.c
 
 test:
 	./matmul.exe
 	./gather.exe
-	./broadcast8_demo.exe
-	./reduction8_demo.exe
 	./gups.exe
+	./SHMEMRandomAccess.exe
+	./broadcast8.exe
+	./reduction8.exe
 
 clean:
 	rm -f ./*.o ./*.exe

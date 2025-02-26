@@ -179,7 +179,10 @@ int main( int argc, char **argv ){
 #ifdef DEBUG
   printf( "PE=%d; EXECUTING BARRIER\n", xbrtime_mype() );
 #endif
+  RealTime = -RTSEC(); // Begin timed section
   xbrtime_barrier();
+  RealTime += RTSEC(); // End timed section
+  printf("\tRTSEC for xbrtime_barrier = %f seconds\n", RealTime );
 
 	if(xbrtime_mype() == 0){
 		t_end = mysecond();

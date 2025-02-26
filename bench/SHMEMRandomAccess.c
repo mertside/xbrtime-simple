@@ -371,7 +371,6 @@ int main(int argc, char **argv)
   xbrtime_barrier_all();
 
   /* End timed section */
-  RealTime += RTSEC();
   RealTime += RTSEC(); // End timed section
   printf("\tRTSEC for updates = %f seconds\n", RealTime );
 

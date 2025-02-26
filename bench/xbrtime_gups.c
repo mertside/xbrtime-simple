@@ -12,11 +12,19 @@ typedef struct {
   int target_pe;
 } work_t;
 
-// Timer function
-double get_time() {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  return tv.tv_sec + tv.tv_usec * 1e-6;
+// // Timer function
+// double get_time() {
+//   struct timeval tv;
+//   gettimeofday(&tv, NULL);
+//   return tv.tv_sec + tv.tv_usec * 1e-6;
+// }
+
+// For timing
+static double RTSEC()
+{
+ struct timeval tp;
+ gettimeofday (&tp, NULL);
+ return tp.tv_sec + tp.tv_usec / (double)1.0e6;
 }
 
 // Worker function for thread pool
@@ -49,7 +57,7 @@ int main(int argc, char *argv[]) {
   xbrtime_barrier();
 
   // Start benchmark
-  double start_time = get_time();
+  double start_time = RTSEC();
   for (int currentPE = 0; currentPE < npes; currentPE++) {
     for (size_t i = 0; i < NUM_UPDATES / npes; i++) {
       // Generate a random index in the table
@@ -70,7 +78,7 @@ int main(int argc, char *argv[]) {
   
   // Wait for all tasks to complete
   xbrtime_barrier();
-  double end_time = get_time();
+  double end_time = RTSEC();
 
   // Calculate GUPS
   double elapsed_time = end_time - start_time;

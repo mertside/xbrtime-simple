@@ -7,7 +7,7 @@ ASM = ../runtime/xbMrtime_api_asm.s
 MY_CC = $(CCOM) $(CFLAGS) $(INCLUDES) $(ASM)
 #DIR=~/cheri/output/rootfs-morello-purecap/mert_files/xbrtime-simple
 
-all: matMul gather gupsM broadcast reduction gupsM
+all: matMul gather gupsM broadcast reduction
 
 matMul:
 	$(MY_CC) -o matmul.exe matmul_M.c

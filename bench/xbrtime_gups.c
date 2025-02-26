@@ -6,8 +6,6 @@
 #define TABLE_SIZE (1 << 24)  // Example: 16M elements
 #define NUM_UPDATES (1 << 26) // Example: 64M updates
 
-typedef long long int int64_t;
-
 typedef struct {
   int64_t *table;
   int64_t remote_index;

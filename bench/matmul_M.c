@@ -89,7 +89,7 @@ int main( int argc, char **argv ){
   rtn = xbrtime_init();
   RealTime += RTSEC(); // End timed section
   printf("[M]"GRN " Passed xbrtime_init()\n"RESET);
-  printf("\tReal time used = %.6f seconds\n", RealTime );
+  printf("\tRTSEC used fior INIT = %.6f seconds\n", RealTime );
 
   int num_pes = xbrtime_num_pes();
   row         = num_pes;
@@ -138,6 +138,7 @@ int main( int argc, char **argv ){
 	}
 
   /* fetch via loop */
+  RealTime = -RTSEC(); // Begin timed section
   if(xbrtime_mype() == 0){
     //xbrtime_ulonglong_get(&x,&y,1,1,1);
     for( i = 0; i < row; i++ ){
@@ -152,6 +153,7 @@ int main( int argc, char **argv ){
         check = tpool_add_work( threads[i].thread_queue, 
                         xbrtime_ulonglong_get, 
                         func_args);
+        
 
         /*
         xbrtime_ulonglong_get((unsigned long long *)(&(shared[i])), // dest
@@ -166,9 +168,12 @@ int main( int argc, char **argv ){
               RESET, i, j, check ? "true" : "false", threads[i].thread_handle);
         fflush(stdout);
       }
-    }
+    
     printf("[M] "BGRN"Passed xbrtime_ulonglong_get()\n"RESET);
   }
+  RealTime += RTSEC(); // End timed section
+
+  printf("\tRTSEC for xbrtime_ulonglong_get = %.6f seconds\n", RealTime );
 
   /* perform a barrier */
 #ifdef DEBUG
@@ -194,7 +199,10 @@ int main( int argc, char **argv ){
   //                         1);									 								 // pe
 	// }
 
+  RealTime = -RTSEC(); // Begin timed section
   xbrtime_barrier();
+  RealTime += RTSEC(); // End timed section
+  printf("\tRTSEC for xbrtime_barrier = %.6f seconds\n", RealTime );
 
 	if(xbrtime_mype() == 0){
 		t_end = mysecond();

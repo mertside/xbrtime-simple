@@ -171,7 +171,7 @@ int main( int argc, char **argv ){
 	if(xbrtime_mype() == 0)
 		PRINT(local, remote, t_init, t_mem);
 
-  printf("\tRTSEC for last barrier = %.6f seconds\n", RealTime );
+  printf("\tRTSEC for last barrier = %f seconds\n", RealTime );
 
 	free(private);
 	free(idx);
